@@ -1,5 +1,9 @@
 # CS152_ASD
 
+Author(s): Danin Namiranian, Abhinav Ramachandran, TianCheng Zhao, Hunter Adomitis
+
+# Language Features
+
 | Language Feature | Code Example |
 |----------|----------|
 | Add | x+y |
@@ -17,6 +21,8 @@
 | Read | read(x) |
 | Arrays | int [8] array |
 | Comment | # This is a comment |
+
+# Table of Symbols
 
 | Symbol        | Token Name   |
 |---------------|--------------|
