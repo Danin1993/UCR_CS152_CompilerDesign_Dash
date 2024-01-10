@@ -1,4 +1,4 @@
-# CS152_ASD
+# CS152 - DASH Language
 
 Author(s): Danin Namiranian, Abhinav Ramachandran, TianCheng Zhao, Hunter Adomitis
 
