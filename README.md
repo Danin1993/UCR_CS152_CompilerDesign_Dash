@@ -2,18 +2,18 @@
 
 | Language Feature | Code Example |
 |----------|----------|
-| Add | Row 1, Column 2 |
-| Sub | Row 2, Column 2 |
-| Multiply | Row 1, Column 2 |
-| Divide | Row 2, Column 2 |
-| Modulus | Row 1, Column 2 |
-| Less Than | Row 2, Column 2 |
-| Less Than Equal | Row 1, Column 2 |
-| Equality | Row 2, Column 2 |
-| Not Equality | Row 1, Column 2 |
-| Greater Than | Row 2, Column 2 |
-| Greater Than Equal | Row 1, Column 2 |
-| Write | Row 2, Column 2 |
-| Read | Row 2, Column 2 |
-| Arrays | Row 2, Column 2 |
-| Comment | Row 2, Column 2 |
+| Add | x+y |
+| Sub | x-y |
+| Multiply | x*y |
+| Divide | x/y |
+| Modulus | x%y |
+| Less Than | x<y |
+| Less Than Equal | x<=y |
+| Equality | x===y |
+| Not Equality | x!=y |
+| Greater Than | x>y |
+| Greater Than Equal | x>=y|
+| Write | prt(x) |
+| Read | read(x) |
+| Arrays | int [8] array |
+| Comment | # This is a comment |
