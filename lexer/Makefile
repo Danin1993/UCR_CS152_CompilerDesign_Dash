@@ -1,4 +1,5 @@
-all:
-	flex lexer.lex
-	gcc lex.yy.c -lfl
+all: lexer
 
+lexer: lexer.lex
+	flex lexer.lex
+	gcc -o lexer lex.yy.c -lfl
