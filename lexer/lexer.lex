@@ -17,6 +17,7 @@ WHITESPACE  [ \t\n]+
 KEYWORDS "func"|"return"|"int"|"prt"|"read"|"while"|"if"|"else"|"break"|"continue"
 IDENTIFIER  {ALPHA}+(({ALPHA}|{DIGIT})+)?
 NUMBER      {DIGIT}+(\.{DIGIT}+)?
+SCINTIFICNUM {NUMBER}[eE][+-]?{NUMBER}
 SYMBOLS  ";"|","|"("|")"|"{"|"}"|"["|"]"
 MATHOPERATIONS "+"|"-"|"*"|"/"|"%"
 COMPARISON "<"|"<="|">"|">="|"==="|"!="
@@ -32,6 +33,7 @@ ERRORCOM {COMPARISON}.
 {IDENTIFIER}            {printf("IDENTIFIER: %s\n", yytext);}
 "="         		{intEq+=1;printf("ASSIGNMENT OPPERATOR: =\n");}
 {NUMBER}                {intNum+=1; printf("NUMBER: %s\n", yytext);}
+{SCINTIFICNUM}		{{intNum+=1; printf("SCINTIFIC NUMBER: %s\n", yytext);}}	
 {COMMENT}               {}
 {WHITESPACE}            { printf; column += yyleng; }
 {IDENTIFIER_INVALID}    { printf("ERROR: Invalid identifier '%s' at line %d, column %d\n", yytext, yylineno, column); column += yyleng; }
