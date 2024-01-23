@@ -1,6 +1,11 @@
 %{
 #include <stdio.h>
+
+int column = 1;
+
 %}
+
+%option yylineno
 
 DIGIT       [0-9]
 ALPHA       [a-zA-Z]
@@ -9,6 +14,8 @@ WHITESPACE  [ \t\n]+
 
 IDENTIFIER  {ALPHA}+(({ALPHA}|{DIGIT})+)?
 NUMBER      {DIGIT}+(\.{DIGIT}+)?
+
+IDENTIFIER_INVALID {DIGIT}+({ALPHA}|{DIGIT})+
 
 %%
 
@@ -45,15 +52,21 @@ NUMBER      {DIGIT}+(\.{DIGIT}+)?
 "!="        {printf("NOT EQUAL\n");}
 
 
-{IDENTIFIER}    {printf("IDENTIFIER: %s\n", yytext);}
-{NUMBER}        {printf("NUMBER: %s\n", yytext);}
-{COMMENT}       {}
-{WHITESPACE}    {} 
-
-.              {printf("UNKNOWN CHARACTER: %s\n", yytext);}
-
+{IDENTIFIER}            {printf("IDENTIFIER: %s\n", yytext);}
+{NUMBER}                {printf("NUMBER: %s\n", yytext);}
+{COMMENT}               {}
+{WHITESPACE}            { printf; column += yyleng; }
+{IDENTIFIER_INVALID}    { printf("ERROR: Invalid identifier '%s' at line %d, column %d\n", yytext, yylineno, column); column += yyleng; }
+.                       { printf("ERROR: Unrecognized symbol '%s' at line %d, column %d\n", yytext, yylineno, column); column += yyleng; }
 %%
 
-int yywrap(){return 1;}
+int main(int argc, char **argv)
+{
+    yylex();
+    return 0;
+}
 
-int main(void) {yylex(); return 0;}
+int yywrap(void)
+{
+    return 1;
+}

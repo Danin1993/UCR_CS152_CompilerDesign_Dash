@@ -1,11 +1,19 @@
-a aa abb aAbB aaa111222
+# This is a heavy Heavt Test
 
-111 123.45566 
+111
+222.333
 
-123$&&
+a
+aA 
+aA12 
+$%
+#%
 
-+ - / %
 
-array 
+# The lexer should detect and remove comments correctly (e.g. //This is a comment should parse as one token)
 
-func
+# The lexer should detect and report proper error messages for invalid identifiers and unrecognized symbols (e.g. 2a is an error)
+
+2a
+3454aab
+1aab555AAAbs
