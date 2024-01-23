@@ -1,34 +1,54 @@
 %{
-# include <stdio.h>
+#include <stdio.h>
+
+int column = 1;
+int intNum=0;
+int intOp=0;
+int intEq=0;
+int intPar=0;
 %}
 
-DIGIT [0-9]
-ALPHA [a-zA-Z]
-COMMENT [#].*\n
-KEYWORD func|return|int|prt|read|if|else|break|continue
-MATH "+"|"-"|"*"|"/"|"%"|"="
-SYMBOL ";"|","|"("|")"|"{"|"}"|"["|"]"
-COMPARISON "<"|"<="|">"|">="|"==="|"!="
+%option yylineno
+
+DIGIT       [0-9]
+ALPHA       [a-zA-Z]
+COMMENT     [#].*\n
 WHITESPACE  [ \t\n]+
+KEYWORDS "func"|"return"|"int"|"prt"|"read"|"while"|"if"|"else"|"break"|"continue"
 IDENTIFIER  {ALPHA}+(({ALPHA}|{DIGIT})+)?
 NUMBER      {DIGIT}+(\.{DIGIT}+)?
+SYMBOLS  ";"|","|"("|")"|"{"|"}"|"["|"]"
+MATHOPERATIONS "+"|"-"|"*"|"/"|"%"
+COMPARISON "<"|"<="|">"|">="|"==="|"!="
+IDENTIFIER_INVALID {DIGIT}+({ALPHA}|{DIGIT})+
 
-  
-%%
-
-{KEYWORD} {printf("KEYWORD: %s\n", yytext);}
-{MATH} {printf("MATH OPERATION: %s\n", yytext);}
-{SYMBOL} {printf("SYMBOL: %s\n", yytext);}
-{COMPARISON} {printf("COMPARISON SYMBOL: %s\n", yytext);}
-{DIGIT}+ {printf("NUMBER: %s\n", yytext);}
-{ALPHA}+ {printf("TOKEN: %s\n", yytext);}
-{WHITESPACE}    {}
-{IDENTIFIER}    {printf("IDENTIFIER: %s\n", yytext);}
-{NUMBER}        {printf("NUMBER: %s\n", yytext);}
-[\s\t\r\n\f] {}   
 
 %%
-int main(void) {
+{KEYWORDS}            {printf("KEYWORDS: %s\n", yytext);}
+{SYMBOLS}            {if(*(yytext) == '(' || *(yytext) == ')') intPar+=1;printf("SYMBOLS: %s\n", yytext);}
+{MATHOPERATIONS}            {intOp+=1;printf("MATH OPPERATOR: %s\n", yytext);}
+{COMPARISON}            {printf("COMPARISON SYMBOL: %s\n", yytext);}
+{IDENTIFIER}            {printf("IDENTIFIER: %s\n", yytext);}
+"="         		{intEq+=1;printf("ASSIGNMENT OPPERATOR: =\n");}
+{NUMBER}                {intNum+=1; printf("NUMBER: %s\n", yytext);}
+{COMMENT}               {}
+{WHITESPACE}            { printf; column += yyleng; }
+{IDENTIFIER_INVALID}    { printf("ERROR: Invalid identifier '%s' at line %d, column %d\n", yytext, yylineno, column); column += yyleng; }
+.                       { printf("ERROR: Unrecognized symbol '%s' at line %d, column %d\n", yytext, yylineno, column); column += yyleng; }
+%%
+
+int main(int argc, char **argv)
+{
     yylex();
+printf( "# of ints = %d\n",intNum);
+printf( "# of Opperations = %d\n",intOp);
+printf( "# of  parentheses = %d\n",intPar);
+printf( "# of equals = %d\n",intEq);
+
     return 0;
+}
+
+int yywrap(void)
+{
+    return 1;
 }
