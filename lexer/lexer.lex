@@ -22,7 +22,7 @@ SYMBOLS  ";"|","|"("|")"|"{"|"}"|"["|"]"
 MATHOPERATIONS "+"|"-"|"*"|"/"|"%"
 COMPARISON "<"|"<="|">"|">="|"==="|"!="
 IDENTIFIER_INVALID {DIGIT}+({ALPHA}|{DIGIT})+
-ERRORCOM {COMPARISON}.
+ERRORCOM {COMPARISON}[^ \t\n]
 
 
 %%
