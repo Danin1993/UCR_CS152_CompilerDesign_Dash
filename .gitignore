@@ -1,2 +1,7 @@
 .nfs*
 *.swp
+
+
+*.o
+lexer
+lex.yy.c
