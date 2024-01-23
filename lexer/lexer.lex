@@ -21,6 +21,7 @@ SYMBOLS  ";"|","|"("|")"|"{"|"}"|"["|"]"
 MATHOPERATIONS "+"|"-"|"*"|"/"|"%"
 COMPARISON "<"|"<="|">"|">="|"==="|"!="
 IDENTIFIER_INVALID {DIGIT}+({ALPHA}|{DIGIT})+
+ERRORCOM {COMPARISON}.
 
 
 %%
@@ -34,7 +35,8 @@ IDENTIFIER_INVALID {DIGIT}+({ALPHA}|{DIGIT})+
 {COMMENT}               {}
 {WHITESPACE}            { printf; column += yyleng; }
 {IDENTIFIER_INVALID}    { printf("ERROR: Invalid identifier '%s' at line %d, column %d\n", yytext, yylineno, column); column += yyleng; }
-.                       { printf("ERROR: Unrecognized symbol '%s' at line %d, column %d\n", yytext, yylineno, column); column += yyleng; }
+{ERRORCOM}              { printf("ERROR: Unrecognized symbol '%s' at line %d, column %d\n", yytext, yylineno, column); column += yyleng; return -1;}
+.                       { printf("ERROR: Unrecognized symbol '%s' at line %d, column %d\n", yytext, yylineno, column); column += yyleng; return -1;}
 %%
 
 int main(int argc, char **argv)
