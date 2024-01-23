@@ -1,6 +1,7 @@
-# simple program which adds two numbers together
-# This program should output '150'
+#Chcked, Done
+
 func main() {
+
   int a;
   int b;
   int c;
@@ -8,4 +9,5 @@ func main() {
   b = 50;
   c = a + b;
   prt(c);
+
 }

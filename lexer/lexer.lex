@@ -14,6 +14,7 @@ DIGIT       [0-9]
 ALPHA       [a-zA-Z]
 COMMENT     [#].*\n
 WHITESPACE  [ \t\n]+
+<<<<<<< HEAD
 KEYWORDS "func"|"return"|"int"|"prt"|"read"|"while"|"if"|"else"|"break"|"continue"
 IDENTIFIER  {ALPHA}+(({ALPHA}|{DIGIT})+)?
 NUMBER      {DIGIT}+(\.{DIGIT}+)?
@@ -48,7 +49,7 @@ printf( "# of equals = %d\n",intEq);
     return 0;
 }
 
-int yywrap(void)
+nt yywrap(void)
 {
     return 1;
 }
