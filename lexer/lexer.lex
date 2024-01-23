@@ -1,9 +1,11 @@
 %{
-#include <stdio.h>
+# include <stdio.h>
 %}
+
 DIGIT [0-9]
 ALPHA [a-zA-Z]
 COMMENT [#].*\n
+
 %%
 "func" {printf("FUNC DECLERATION\n");}
 "return" {printf("RETURN TOKEN\n");}
