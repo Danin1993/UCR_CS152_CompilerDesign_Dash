@@ -25,7 +25,6 @@ IDENTIFIER_INVALID {DIGIT}+({ALPHA}|{DIGIT})+
 ASSIGNMENT_ERROR [=][^ \t\n]	 
 ERRORCOM {COMPARISON}[^ \t\n]|"=="
 
-
 %%
  
 {KEYWORDS}            {printf("KEYWORDS: %s\n", yytext);}
