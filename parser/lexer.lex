@@ -14,7 +14,7 @@ DIGIT       [0-9]
 ALPHA       [a-zA-Z]
 COMMENT     [#].*\n
 WHITESPACE  [ \t\n]+
-FUNC "func"
+FUNC func
 RETURN return
 INT int
 PRT prt
@@ -29,18 +29,18 @@ NUMBER      [+-]?{DIGIT}+(\.{DIGIT}+)?
 SCINTIFICNUM {NUMBER}[eE][+-]?{NUMBER}
 SEMICOLON  ;
 COMMA ,
-L_PAR (
-R_PAR )
-L_CURLY {
-R_CURLY }
-L_BRAKET [
-R_BRAKET ]
-ADD +
-SUBTRACR -
-MUTIPLY *
-DIVIDE /
-MOD %
-ASSIGNMENT =
+L_PAR \(
+R_PAR \)
+L_CURLY \{
+R_CURLY \}
+L_BRAKET \[
+R_BRAKET \]
+ADD \+
+SUBTRACTION \-
+MUTIPLY \*
+DIVIDE \/
+MOD \%
+ASSIGNMENT \=
 LESS <
 LESS_EQ <=
 GREATER >
@@ -53,7 +53,31 @@ ASSIGNMENT_ERROR [=][^ \t\n]
 ERRORCOM {COMPARISON}[^ \t\n]|"=="
 
 %%
- 
+{FUNC}            {printf("FUNCTION DECLERATION \n", yytext);}
+{RETURN}            {printf("RETURN STATEMENT \n", yytext);}
+{INT}            {printf("INT DECLERATION \n", yytext);}
+{PRT}            {printf("PRT STATEMENT \n", yytext);}
+{WHILE}            {printf("LOOP DECLERATION \n", yytext);}
+{IF}            {printf("IF STATEMENT \n", yytext);}
+{ELSE}            {printf("ELSE STATEMENT \n", yytext);}
+{BREAK}            {printf("BREAK STATEMENT \n", yytext);}
+{CONTINUE}            {printf("CONTINUE STATEMENT \n", yytext);}
+{READ}            {printf("READ STATEMENT \n", yytext);}
+{SEMICOLON}            {printf("SEMICOLON \n", yytext);}
+{COMMA}            {printf("COMMA \n", yytext);}
+{L_PAR}            {intPar++; printf("LEFT PAR \n", yytext);}
+{R_PAR}            {intPar++; printf("RIGHT PAR \n", yytext);}
+{L_CURLY}            {printf("LEFT CURLY \n", yytext);}
+{R_CURLY}            {printf("RIGHT CURLY \n", yytext);}
+{L_BRAKET}            {printf("LEFT BRAKET \n", yytext);}
+{R_BRAKET}            {printf("RIGHT BRAKET \n", yytext);}
+{ADD}            {intOp++; printf("ADDITION \n", yytext);}
+{SUBTRACTION}            {intOp++; printf("SUBTRACTION \n", yytext);}
+{MUTIPLY}            {intOp++; printf("MUTIPLICATION \n", yytext);}
+{DIVIDE}            {intOp++; printf("DIVISON \n", yytext);}
+{MOD}            {intOp++; printf("MODULO \n", yytext);}
+{ASSIGNMENT}            {intEq++;printf("ASSIGNMENT \n", yytext);}
+
 
 
 {IDENTIFIER}            {printf("IDENTIFIER: %s\n", yytext);}
