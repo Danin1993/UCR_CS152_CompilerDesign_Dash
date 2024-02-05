@@ -1,11 +1,9 @@
 %{
 #include <stdio.h>
 
-int column = 1;
-int intNum=0;
-int intOp=0;
-int intEq=0;
-int intPar=0;
+# define YY_DECL int yylex()
+
+#include "parser.tab.h"
 %}
 
 %option yylineno
@@ -53,36 +51,36 @@ ASSIGNMENT_ERROR [=][^ \t\n]
 ERRORCOM {COMPARISON}[^ \t\n]|"=="
 
 %%
-{FUNC}            {printf("FUNCTION DECLERATION \n", yytext);}
-{RETURN}            {printf("RETURN STATEMENT \n", yytext);}
-{INT}            {printf("INT DECLERATION \n", yytext);}
-{PRT}            {printf("PRT STATEMENT \n", yytext);}
-{WHILE}            {printf("LOOP DECLERATION \n", yytext);}
-{IF}            {printf("IF STATEMENT \n", yytext);}
-{ELSE}            {printf("ELSE STATEMENT \n", yytext);}
-{BREAK}            {printf("BREAK STATEMENT \n", yytext);}
-{CONTINUE}            {printf("CONTINUE STATEMENT \n", yytext);}
-{READ}            {printf("READ STATEMENT \n", yytext);}
-{SEMICOLON}            {printf("SEMICOLON \n", yytext);}
-{COMMA}            {printf("COMMA \n", yytext);}
-{L_PAR}            {intPar++; printf("LEFT PAR \n", yytext);}
-{R_PAR}            {intPar++; printf("RIGHT PAR \n", yytext);}
-{L_CURLY}            {printf("LEFT CURLY \n", yytext);}
-{R_CURLY}            {printf("RIGHT CURLY \n", yytext);}
-{L_BRAKET}            {printf("LEFT BRAKET \n", yytext);}
-{R_BRAKET}            {printf("RIGHT BRAKET \n", yytext);}
-{ADD}            {intOp++; printf("ADDITION \n", yytext);}
-{SUBTRACTION}            {intOp++; printf("SUBTRACTION \n", yytext);}
-{MUTIPLY}            {intOp++; printf("MUTIPLICATION \n", yytext);}
-{DIVIDE}            {intOp++; printf("DIVISON \n", yytext);}
-{MOD}            {intOp++; printf("MODULO \n", yytext);}
-{ASSIGNMENT}            {intEq++;printf("ASSIGNMENT \n", yytext);}
-{LESS}            {printf("LESS\n", yytext);}
-{LESS_EQ}            {printf("LESS_EQ\n", yytext);}
-{GREATER}            {printf("GREATER\n", yytext);}
-{GREATER_EQ}            {printf("GREATER_EQ\n", yytext);}
-{EQUALITY}            {printf("EQUALITY\n", yytext);}
-{NOT_EQ}            {printf("NOT_EQ\n", yytext);}
+{FUNC}            {return FUNC;}
+{RETURN}            {return RETURN;}
+{INT}            {return INT;}
+{PRT}            {return PRT;}
+{WHILE}            {return WHILE;}
+{IF}            {return IF;}
+{ELSE}            {return ELSE;}
+{BREAK}            {return BREAK;}
+{CONTINUE}            {return CONTINUE;}
+{READ}            {return READ;}
+{SEMICOLON}            {return SEMICOLON;}
+{COMMA}            {return COMMA;}
+{L_PAR}            {return L_PAR;}
+{R_PAR}            {return R_PAR;}
+{L_CURLY}            {return L_CURLY;}
+{R_CURLY}            {return R_CURLY;}
+{L_BRAKET}            {return L_BRAKET;}
+{R_BRAKET}            {return R_BRAKET;}
+{ADD}            {return ADD;}
+{SUBTRACTION}            {return SUBTRACTION;}
+{MUTIPLY}            {return MUTIPLY;}
+{DIVIDE}            {return DIVIDE;}
+{MOD}            {return MOD;}
+{ASSIGNMENT}            {return ASSIGMENT;}
+{LESS}            {return LESS;}
+{LESS_EQ}            {return LESS_EQ;}
+{GREATER}            {return GREATER;}
+{GREATER_EQ}            {return GREATER_EQ;}
+{EQUALITY}            {return EQUALITY;}
+{NOT_EQ}            {return NOT_EQ;}
 
 
 
@@ -101,17 +99,6 @@ ERRORCOM {COMPARISON}[^ \t\n]|"=="
 .                       { printf("ERROR: Unrecognized symbol '%s' at line %d, column %d\n", yytext, yylineno, column); column += yyleng; return -1;}
                      
 %%
-
-int main(int argc, char **argv)
-{
-    yylex();
-printf( "# of ints = %d\n",intNum);
-printf( "# of Opperations = %d\n",intOp);
-printf( "# of  parentheses = %d\n",intPar);
-printf( "# of equals = %d\n",intEq);
-
-    return 0;
-}
 
 int yywrap(void)
 {
