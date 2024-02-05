@@ -77,6 +77,16 @@ ERRORCOM {COMPARISON}[^ \t\n]|"=="
 {DIVIDE}            {intOp++; printf("DIVISON \n", yytext);}
 {MOD}            {intOp++; printf("MODULO \n", yytext);}
 {ASSIGNMENT}            {intEq++;printf("ASSIGNMENT \n", yytext);}
+{LESS}            {printf("LESS\n", yytext);}
+{LESS_EQ}            {printf("LESS_EQ\n", yytext);}
+{GREATER}            {printf("GREATER\n", yytext);}
+{GREATER_EQ}            {printf("GREATER_EQ\n", yytext);}
+{EQUALITY}            {printf("EQUALITY\n", yytext);}
+{NOT_EQ}            {printf("NOT_EQ\n", yytext);}
+
+
+
+
 
 
 
