@@ -29,23 +29,41 @@ int parCnt = 0;
 
 %token UNKNOWN_TOKEN
 
-%nterm <double> function_decleration
+%nterm <double> function_decleration paramerter_declerations paramerter_decleration statements statement 
+%nterm <double> var_decleration var_assigment expression
 
 %start functions
 
 %%
-functions  	       : functions function_decleration {printf("function -> functions function_decleration\n");}
+functions  	       : functions function_decleration {printf("functions -> functions function_decleration\n");}
                        | %empty                 {printf("functions -> epsilon\n");}
                        ;
 paramerter_declerations: paramerter_declerations paramerter_decleration {printf("paramerter_declerations -> paramerter_declerations paramerter_decleration\n");}
 		       | %empty {printf("paramerter_declerations -> epsilon\n");}
+		       ;
+statements	       : statements statement {printf("statements -> statemtnents statement\n");}
+		       | %empty			{printf("statemtnents -> epsilon\n");}
+		       ;
+statement	       : var_decleration {printf("statement -> var_decleration\n");}
+	               | var_assigment {printf("statement -> var_assigment\n");}
+		       | print {printf("statement -> print\n");}
+		       | SEMICOLON {printf("statement -> SEMICOLON\n");}
+		       ;  
+var_decleration        : INT IDENTIFIER SEMICOLON {printf("var_decleration -> INT INDENTIFIER SEMICOLON\n");} 
+	               | INT var_assigment {printf("var_decleration -> INT var_assigment\n");}
 		       ;
 paramerter_decleration : INT IDENTIFIER COMMA {printf("paramerter_decleration -> INT INDENTIFIER COMA\n");}
 		       | INT IDENTIFIER L_BRAKET R_BRAKET COMMA {printf("paramerter_decleration -> INT INDENTIFIER L_BRAKET R_BRAKET COMA\n");}
 		       | INT IDENTIFIER {printf("paramerter_decleration -> INT INDENTIFIER\n");}
 		       | INT IDENTIFIER L_BRAKET R_BRAKET {printf("paramerter_decleration -> INT INDENTIFIER L_BRAKET R_BRAKET\n");}
 		       ; 
-function_decleration   : FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY R_CURLY {printf("functions -> FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY R_CURLY\n");};
+function_decleration   : FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY {printf("function_decleration -> FUNC IDENTIFIER L_PAR paramerter_declerationsR_PAR L_CURLY statements R_CURLY\n");	       };
+var_assigment          : IDENTIFIER ASSIGNMENT expression {printf("var_assigment -> IDENTIFER ASSIGNEMNT expression\n");}
+                       ;
+expression             : NUMBER {printf("expression -> NUMBER\n");}
+		       | IDENTIFIER {printf("expression -> INDENTIFIER\n");}
+                       ;
+print		       : PRT L_PAR expression R_PAR {printf("print -> PRT L_PAR expression R_PAR\n");}
 %%
 int main(int argc, char** argv){
 	yyin = stdin;
