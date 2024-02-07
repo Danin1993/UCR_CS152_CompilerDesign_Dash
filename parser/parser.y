@@ -29,36 +29,23 @@ int parCnt = 0;
 
 %token UNKNOWN_TOKEN
 
-%nterm <double> expression func add sub mult div mod declerations
+%nterm <double> function_decleration
 
-%start expressions
+%start functions
+
 %%
-expressions: expressions expression {printf("expressions -> expressions expression\n");}
-           | %empty                 {printf("expressions -> epsilon\n");}
-           ;
-
-expression: add     	 {printf("expression -> add\n");}
-          | sub     	 {printf("expression -> sub\n");}
-          | mult    	 {printf("expression -> mult\n");}
-          | div     	 {printf("expression -> div\n");}
-          | mod     	 {printf("expression -> mod\n");}
-          | NUMBER  	 {printf("expression -> NUMBER\n");}
-	  | func    	 {printf("expression -> func \n");}
-	  | declerations {printf("expression -> declerations \n");}
-          ;
-declerations: declerations declerations {printf("declerationis-> declerations declerations\n");} 
-	    |INT IDENTIFIER COMMA {printf("declerations -> INT IDENTIFER COMMA\n");}
-	    | INT IDENTIFIER L_BRAKET R_BRAKET COMMA {printf("declerations -> INT IDENTIFER L_BRAKET R_BRAKET COMMA\n"); }
-	    | INT IDENTIFIER {printf("declerations -> INT IDENTIFER\n"); } 
-	    | INT IDENTIFIER L_BRAKET R_BRAKET {printf("declerations -> INT IDENTIFER L_BRAKET R_BRAKET\n"); }
-	    | %empty {printf("declerations -> epsilon\n");} 
-	    ;
-func: FUNC IDENTIFIER L_PAR declerations R_PAR L_CURLY expression R_CURLY {printf("func -> FUNC IDENTIFER L_PAR declerations R_PAR L_CURLY expression R_CURLY\n");} 
-add:  L_PAR ADD  expression expression R_PAR {printf("add  -> L_PAREN ADD  expression expression R_PAREN\n"); $$ = $3 + $4;};
-sub:  L_PAR SUBTRACTION  expression expression R_PAR {printf("sub  -> L_PAREN SUB  expression expression R_PAREN\n"); $$ = $3 - $4;};
-mult: L_PAR MUTIPLY expression expression R_PAR {printf("mult -> L_PAREN MULT expression expression R_PAREN\n"); $$ = $3 * $4;};
-div:  L_PAR DIVIDE  expression expression R_PAR {printf("div  -> L_PAREN DIV  expression expression R_PAREN\n"); $$ = $3 / $4;};
-mod:  L_PAR MOD  expression expression R_PAR {printf("mod  -> L_PAREN MOD  expression expression R_PAREN\n"); $$ = fmod($3, $4);};
+functions  	       : functions function_decleration {printf("function -> functions function_decleration\n");}
+                       | %empty                 {printf("functions -> epsilon\n");}
+                       ;
+paramerter_declerations: paramerter_declerations paramerter_decleration {printf("paramerter_declerations -> paramerter_declerations paramerter_decleration\n");}
+		       | %empty {printf("paramerter_declerations -> epsilon\n");}
+		       ;
+paramerter_decleration : INT IDENTIFIER COMMA {printf("paramerter_decleration -> INT INDENTIFIER COMA\n");}
+		       | INT IDENTIFIER L_BRAKET R_BRAKET COMMA {printf("paramerter_decleration -> INT INDENTIFIER L_BRAKET R_BRAKET COMA\n");}
+		       | INT IDENTIFIER {printf("paramerter_decleration -> INT INDENTIFIER\n");}
+		       | INT IDENTIFIER L_BRAKET R_BRAKET {printf("paramerter_decleration -> INT INDENTIFIER L_BRAKET R_BRAKET\n");}
+		       ; 
+function_decleration   : FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY R_CURLY {printf("functions -> FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY R_CURLY\n");};
 %%
 int main(int argc, char** argv){
 	yyin = stdin;
