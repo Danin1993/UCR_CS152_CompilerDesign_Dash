@@ -1,13 +1,3 @@
-%{
-#include <stdio.h>
-
-# define YY_DECL int yylex()
-
-#include "parser.tab.h"
-%}
-
-%option yylineno
-
 DIGIT       [0-9]
 ALPHA       [a-zA-Z]
 COMMENT     [#].*\n
@@ -50,7 +40,17 @@ IDENTIFIER_INVALID {DIGIT}+({ALPHA}|{DIGIT})+
 ASSIGNMENT_ERROR [=][^ \t\n]	 
 ERRORCOM {COMPARISON}[^ \t\n]|"=="
 
+%{
+#include <stdio.h>
+
+#define YY_DECL int yylex()
+#include "parser.tab.h"
+%}
+
+%option yylineno
+
 %%
+
 {FUNC}            {return FUNC;}
 {RETURN}            {return RETURN;}
 {INT}            {return INT;}
@@ -74,7 +74,7 @@ ERRORCOM {COMPARISON}[^ \t\n]|"=="
 {MUTIPLY}            {return MUTIPLY;}
 {DIVIDE}            {return DIVIDE;}
 {MOD}            {return MOD;}
-{ASSIGNMENT}            {return ASSIGMENT;}
+{ASSIGNMENT}            {return ASSIGNMENT;}
 {LESS}            {return LESS;}
 {LESS_EQ}            {return LESS_EQ;}
 {GREATER}            {return GREATER;}
@@ -88,18 +88,17 @@ ERRORCOM {COMPARISON}[^ \t\n]|"=="
 
 
 
-{IDENTIFIER}            {printf("IDENTIFIER: %s\n", yytext);}
-{ASSIGNMENT_ERROR}              { printf("ERROR: Unrecognized symbol '%s' at line %d, column %d\n", yytext, yylineno, column); column += yyleng; return -1;}
-{NUMBER}                {intNum+=1; printf("NUMBER: %s\n", yytext);}
-{SCINTIFICNUM}		{{intNum+=1; printf("SCINTIFIC NUMBER: %s\n", yytext);}}	
+{IDENTIFIER}            { return IDENTIFIER;}
+{ASSIGNMENT_ERROR}      {printf("Error: unrecognized symbol \"%s\"\n", yytext); return -1; }
+{NUMBER}                {yylval.NUMBER = atof(yytext); return NUMBER;}
+{SCINTIFICNUM}		{ printf("SCINTIFIC NUMBER: %s\n", yytext);}
 {COMMENT}               {/* ignore */}
-{WHITESPACE}            { printf; column += yyleng; }
-{IDENTIFIER_INVALID}    { printf("ERROR: Invalid identifier '%s' at line %d, column %d\n", yytext, yylineno, column); column += yyleng; return -1; }
-{ERRORCOM}              { printf("ERROR: Unrecognized symbol '%s' at line %d, column %d\n", yytext, yylineno, column); column += yyleng; return -1;}
-.                       { printf("ERROR: Unrecognized symbol '%s' at line %d, column %d\n", yytext, yylineno, column); column += yyleng; return -1;}
-                     
+{WHITESPACE}            { /*ignore*/ }
+{IDENTIFIER_INVALID}    {printf("Error: unrecognized symbol \"%s\"\n", yytext); return -1; }
+{ERRORCOM}              {printf("Error: unrecognized symbol \"%s\"\n", yytext); return -1; }
+.                       {printf("Error: unrecognized symbol \"%s\"\n", yytext); return -1; }
+ 
 %%
-
 int yywrap(void)
 {
     return 1;
