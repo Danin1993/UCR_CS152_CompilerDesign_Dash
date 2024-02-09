@@ -32,7 +32,7 @@ int parCnt = 0;
 
 %nterm <double> function_decleration statements statement paramerter_declerations pars if_statement else_statement 
 %nterm <double> var_decleration var_assigment expression multiplicative_expr term varibles comparitors bool_expression
-
+%nterm <double> return_statement
 %start function_declerations
 
 %%
@@ -46,6 +46,7 @@ statement	       : var_decleration {printf("statement -> var_decleration\n");}
 	               | var_assigment {printf("statement -> var_assigment\n");}
 		       | print {printf("statement -> print\n");}
 		       | if_statement {printf("statement -> if_statement\n");}
+		       | return_statement {printf("statement -> return_statement\n");}
 		       | SEMICOLON {printf("statement -> SEMICOLON\n");}
 		       ;  
 if_statement           : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {printf("if_statement -> IF L_PAR R_PAR L_CURLY statements R_CURLY else_statement\n");};
@@ -59,6 +60,7 @@ comparitors            : LESS {printf("comparitors -> LESS\n");}
                        | EQUALITY {printf("comparitors -> EQUALITY\n");} 
                        | NOT_EQ {printf("comparitors -> NOT_EQ\n");}
                        ;
+return_statement       : RETURN expression {printf("return_statement -> RETURN expression\n");};
 var_decleration        : INT IDENTIFIER {printf("var_decleration -> INT INDENTIFIER\n");} 
 		       | INT L_BRAKET expression R_BRAKET IDENTIFIER {printf("var_decleration -> INT L_BRAKET expression R_BRAKET IDENTIFIER\n");} 
 	               | INT var_assigment {printf("var_decleration -> INT var_assigment\n");}
@@ -66,10 +68,10 @@ var_decleration        : INT IDENTIFIER {printf("var_decleration -> INT INDENTIF
 paramerter_declerations: paramerter_declerations paramerter_decleration {printf("paramerter_declerations -> paramerter_declerations paramerter_decleration\n");}
 		       | %empty {printf("paramerter_declerations -> epsilon\n");}
                        ;
-paramerter_decleration : IDENTIFIER {printf("paramerter_decleration -> IDENTIFIER\n");}
-             	       | IDENTIFIER COMMA {printf("paramerter_decleration -> IDENTIFIER COMMA\n");}
-		       | IDENTIFIER L_BRAKET R_BRAKET {printf("paramerter_decleration -> IDENTIFIER L_BRAKET R_BRAKET\n");}
-            	       | IDENTIFIER L_BRAKET R_BRAKET COMMA {printf("paramerter_decleration -> IDENTIFIER L_BRAKET R_BRAKET COMMA\n");}
+paramerter_decleration : INT IDENTIFIER {printf("paramerter_decleration -> INT IDENTIFIER\n");}
+             	       | INT IDENTIFIER COMMA {printf("paramerter_decleration -> INT IDENTIFIER COMMA\n");}
+		       | INT L_BRAKET R_BRAKET IDENTIFIER {printf("paramerter_decleration -> INT L_BRAKET R_BRAKET IDENTIFIER\n");}
+            	       | INT L_BRAKET R_BRAKET IDENTIFIER COMMA {printf("paramerter_decleration -> INT L_BRAKET R_BRAKET IDENTIFIER COMMA\n");}
 		       ; 
 function_decleration   : FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY {printf("function_decleration -> FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY\n");};
 var_assigment          : varibles ASSIGNMENT expression {printf("var_assigment -> varibles ASSIGNMENT expression\n");};
