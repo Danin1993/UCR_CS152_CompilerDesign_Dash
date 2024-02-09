@@ -30,8 +30,8 @@ int parCnt = 0;
 
 %token UNKNOWN_TOKEN
 
-%nterm <double> function_decleration statements statement paramerter_declerations pars  
-%nterm <double> var_decleration var_assigment expression multiplicative_expr term varibles
+%nterm <double> function_decleration statements statement paramerter_declerations pars if_statement else_statement 
+%nterm <double> var_decleration var_assigment expression multiplicative_expr term varibles comparitors bool_expression
 
 %start function_declerations
 
@@ -45,8 +45,20 @@ statements	       : statements statement {printf("statements -> statemtnents sta
 statement	       : var_decleration {printf("statement -> var_decleration\n");}
 	               | var_assigment {printf("statement -> var_assigment\n");}
 		       | print {printf("statement -> print\n");}
+		       | if_statement {printf("statement -> if_statement\n");}
 		       | SEMICOLON {printf("statement -> SEMICOLON\n");}
 		       ;  
+if_statement           : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {printf("if_statement -> IF L_PAR R_PAR L_CURLY statements R_CURLY else_statement\n");};
+else_statement         : ELSE L_CURLY statements R_CURLY {printf("else_statement -> ELSE L_CURLY statements R_CURLY\n");}
+		       | %empty {printf("else_statement -> epsilon\n");}
+                       ;
+comparitors            : LESS {printf("comparitors -> LESS\n");}
+		       | LESS_EQ {printf("comparitors -> LESS_EQ\n");}
+		       | GREATER {printf("comparitors -> GREATER\n");}
+                       | GREATER_EQ {printf("comparitors -> GREATER_EQ\n");}
+                       | EQUALITY {printf("comparitors -> EQUALITY\n");} 
+                       | NOT_EQ {printf("comparitors -> NOT_EQ\n");}
+                       ;
 var_decleration        : INT IDENTIFIER {printf("var_decleration -> INT INDENTIFIER\n");} 
 		       | INT L_BRAKET expression R_BRAKET IDENTIFIER {printf("var_decleration -> INT L_BRAKET expression R_BRAKET IDENTIFIER\n");} 
 	               | INT var_assigment {printf("var_decleration -> INT var_assigment\n");}
@@ -65,6 +77,7 @@ expression             : multiplicative_expr {printf("expression -> \n");}
 		       | multiplicative_expr ADD multiplicative_expr {printf("expression -> multiplicative_expr ADD multiplicative_expr\n");}
 		       | multiplicative_expr SUBTRACTION multiplicative_expr {printf("expression -> multiplicative_expr ADD multiplicative_expr\n");}
                        ;
+bool_expression        : expression comparitors expression {printf("bool_expression -> expression comparitors expression \n");};
 multiplicative_expr    : term {printf("multiplicative_expr -> term\n");}
                        | term MOD term {printf("multiplicative_expr -> term MOD term\n");}
 		       | term MUTIPLY term {printf("multiplicative_expr -> term MUTIPLY term\n");}
