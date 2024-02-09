@@ -1,5 +1,5 @@
-main() {
-    int [4] array;
+func main() {
+    int[4] array;
 
     # Should print out '2'
     array[0] = 2;
@@ -12,5 +12,6 @@ main() {
     # Should print out '8'
     array[2] = array[1] + 2 * 2;
     prt(array[2]);
-
+ 
+    
 }
