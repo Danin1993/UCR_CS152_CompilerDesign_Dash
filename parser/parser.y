@@ -20,17 +20,18 @@ int parCnt = 0;
 
 %left SUBTRACTION ADD
 %left MUTIPLY DIVIDE MOD
-%left FUNC 
+%left L_PAR R_PAR 
+%left IDENTIFIER
 
 %token <double> NUMBER
 
-%token L_PAR R_PAR RETURN IDENTIFIER RRETURN INT PRT WHILE IF ELSE BREAK CONTINUE READ SEMICOLON COMMA 
+%token L_PAR R_PAR RETURN IDENTIFIER RRETURN INT PRT FUNC WHILE IF ELSE BREAK CONTINUE READ SEMICOLON COMMA 
 %token L_CURLY R_CURLY L_BRAKET R_BRAKET ASSIGNMENT LESS LESS_EQ GREATER GREATER_EQ EQUALITY NOT_EQ
 
 %token UNKNOWN_TOKEN
 
 %nterm <double> function_decleration paramerter_declerations paramerter_decleration statements statement 
-%nterm <double> var_decleration var_assigment expression
+%nterm <double> var_decleration var_assigment expression paratheses add subtract divide multiply 
 
 %start functions
 
@@ -49,7 +50,7 @@ statement	       : var_decleration {printf("statement -> var_decleration\n");}
 		       | print {printf("statement -> print\n");}
 		       | SEMICOLON {printf("statement -> SEMICOLON\n");}
 		       ;  
-var_decleration        : INT IDENTIFIER SEMICOLON {printf("var_decleration -> INT INDENTIFIER SEMICOLON\n");} 
+var_decleration        : INT IDENTIFIER {printf("var_decleration -> INT INDENTIFIER\n");} 
 	               | INT var_assigment {printf("var_decleration -> INT var_assigment\n");}
 		       ;
 paramerter_decleration : INT IDENTIFIER COMMA {printf("paramerter_decleration -> INT INDENTIFIER COMA\n");}
@@ -57,13 +58,33 @@ paramerter_decleration : INT IDENTIFIER COMMA {printf("paramerter_decleration ->
 		       | INT IDENTIFIER {printf("paramerter_decleration -> INT INDENTIFIER\n");}
 		       | INT IDENTIFIER L_BRAKET R_BRAKET {printf("paramerter_decleration -> INT INDENTIFIER L_BRAKET R_BRAKET\n");}
 		       ; 
-function_decleration   : FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY {printf("function_decleration -> FUNC IDENTIFIER L_PAR paramerter_declerationsR_PAR L_CURLY statements R_CURLY\n");	       };
+function_decleration   : FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY {printf("function_decleration -> FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY\n");	       };
 var_assigment          : IDENTIFIER ASSIGNMENT expression {printf("var_assigment -> IDENTIFER ASSIGNEMNT expression\n");}
                        ;
 expression             : NUMBER {printf("expression -> NUMBER\n");}
 		       | IDENTIFIER {printf("expression -> INDENTIFIER\n");}
+		       | paratheses {printf("expression -> paratheses\n");}
+		       | add {printf("expression -> add\n");}
+		       | subtract {printf("expression -> subtract\n");}
+		       | multiply {printf("expression -> multiply\n");}
+		       | divide {printf("expression -> divide\n");}
                        ;
 print		       : PRT L_PAR expression R_PAR {printf("print -> PRT L_PAR expression R_PAR\n");}
+paratheses             : L_PAR expression R_PAR expression {printf("paratheses -> L_PAR expression R_PAR expression\n");}
+		       | L_PAR expression R_PAR {printf("paratheses -> L_PAR expression R_PAR\n");} 
+		       ;
+add                    : expression ADD expression {printf("add -> expression ADD expression\n");}
+		       | ADD expression {printf("add -> ADD expression\n");}
+		       ;
+subtract               : expression SUBTRACTION expression {printf("subtract -> expression SUBTRACTION expression\n");}
+                       | SUBTRACTION expression {printf("subtract -> SUBTRACTION expression\n");}
+                       ;
+multiply               : expression MUTIPLY expression {printf("multiply -> expression MUTIPLY expression\n");}
+                       | MUTIPLY expression {printf("multiply -> MUTIPLY expression\n");}
+                       ;
+divide                 : expression DIVIDE expression {printf("divide -> expression DIVIDE expression\n");}
+                       | DIVIDE expression {printf("divide -> DIVIDE expression\n");}
+                       ;
 %%
 int main(int argc, char** argv){
 	yyin = stdin;
