@@ -4,7 +4,5 @@ func main() {
   int a = 10;
   int b;
   int c;
-  prt (10);
-  prt (a);
-  
+  c = a + (b * c) / 10;
 }
