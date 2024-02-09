@@ -79,7 +79,7 @@ paramerter_decleration : INT IDENTIFIER {printf("paramerter_decleration -> INT I
 		       ; 
 function_decleration   : FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY {printf("function_decleration -> FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY\n");};
 var_assigment          : varibles ASSIGNMENT expression {printf("var_assigment -> varibles ASSIGNMENT expression\n");};
-expression             : multiplicative_expr {printf("expression -> \n");}
+expression             : multiplicative_expr {printf("expression -> multiplicative_expr\n");}
 		       | multiplicative_expr ADD multiplicative_expr {printf("expression -> multiplicative_expr ADD multiplicative_expr\n");}
 		       | multiplicative_expr SUBTRACTION multiplicative_expr {printf("expression -> multiplicative_expr ADD multiplicative_expr\n");}
                        ;
