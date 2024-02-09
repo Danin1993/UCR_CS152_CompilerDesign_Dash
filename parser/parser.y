@@ -32,7 +32,7 @@ int parCnt = 0;
 
 %nterm <double> function_decleration statements statement paramerter_declerations pars if_statement else_statement 
 %nterm <double> var_decleration var_assigment expression multiplicative_expr term varibles comparitors bool_expression
-%nterm <double> return_statement
+%nterm <double> return_statement read_statement while_statement
 %start function_declerations
 
 %%
@@ -47,6 +47,10 @@ statement	       : var_decleration {printf("statement -> var_decleration\n");}
 		       | print {printf("statement -> print\n");}
 		       | if_statement {printf("statement -> if_statement\n");}
 		       | return_statement {printf("statement -> return_statement\n");}
+                       | read_statement {printf("statement -> read_statement\n");}
+		       | while_statement {printf("statement -> while_statement\n");}
+                       | BREAK {printf("statement -> BREAK\n");}
+                       | CONTINUE {printf("statement -> CONTINUE\n");}
 		       | SEMICOLON {printf("statement -> SEMICOLON\n");}
 		       ;  
 if_statement           : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {printf("if_statement -> IF L_PAR R_PAR L_CURLY statements R_CURLY else_statement\n");};
@@ -98,6 +102,8 @@ varibles               : IDENTIFIER {printf("varibles -> IDENTIFIER\n");}
 		       | IDENTIFIER L_BRAKET expression R_BRAKET {printf("varibles -> IDENTIFIER L_BRAKET expression R_BRAKE\nT");}
                        ;
 print		       : PRT L_PAR expression R_PAR {printf("print -> PRT L_PAR expression R_PAR\n");};
+read_statement         : READ L_PAR expression R_PAR {printf("read_statement -> PRT L_PAR expression R_PAR\n");};
+while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {printf("while_statement -> WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY\n");};
 %%
 int main(int argc, char** argv){
 	yyin = stdin;

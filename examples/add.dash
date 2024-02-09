@@ -1,8 +1,12 @@
 #Chcked, Done
-
 func main() {
-  int a = 10;
-  int b;
-  int c;
-  c = a + (b * c) / 10;
+  if(){
+
+  }
+  if(){
+
+  }
+  else{
+
+  }
 }
