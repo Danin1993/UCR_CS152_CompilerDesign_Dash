@@ -42,16 +42,15 @@ function_declerations  : function_declerations function_decleration {printf("fun
 statements	       : statements statement {printf("statements -> statemtnents statement\n");}
 		       | %empty			{printf("statemtnents -> epsilon\n");}
 		       ;
-statement	       : var_decleration {printf("statement -> var_decleration\n");}
-	               | var_assigment {printf("statement -> var_assigment\n");}
-		       | print {printf("statement -> print\n");}
+statement	       : var_decleration SEMICOLON {printf("statement -> var_decleration SEMICOLON\n");}
+	               | var_assigment SEMICOLON {printf("statement -> var_assigment SEMICOLON\n");}
+		       | print SEMICOLON {printf("statement -> print  SEMICOLON\n");}
 		       | if_statement {printf("statement -> if_statement\n");}
-		       | return_statement {printf("statement -> return_statement\n");}
-                       | read_statement {printf("statement -> read_statement\n");}
+		       | return_statement SEMICOLON {printf("statement -> return_statement SEMICOLON\n");}
+                       | read_statement SEMICOLON {printf("statement -> read_statement SEMICOLON\n");}
 		       | while_statement {printf("statement -> while_statement\n");}
-                       | BREAK {printf("statement -> BREAK\n");}
-                       | CONTINUE {printf("statement -> CONTINUE\n");}
-		       | SEMICOLON {printf("statement -> SEMICOLON\n");}
+                       | BREAK SEMICOLON {printf("statement -> BREAK SEMICOLON\n");}
+                       | CONTINUE SEMICOLON {printf("statement -> CONTINUE SEMICOLON\n");}
 		       ;  
 if_statement           : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {printf("if_statement -> IF L_PAR R_PAR L_CURLY statements R_CURLY else_statement\n");};
 else_statement         : ELSE L_CURLY statements R_CURLY {printf("else_statement -> ELSE L_CURLY statements R_CURLY\n");}
