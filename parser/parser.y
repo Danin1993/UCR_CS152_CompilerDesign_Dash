@@ -7,6 +7,8 @@
 
 extern int yylex();
 extern FILE* yyin;
+extern int yylineno;
+int error_count = 0;
 
 void yyerror(const char* s);
 
@@ -104,26 +106,44 @@ print		       : PRT L_PAR expression R_PAR {printf("print -> PRT L_PAR expressio
 read_statement : READ L_PAR expression R_PAR {printf("read_statement -> READ L_PAR expression R_PAR\n");};
 while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {printf("while_statement -> WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY\n");};
 %%
-int main(int argc, char** argv){
-	yyin = stdin;
 
-	bool interaction =true;
+int main(int argc, char** argv) {
+    yyin = stdin;
 
-	if(argc >= 2){
-		FILE* file_ptr = fopen(argv[1], "r");
-		if(file_ptr == NULL){
-			printf("Could not open file: %s\n", argv[1]);
-			exit(1);
-		}
-		yyin = file_ptr;
-		interaction = false;
-  	}
-	return yyparse();
+    if (argc >= 2) {
+        FILE* file_ptr = fopen(argv[1], "r");
+        if (file_ptr == NULL) {
+            printf("Could not open file: %s\n", argv[1]);
+            exit(1);
+        }
+        yyin = file_ptr;
+    }
+
+    yyparse();
+
+    if (argc >= 2) {
+        fclose(yyin);
+    }
+
+    if (error_count > 0) {
+        fprintf(stderr, "Parsing finished with %d error(s).\n", error_count);
+        return 1; 
+    }
+
+    return 0;
 }
 
-void yyerror(const char* s){
-fprintf(stderr, "Error encountered while parsing token at [%i,%i-%i,%i]: %s\n", yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column, s);
- exit(1);
+void yyerror(const char* s) {
+    if (strcmp(s, "syntax error") == 0) {
+        fprintf(stderr, "Syntax error at line %d: Unexpected token\n", yylineno);
+    } else if (strcmp(s, "type error") == 0) {
+        fprintf(stderr, "Type error at line %d: Incompatible types\n", yylineno);
+    } else if (strcmp(s, "undeclared variable") == 0) {
+        fprintf(stderr, "Error at line %d: Undeclared variable\n", yylineno);
+    } else {
+        fprintf(stderr, "Error at line %d: %s\n", yylineno, s);
+    }
+    error_count++;
 }
 
 
