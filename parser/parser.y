@@ -101,7 +101,7 @@ varibles               : IDENTIFIER {printf("varibles -> IDENTIFIER\n");}
 		       | IDENTIFIER L_BRAKET expression R_BRAKET {printf("varibles -> IDENTIFIER L_BRAKET expression R_BRAKE\nT");}
                        ;
 print		       : PRT L_PAR expression R_PAR {printf("print -> PRT L_PAR expression R_PAR\n");};
-read_statement         : READ L_PAR expression R_PAR {printf("read_statement -> PRT L_PAR expression R_PAR\n");};
+read_statement : READ L_PAR expression R_PAR {printf("read_statement -> READ L_PAR expression R_PAR\n");};
 while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {printf("while_statement -> WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY\n");};
 %%
 int main(int argc, char** argv){
