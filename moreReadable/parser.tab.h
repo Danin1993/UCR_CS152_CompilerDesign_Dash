@@ -97,16 +97,8 @@ extern int yydebug;
 union YYSTYPE
 {
   double NUMBER;                           /* NUMBER  */
-  double paramerter_declerations;          /* paramerter_declerations  */
-  double statements;                       /* statements  */
-  double statement;                        /* statement  */
-  double var_decleration;                  /* var_decleration  */
-  double paramerter_decleration;           /* paramerter_decleration  */
-  double function_decleration;             /* function_decleration  */
-  double var_assigment;                    /* var_assigment  */
-  double expression;                       /* expression  */
 
-#line 110 "parser.tab.h"
+#line 102 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
