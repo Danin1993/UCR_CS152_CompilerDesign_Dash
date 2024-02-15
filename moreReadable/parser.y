@@ -28,49 +28,88 @@ int parCnt = 0;
 
 %token UNKNOWN_TOKEN
 
-%nterm <double> function_decleration statements statement paramerter_declerations pars if_statement else_statement 
-%nterm <double> var_decleration var_assigment expression multiplicative_expr term varibles comparitors bool_expression
-%nterm <double> return_statement read_statement while_statement
-%start function_declerations
+%nterm <double> funcDec stms stm paramDecs pars if_stm else_stm 
+%nterm <double> varDec var_assigment expression multiplicative_expr term varibles compers bool_expression
+%nterm <double> return_stm read_stm while_stm
+%start funcDecs
 
 %%
 
-function_declerations  : function_declerations function_decleration {printf("function_declerations -> function_declerations function_decleration\n");}
-                       | %empty                 {printf("functions -> epsilon\n");}
-                       ;
+funcDecs  : funcDecs funcDec {printf("funcDecs -> funcDecs funcDec\n");}
+          | %empty           {printf("functions -> epsilon\n");}
+          ;
 
-function_decleration   : FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY {printf("function_decleration -> FUNC IDENTIFIER L_PAR paramerter_declerationsR_PAR L_CURLY statements R_CURLY\n");}
-;
+stms	    : stms stm          {printf("stms -> stms stm\n");}
+		      | %empty			      {printf("stms -> epsilon\n");}
+		      ;
 
-statements	       : statements statement {printf("statements -> statements statement\n");}
-		       | %empty			{printf("statements -> epsilon\n");}
+stm	      : varDec SEMICOLON          {printf("stm -> varDec SEMICOLON\n");}
+	        | var_assigment SEMICOLON   {printf("stm -> var_assigment SEMICOLON\n");}
+		      | print SEMICOLON           {printf("stm -> print  SEMICOLON\n");}
+		      | if_stm                    {printf("stm -> if_stm\n");}
+		      | return_stm SEMICOLON      {printf("stm -> return_stm SEMICOLON\n");}
+          | read_stm SEMICOLON        {printf("stm -> read_stm SEMICOLON\n");}
+		      | while_stm                 {printf("stm -> while_stm\n");}
+          | BREAK SEMICOLON           {printf("stm -> BREAK SEMICOLON\n");}
+          | CONTINUE SEMICOLON        {printf("stm -> CONTINUE SEMICOLON\n");}
+		      ;  
+
+if_stm    : IF L_PAR bool_expression R_PAR L_CURLY stms R_CURLY else_stm  {printf("if_stm -> IF L_PAR R_PAR L_CURLY stms R_CURLY else_stm\n");};
+else_stm  : ELSE L_CURLY stms R_CURLY                                     {printf("else_stm -> ELSE L_CURLY stms R_CURLY\n");}
+		      | %empty                                                        {printf("else_stm -> epsilon\n");}
+          ;
+
+compers   : LESS        {printf("compers -> LESS\n");}
+		      | LESS_EQ     {printf("compers -> LESS_EQ\n");}
+		      | GREATER     {printf("compers -> GREATER\n");}
+          | GREATER_EQ  {printf("compers -> GREATER_EQ\n");}
+          | EQUALITY    {printf("compers -> EQUALITY\n");} 
+          | NOT_EQ      {printf("compers -> NOT_EQ\n");}
+          ;
+
+return_stm : RETURN expression {printf("return_stm -> RETURN expression\n");};
+
+varDec     : INT IDENTIFIER                               {printf("varDec -> INT IDENTIFIER\n");} 
+		       | INT L_BRAKET expression R_BRAKET IDENTIFIER  {printf("varDec -> INT L_BRAKET expression R_BRAKET IDENTIFIER\n");} 
+	         | INT var_assigment                            {printf("varDec -> INT var_assigment\n");}
 		       ;
-statement	       : var_decleration SEMICOLON {printf("statement -> var_decleration SEMICOLON\n");}
-	               | var_assigment SEMICOLON {printf("statement -> var_assigment SEMICOLON\n");}
-		       | print SEMICOLON {printf("statement -> print  SEMICOLON\n");}
-		       | if_statement {printf("statement -> if_statement\n");}
-		       | return_statement SEMICOLON {printf("statement -> return_statement SEMICOLON\n");}
-                       | read_statement SEMICOLON {printf("statement -> read_statement SEMICOLON\n");}
-		       | while_statement {printf("statement -> while_statement\n");}
-                       | BREAK SEMICOLON {printf("statement -> BREAK SEMICOLON\n");}
-                       | CONTINUE SEMICOLON {printf("statement -> CONTINUE SEMICOLON\n");}
-		       ;  
 
-if_statement           : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {printf("if_statement -> IF L_PAR R_PAR L_CURLY statements R_CURLY else_statement\n");};
-else_statement         : ELSE L_CURLY statements R_CURLY {printf("else_statement -> ELSE L_CURLY statements R_CURLY\n");}
-		       | %empty {printf("else_statement -> epsilon\n");}
-
-comparitors            : LESS {printf("comparitors -> LESS\n");}
-		       | LESS_EQ {printf("comparitors -> LESS_EQ\n");}
-		       | GREATER {printf("comparitors -> GREATER\n");}
-                       | GREATER_EQ {printf("comparitors -> GREATER_EQ\n");}
-                       | EQUALITY {printf("comparitors -> EQUALITY\n");} 
-                       | NOT_EQ {printf("comparitors -> NOT_EQ\n");}
+paramDecs: paramDecs paramDec   {printf("paramDecs -> paramDecs paramDec\n");}
+		       | %empty             {printf("paramDecs -> epsilon\n");}
+           ;
+           
+paramDec : INT IDENTIFIER {printf("paramDec -> INT IDENTIFIER\n");}
+             	       | INT IDENTIFIER COMMA paramDec {printf("paramDec -> INT IDENTIFIER COMMA paramDec\n");}
+		       | INT L_BRAKET R_BRAKET IDENTIFIER {printf("paramDec -> INT L_BRAKET R_BRAKET IDENTIFIER\n");}
+            	       | INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramDec {printf("paramDec -> INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramDec\n");}
+		       ; 
+funcDec   : FUNC IDENTIFIER L_PAR paramDecs R_PAR L_CURLY stms R_CURLY {printf("funcDec -> FUNC IDENTIFIER L_PAR paramDecs R_PAR L_CURLY stms R_CURLY\n");};
+var_assigment          : varibles ASSIGNMENT expression {printf("var_assigment -> varibles ASSIGNMENT expression\n");};
+expression             : multiplicative_expr {printf("expression -> multiplicative_expr\n");}
+		       | multiplicative_expr ADD multiplicative_expr {printf("expression -> multiplicative_expr ADD multiplicative_expr\n");}
+		       | multiplicative_expr SUBTRACTION multiplicative_expr {printf("expression -> multiplicative_expr ADD multiplicative_expr\n");}
                        ;
-return_statement       : RETURN expression {printf("return_statement -> RETURN expression\n");};
-var_decleration        : INT IDENTIFIER {printf("var_decleration -> INT IDENTIFIER\n");} 
-		       | INT L_BRAKET expression R_BRAKET IDENTIFIER {printf("var_decleration -> INT L_BRAKET expression R_BRAKET IDENTIFIER\n");} 
-	               | INT var_assigment {printf("var_decleration -> INT var_assigment\n");}
+bool_expression        : expression compers expression {printf("bool_expression -> expression compers expression \n");};
+multiplicative_expr    : term {printf("multiplicative_expr -> term\n");}
+                       | term MOD term {printf("multiplicative_expr -> term MOD term\n");}
+		       | term MULTIPLY term {printf("multiplicative_expr -> term MULTIPLY term\n");}
+		       | term DIVIDE term {printf("multiplicative_expr -> term DIVIDE term\n");}
+		       ;
+term                   : L_PAR expression R_PAR {printf("term -> L_PAR expression R_PAR\n");}
+		       | NUMBER {printf("term -> NUMBER\n");}
+                       | IDENTIFIER L_PAR pars R_PAR {printf("term -> IDENTIFIER L_PAR pars R_PAR\n");}
+		       | varibles {printf("term -> varibles\n");}
+		       ;
+pars                   : pars COMMA expression {printf("pars -> pars COMMA expressionn");}
+		       | expression {printf("pars -> expression\n");}
+                       | %empty {printf("pars -> epsilon\n");}
+                       ;
+varibles               : IDENTIFIER {printf("varibles -> IDENTIFIER\n");}
+		       | IDENTIFIER L_BRAKET expression R_BRAKET {printf("varibles -> IDENTIFIER L_BRAKET expression R_BRAKE\nT");}
+                       ;
+print		       : PRT L_PAR expression R_PAR {printf("print -> PRT L_PAR expression R_PAR\n");};
+read_stm : READ L_PAR expression R_PAR {printf("read_stm -> READ L_PAR expression R_PAR\n");};
+while_stm        : WHILE L_PAR bool_expression R_PAR L_CURLY stms R_CURLY {printf("while_stm -> WHILE L_PAR bool_expression R_PAR L_CURLY stms R_CURLY\n");};
 
 %%
 

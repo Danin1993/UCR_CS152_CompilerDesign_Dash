@@ -146,16 +146,27 @@ enum yysymbol_kind_t
   YYSYMBOL_NOT_EQ = 35,                    /* NOT_EQ  */
   YYSYMBOL_UNKNOWN_TOKEN = 36,             /* UNKNOWN_TOKEN  */
   YYSYMBOL_YYACCEPT = 37,                  /* $accept  */
-  YYSYMBOL_function_declerations = 38,     /* function_declerations  */
-  YYSYMBOL_function_decleration = 39,      /* function_decleration  */
-  YYSYMBOL_paramerter_declerations = 40,   /* paramerter_declerations  */
-  YYSYMBOL_paramerter_decleration = 41,    /* paramerter_decleration  */
-  YYSYMBOL_statements = 42,                /* statements  */
-  YYSYMBOL_statement = 43,                 /* statement  */
-  YYSYMBOL_print = 44,                     /* print  */
-  YYSYMBOL_var_decleration = 45,           /* var_decleration  */
-  YYSYMBOL_var_assigment = 46,             /* var_assigment  */
-  YYSYMBOL_expression = 47                 /* expression  */
+  YYSYMBOL_funcDecs = 38,                  /* funcDecs  */
+  YYSYMBOL_stms = 39,                      /* stms  */
+  YYSYMBOL_stm = 40,                       /* stm  */
+  YYSYMBOL_if_stm = 41,                    /* if_stm  */
+  YYSYMBOL_else_stm = 42,                  /* else_stm  */
+  YYSYMBOL_compers = 43,                   /* compers  */
+  YYSYMBOL_return_stm = 44,                /* return_stm  */
+  YYSYMBOL_varDec = 45,                    /* varDec  */
+  YYSYMBOL_paramDecs = 46,                 /* paramDecs  */
+  YYSYMBOL_paramDec = 47,                  /* paramDec  */
+  YYSYMBOL_funcDec = 48,                   /* funcDec  */
+  YYSYMBOL_var_assigment = 49,             /* var_assigment  */
+  YYSYMBOL_expression = 50,                /* expression  */
+  YYSYMBOL_bool_expression = 51,           /* bool_expression  */
+  YYSYMBOL_multiplicative_expr = 52,       /* multiplicative_expr  */
+  YYSYMBOL_term = 53,                      /* term  */
+  YYSYMBOL_pars = 54,                      /* pars  */
+  YYSYMBOL_varibles = 55,                  /* varibles  */
+  YYSYMBOL_print = 56,                     /* print  */
+  YYSYMBOL_read_stm = 57,                  /* read_stm  */
+  YYSYMBOL_while_stm = 58                  /* while_stm  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -463,16 +474,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   27
+#define YYLAST   128
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  37
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  11
+#define YYNNTS  22
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  22
+#define YYNRULES  55
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  37
+#define YYNSTATES  115
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   291
@@ -525,9 +536,12 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    38,    38,    39,    42,    45,    46,    49,    50,    51,
-      52,    55,    56,    59,    60,    61,    62,    65,    67,    68,
-      70,    73,    74
+       0,    38,    38,    39,    42,    43,    46,    47,    48,    49,
+      50,    51,    52,    53,    54,    57,    58,    59,    62,    63,
+      64,    65,    66,    67,    70,    72,    73,    74,    77,    78,
+      80,    81,    82,    83,    85,    86,    87,    88,    89,    91,
+      92,    93,    94,    95,    97,    98,    99,   100,   102,   103,
+     104,   106,   107,   109,   110,   111
 };
 #endif
 
@@ -549,9 +563,10 @@ static const char *const yytname[] =
   "BREAK", "CONTINUE", "READ", "SEMICOLON", "COMMA", "L_CURLY", "R_CURLY",
   "L_BRAKET", "R_BRAKET", "ASSIGNMENT", "LESS", "LESS_EQ", "GREATER",
   "GREATER_EQ", "EQUALITY", "NOT_EQ", "UNKNOWN_TOKEN", "$accept",
-  "function_declerations", "function_decleration",
-  "paramerter_declerations", "paramerter_decleration", "statements",
-  "statement", "print", "var_decleration", "var_assigment", "expression", YY_NULLPTR
+  "funcDecs", "stms", "stm", "if_stm", "else_stm", "compers", "return_stm",
+  "varDec", "paramDecs", "paramDec", "funcDec", "var_assigment",
+  "expression", "bool_expression", "multiplicative_expr", "term", "pars",
+  "varibles", "print", "read_stm", "while_stm", YY_NULLPTR
 };
 
 static const char *
@@ -561,12 +576,12 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-22)
+#define YYPACT_NINF (-86)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
 
-#define YYTABLE_NINF (-1)
+#define YYTABLE_NINF (-52)
 
 #define yytable_value_is_error(Yyn) \
   0
@@ -575,10 +590,18 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-     -22,     1,   -22,    -7,   -22,    10,   -22,    -3,   -16,     2,
-     -22,   -22,   -17,   -10,   -22,    -9,    -8,    12,    15,   -22,
-     -22,   -22,   -22,   -22,   -22,    -4,     4,   -21,   -22,     4,
-     -22,   -22,   -22,   -22,   -22,    16,   -22
+     -86,     9,   -86,     0,   -86,    21,   -86,    19,     6,    -7,
+     -86,   -86,    16,    22,    39,    38,    45,    35,    28,    -3,
+      50,    55,    59,    47,    56,    65,   -86,   -86,   -86,    58,
+      64,    66,    48,    67,    68,   -86,   -86,    70,    28,    28,
+      -4,   -86,   -86,    31,    37,   -86,   -21,    28,   -86,    28,
+      28,    28,   -86,   -86,    28,   -86,   -86,   -86,    28,   -86,
+     -86,    38,    60,    73,    28,    28,    28,    28,    28,    28,
+      69,    93,   -18,    96,   101,   106,   -86,   -86,   -86,   -86,
+     -86,     2,   -86,   -86,   -86,   -86,   -86,    85,   -86,   -86,
+     -86,   -86,   -86,   -86,   -86,    28,    97,    98,   -86,   -86,
+      28,   -86,   -86,   -86,   -86,   -86,    54,    86,   -86,   105,
+     102,   -86,   -86,    99,   -86
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -586,24 +609,34 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       3,     0,     1,     0,     2,     0,     5,     0,     0,     0,
-       6,    12,     9,     0,     7,     0,     0,     0,     0,    16,
-       4,    11,    15,    13,    14,    10,     0,     0,    19,     0,
-       8,    22,    21,    20,    18,     0,    17
+       3,     0,     1,     0,     2,     0,    29,     0,     0,     0,
+      28,     5,    30,     0,     0,     0,     0,    51,     0,     0,
+       0,     0,     0,     0,     0,     0,    34,     4,     9,     0,
+       0,     0,     0,     0,     0,    12,    31,    32,     0,     0,
+      51,    45,    24,    36,    40,    47,    25,     0,    27,     0,
+       0,     0,    13,    14,     0,    10,     6,     7,     0,     8,
+      11,     0,     0,     0,    50,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,    35,    33,    52,    44,
+      49,     0,    38,    37,    42,    43,    41,     0,    53,    18,
+      19,    20,    21,    22,    23,     0,     0,     0,    54,    46,
+       0,    26,    39,     5,     5,    48,     0,     0,    55,    17,
+       0,    15,     5,     0,    16
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -22,   -22,   -22,   -22,   -22,   -22,   -22,   -22,   -22,     7,
-      -2
+     -86,   -86,   -85,   -86,   -86,   -86,   -86,   -86,   -86,   -86,
+     -13,   -86,   107,   -17,    77,   -20,    17,   -86,   -14,   -86,
+     -86,   -86
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     1,     4,     7,    10,    13,    21,    22,    23,    24,
-      33
+       0,     1,    14,    27,    28,   111,    95,    29,    30,     7,
+      10,     4,    31,    72,    73,    43,    44,    81,    45,    33,
+      34,    35
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -611,42 +644,76 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      16,     2,    34,     5,    17,    18,     8,    14,    26,    11,
-      15,     9,    12,    19,    31,    32,    20,     3,     6,    25,
-      30,    26,    27,    29,    28,    36,     0,    35
+      32,    42,    36,    12,    64,    32,    38,    46,   -51,     2,
+       5,    99,    89,    90,    91,    92,    93,    94,   106,   107,
+      13,    62,    63,    38,    47,     3,   100,   113,     8,     6,
+      70,    11,    71,     9,    65,    66,    39,    75,    40,    41,
+      15,    76,    67,    68,    69,    82,    83,    80,    77,    17,
+      16,    18,     9,    19,    20,    37,    21,    22,    49,    23,
+      24,    25,    38,    50,    17,    26,    18,    51,    19,    20,
+      52,    21,    22,    54,    23,    24,    25,    58,   102,    53,
+     108,    55,    79,   105,    84,    85,    86,    56,    78,    57,
+      59,    60,    32,    32,    61,   101,    17,    87,    18,    32,
+      19,    20,    88,    21,    22,    96,    23,    24,    25,    17,
+      97,    18,   109,    19,    20,    98,    21,    22,     0,    23,
+      24,    25,   103,   104,   110,   114,    48,   112,    74
 };
 
 static const yytype_int8 yycheck[] =
 {
-      10,     0,    23,    10,    14,    15,     9,    24,    29,    25,
-      27,    14,    10,    23,    10,    11,    26,    16,     8,    28,
-      24,    29,    10,     8,    17,     9,    -1,    29
+      14,    18,    15,    10,     8,    19,    27,    10,    29,     0,
+      10,     9,    30,    31,    32,    33,    34,    35,   103,   104,
+      27,    38,    39,    27,    27,    16,    24,   112,     9,     8,
+      47,    25,    49,    14,     3,     4,     8,    54,    10,    11,
+      24,    58,     5,     6,     7,    65,    66,    64,    61,    10,
+      28,    12,    14,    14,    15,    10,    17,    18,     8,    20,
+      21,    22,    27,     8,    10,    26,    12,     8,    14,    15,
+      23,    17,    18,     8,    20,    21,    22,    29,    95,    23,
+      26,    23,     9,   100,    67,    68,    69,    23,    28,    23,
+      23,    23,   106,   107,    24,    10,    10,    28,    12,   113,
+      14,    15,     9,    17,    18,     9,    20,    21,    22,    10,
+       9,    12,    26,    14,    15,     9,    17,    18,    -1,    20,
+      21,    22,    25,    25,    19,    26,    19,    25,    51
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    38,     0,    16,    39,    10,     8,    40,     9,    14,
-      41,    25,    10,    42,    24,    27,    10,    14,    15,    23,
-      26,    43,    44,    45,    46,    28,    29,    10,    46,     8,
-      24,    10,    11,    47,    23,    47,     9
+       0,    38,     0,    16,    48,    10,     8,    46,     9,    14,
+      47,    25,    10,    27,    39,    24,    28,    10,    12,    14,
+      15,    17,    18,    20,    21,    22,    26,    40,    41,    44,
+      45,    49,    55,    56,    57,    58,    47,    10,    27,     8,
+      10,    11,    50,    52,    53,    55,    10,    27,    49,     8,
+       8,     8,    23,    23,     8,    23,    23,    23,    29,    23,
+      23,    24,    50,    50,     8,     3,     4,     5,     6,     7,
+      50,    50,    50,    51,    51,    50,    50,    47,    28,     9,
+      50,    54,    52,    52,    53,    53,    53,    28,     9,    30,
+      31,    32,    33,    34,    35,    43,     9,     9,     9,     9,
+      24,    10,    50,    25,    25,    50,    39,    39,    26,    26,
+      19,    42,    25,    39,    26
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    37,    38,    38,    39,    40,    40,    41,    41,    41,
-      41,    42,    42,    43,    43,    43,    43,    44,    45,    45,
-      46,    47,    47
+       0,    37,    38,    38,    39,    39,    40,    40,    40,    40,
+      40,    40,    40,    40,    40,    41,    42,    42,    43,    43,
+      43,    43,    43,    43,    44,    45,    45,    45,    46,    46,
+      47,    47,    47,    47,    48,    49,    50,    50,    50,    51,
+      52,    52,    52,    52,    53,    53,    53,    53,    54,    54,
+      54,    55,    55,    56,    57,    58
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     2,     0,     8,     0,     2,     3,     5,     2,
-       4,     2,     0,     1,     1,     1,     1,     4,     3,     2,
-       3,     1,     1
+       0,     2,     2,     0,     2,     0,     2,     2,     2,     1,
+       2,     2,     1,     2,     2,     8,     4,     0,     1,     1,
+       1,     1,     1,     1,     2,     2,     5,     2,     2,     0,
+       2,     4,     4,     6,     8,     3,     1,     3,     3,     3,
+       1,     3,     3,     3,     3,     1,     4,     1,     3,     1,
+       0,     1,     4,     4,     4,     7
 };
 
 
@@ -1753,134 +1820,332 @@ yyreduce:
     int yychar_backup = yychar;
     switch (yyn)
       {
-  case 2: /* function_declerations: function_declerations function_decleration  */
+  case 2: /* funcDecs: funcDecs funcDec  */
 #line 38 "parser.y"
-                                                                    {printf("function_declerations -> function_declerations function_decleration\n");}
-#line 1760 "parser.tab.c"
+                             {printf("funcDecs -> funcDecs funcDec\n");}
+#line 1827 "parser.tab.c"
     break;
 
-  case 3: /* function_declerations: %empty  */
+  case 3: /* funcDecs: %empty  */
 #line 39 "parser.y"
-                                                {printf("functions -> epsilon\n");}
-#line 1766 "parser.tab.c"
+                             {printf("functions -> epsilon\n");}
+#line 1833 "parser.tab.c"
     break;
 
-  case 4: /* function_decleration: FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY  */
+  case 4: /* stms: stms stm  */
 #line 42 "parser.y"
-                                                                                                        {printf("function_decleration -> FUNC IDENTIFIER L_PAR paramerter_declerationsR_PAR L_CURLY statements R_CURLY\n");}
-#line 1772 "parser.tab.c"
+                                {printf("stms -> stms stm\n");}
+#line 1839 "parser.tab.c"
     break;
 
-  case 5: /* paramerter_declerations: %empty  */
-#line 45 "parser.y"
-                                   {printf("paramerter_declerations -> epsilon\n");}
-#line 1778 "parser.tab.c"
+  case 5: /* stms: %empty  */
+#line 43 "parser.y"
+                                                      {printf("stms -> epsilon\n");}
+#line 1845 "parser.tab.c"
     break;
 
-  case 6: /* paramerter_declerations: paramerter_declerations paramerter_decleration  */
+  case 6: /* stm: varDec SEMICOLON  */
 #line 46 "parser.y"
-                                                                           {printf("paramerter_declerations -> paramerter_declerations paramerter_decleration\n");}
-#line 1784 "parser.tab.c"
+                                          {printf("stm -> varDec SEMICOLON\n");}
+#line 1851 "parser.tab.c"
     break;
 
-  case 7: /* paramerter_decleration: INT IDENTIFIER COMMA  */
+  case 7: /* stm: var_assigment SEMICOLON  */
+#line 47 "parser.y"
+                                            {printf("stm -> var_assigment SEMICOLON\n");}
+#line 1857 "parser.tab.c"
+    break;
+
+  case 8: /* stm: print SEMICOLON  */
+#line 48 "parser.y"
+                                                  {printf("stm -> print  SEMICOLON\n");}
+#line 1863 "parser.tab.c"
+    break;
+
+  case 9: /* stm: if_stm  */
 #line 49 "parser.y"
-                                              {printf("paramerter_decleration -> INT INDENTIFIER COMA\n");}
-#line 1790 "parser.tab.c"
+                                                  {printf("stm -> if_stm\n");}
+#line 1869 "parser.tab.c"
     break;
 
-  case 8: /* paramerter_decleration: INT IDENTIFIER L_BRAKET R_BRAKET COMMA  */
+  case 10: /* stm: return_stm SEMICOLON  */
 #line 50 "parser.y"
-                                                                {printf("paramerter_decleration -> INT INDENTIFIER L_BRAKET R_BRAKET COMA\n");}
-#line 1796 "parser.tab.c"
+                                                  {printf("stm -> return_stm SEMICOLON\n");}
+#line 1875 "parser.tab.c"
     break;
 
-  case 9: /* paramerter_decleration: INT IDENTIFIER  */
+  case 11: /* stm: read_stm SEMICOLON  */
 #line 51 "parser.y"
-                                        {printf("paramerter_decleration -> INT INDENTIFIER\n");}
-#line 1802 "parser.tab.c"
+                                      {printf("stm -> read_stm SEMICOLON\n");}
+#line 1881 "parser.tab.c"
     break;
 
-  case 10: /* paramerter_decleration: INT IDENTIFIER L_BRAKET R_BRAKET  */
+  case 12: /* stm: while_stm  */
 #line 52 "parser.y"
-                                                          {printf("paramerter_decleration -> INT INDENTIFIER L_BRAKET R_BRAKET\n");}
-#line 1808 "parser.tab.c"
+                                                  {printf("stm -> while_stm\n");}
+#line 1887 "parser.tab.c"
     break;
 
-  case 11: /* statements: statements statement  */
-#line 55 "parser.y"
-                                  {printf("statements -> statemtnents statement\n");}
-#line 1814 "parser.tab.c"
+  case 13: /* stm: BREAK SEMICOLON  */
+#line 53 "parser.y"
+                                      {printf("stm -> BREAK SEMICOLON\n");}
+#line 1893 "parser.tab.c"
     break;
 
-  case 12: /* statements: %empty  */
-#line 56 "parser.y"
-                                                {printf("statemtnents -> epsilon\n");}
-#line 1820 "parser.tab.c"
+  case 14: /* stm: CONTINUE SEMICOLON  */
+#line 54 "parser.y"
+                                      {printf("stm -> CONTINUE SEMICOLON\n");}
+#line 1899 "parser.tab.c"
     break;
 
-  case 13: /* statement: var_decleration  */
+  case 15: /* if_stm: IF L_PAR bool_expression R_PAR L_CURLY stms R_CURLY else_stm  */
+#line 57 "parser.y"
+                                                                          {printf("if_stm -> IF L_PAR R_PAR L_CURLY stms R_CURLY else_stm\n");}
+#line 1905 "parser.tab.c"
+    break;
+
+  case 16: /* else_stm: ELSE L_CURLY stms R_CURLY  */
+#line 58 "parser.y"
+                                                                          {printf("else_stm -> ELSE L_CURLY stms R_CURLY\n");}
+#line 1911 "parser.tab.c"
+    break;
+
+  case 17: /* else_stm: %empty  */
 #line 59 "parser.y"
-                                   {printf("statement -> var_decleration\n");}
-#line 1826 "parser.tab.c"
+                                                                                      {printf("else_stm -> epsilon\n");}
+#line 1917 "parser.tab.c"
     break;
 
-  case 14: /* statement: var_assigment  */
-#line 60 "parser.y"
-                                 {printf("statement -> var_assigment\n");}
-#line 1832 "parser.tab.c"
-    break;
-
-  case 15: /* statement: print  */
-#line 61 "parser.y"
-                               {printf("statement -> print\n");}
-#line 1838 "parser.tab.c"
-    break;
-
-  case 16: /* statement: SEMICOLON  */
+  case 18: /* compers: LESS  */
 #line 62 "parser.y"
-                                   {printf("statement -> SEMICOLON\n");}
-#line 1844 "parser.tab.c"
+                        {printf("compers -> LESS\n");}
+#line 1923 "parser.tab.c"
     break;
 
-  case 17: /* print: PRT L_PAR expression R_PAR  */
+  case 19: /* compers: LESS_EQ  */
+#line 63 "parser.y"
+                                    {printf("compers -> LESS_EQ\n");}
+#line 1929 "parser.tab.c"
+    break;
+
+  case 20: /* compers: GREATER  */
+#line 64 "parser.y"
+                                    {printf("compers -> GREATER\n");}
+#line 1935 "parser.tab.c"
+    break;
+
+  case 21: /* compers: GREATER_EQ  */
 #line 65 "parser.y"
-                                                {printf("print -> PRT L_PAR expression R_PAR\n");}
-#line 1850 "parser.tab.c"
+                        {printf("compers -> GREATER_EQ\n");}
+#line 1941 "parser.tab.c"
     break;
 
-  case 18: /* var_decleration: INT IDENTIFIER SEMICOLON  */
+  case 22: /* compers: EQUALITY  */
+#line 66 "parser.y"
+                        {printf("compers -> EQUALITY\n");}
+#line 1947 "parser.tab.c"
+    break;
+
+  case 23: /* compers: NOT_EQ  */
 #line 67 "parser.y"
-                                            {printf("var_decleration -> INT INDENTIFIER SEMICOLON\n");}
-#line 1856 "parser.tab.c"
+                        {printf("compers -> NOT_EQ\n");}
+#line 1953 "parser.tab.c"
     break;
 
-  case 19: /* var_decleration: INT var_assigment  */
-#line 68 "parser.y"
-                                           {printf("var_decleration -> INT var_assigment\n");}
-#line 1862 "parser.tab.c"
-    break;
-
-  case 20: /* var_assigment: IDENTIFIER ASSIGNMENT expression  */
+  case 24: /* return_stm: RETURN expression  */
 #line 70 "parser.y"
-                                                          {printf("var_assigment -> IDENTIFER ASSIGNEMNT expression\n");}
-#line 1868 "parser.tab.c"
+                               {printf("return_stm -> RETURN expression\n");}
+#line 1959 "parser.tab.c"
     break;
 
-  case 21: /* expression: NUMBER  */
+  case 25: /* varDec: INT IDENTIFIER  */
+#line 72 "parser.y"
+                                                          {printf("varDec -> INT IDENTIFIER\n");}
+#line 1965 "parser.tab.c"
+    break;
+
+  case 26: /* varDec: INT L_BRAKET expression R_BRAKET IDENTIFIER  */
 #line 73 "parser.y"
-                                {printf("expression -> NUMBER\n");}
-#line 1874 "parser.tab.c"
+                                                                      {printf("varDec -> INT L_BRAKET expression R_BRAKET IDENTIFIER\n");}
+#line 1971 "parser.tab.c"
     break;
 
-  case 22: /* expression: IDENTIFIER  */
+  case 27: /* varDec: INT var_assigment  */
 #line 74 "parser.y"
-                                    {printf("expression -> INDENTIFIER\n");}
-#line 1880 "parser.tab.c"
+                                                                {printf("varDec -> INT var_assigment\n");}
+#line 1977 "parser.tab.c"
+    break;
+
+  case 28: /* paramDecs: paramDecs paramDec  */
+#line 77 "parser.y"
+                                {printf("paramDecs -> paramDecs paramDec\n");}
+#line 1983 "parser.tab.c"
+    break;
+
+  case 29: /* paramDecs: %empty  */
+#line 78 "parser.y"
+                                            {printf("paramDecs -> epsilon\n");}
+#line 1989 "parser.tab.c"
+    break;
+
+  case 30: /* paramDec: INT IDENTIFIER  */
+#line 80 "parser.y"
+                          {printf("paramDec -> INT IDENTIFIER\n");}
+#line 1995 "parser.tab.c"
+    break;
+
+  case 31: /* paramDec: INT IDENTIFIER COMMA paramDec  */
+#line 81 "parser.y"
+                                                       {printf("paramDec -> INT IDENTIFIER COMMA paramDec\n");}
+#line 2001 "parser.tab.c"
+    break;
+
+  case 32: /* paramDec: INT L_BRAKET R_BRAKET IDENTIFIER  */
+#line 82 "parser.y"
+                                                          {printf("paramDec -> INT L_BRAKET R_BRAKET IDENTIFIER\n");}
+#line 2007 "parser.tab.c"
+    break;
+
+  case 33: /* paramDec: INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramDec  */
+#line 83 "parser.y"
+                                                                         {printf("paramDec -> INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramDec\n");}
+#line 2013 "parser.tab.c"
+    break;
+
+  case 34: /* funcDec: FUNC IDENTIFIER L_PAR paramDecs R_PAR L_CURLY stms R_CURLY  */
+#line 85 "parser.y"
+                                                                       {printf("funcDec -> FUNC IDENTIFIER L_PAR paramDecs R_PAR L_CURLY stms R_CURLY\n");}
+#line 2019 "parser.tab.c"
+    break;
+
+  case 35: /* var_assigment: varibles ASSIGNMENT expression  */
+#line 86 "parser.y"
+                                                        {printf("var_assigment -> varibles ASSIGNMENT expression\n");}
+#line 2025 "parser.tab.c"
+    break;
+
+  case 36: /* expression: multiplicative_expr  */
+#line 87 "parser.y"
+                                             {printf("expression -> multiplicative_expr\n");}
+#line 2031 "parser.tab.c"
+    break;
+
+  case 37: /* expression: multiplicative_expr ADD multiplicative_expr  */
+#line 88 "parser.y"
+                                                                     {printf("expression -> multiplicative_expr ADD multiplicative_expr\n");}
+#line 2037 "parser.tab.c"
+    break;
+
+  case 38: /* expression: multiplicative_expr SUBTRACTION multiplicative_expr  */
+#line 89 "parser.y"
+                                                                             {printf("expression -> multiplicative_expr ADD multiplicative_expr\n");}
+#line 2043 "parser.tab.c"
+    break;
+
+  case 39: /* bool_expression: expression compers expression  */
+#line 91 "parser.y"
+                                                       {printf("bool_expression -> expression compers expression \n");}
+#line 2049 "parser.tab.c"
+    break;
+
+  case 40: /* multiplicative_expr: term  */
+#line 92 "parser.y"
+                              {printf("multiplicative_expr -> term\n");}
+#line 2055 "parser.tab.c"
+    break;
+
+  case 41: /* multiplicative_expr: term MOD term  */
+#line 93 "parser.y"
+                                       {printf("multiplicative_expr -> term MOD term\n");}
+#line 2061 "parser.tab.c"
+    break;
+
+  case 42: /* multiplicative_expr: term MULTIPLY term  */
+#line 94 "parser.y"
+                                            {printf("multiplicative_expr -> term MULTIPLY term\n");}
+#line 2067 "parser.tab.c"
+    break;
+
+  case 43: /* multiplicative_expr: term DIVIDE term  */
+#line 95 "parser.y"
+                                          {printf("multiplicative_expr -> term DIVIDE term\n");}
+#line 2073 "parser.tab.c"
+    break;
+
+  case 44: /* term: L_PAR expression R_PAR  */
+#line 97 "parser.y"
+                                                {printf("term -> L_PAR expression R_PAR\n");}
+#line 2079 "parser.tab.c"
+    break;
+
+  case 45: /* term: NUMBER  */
+#line 98 "parser.y"
+                                {printf("term -> NUMBER\n");}
+#line 2085 "parser.tab.c"
+    break;
+
+  case 46: /* term: IDENTIFIER L_PAR pars R_PAR  */
+#line 99 "parser.y"
+                                                     {printf("term -> IDENTIFIER L_PAR pars R_PAR\n");}
+#line 2091 "parser.tab.c"
+    break;
+
+  case 47: /* term: varibles  */
+#line 100 "parser.y"
+                                  {printf("term -> varibles\n");}
+#line 2097 "parser.tab.c"
+    break;
+
+  case 48: /* pars: pars COMMA expression  */
+#line 102 "parser.y"
+                                               {printf("pars -> pars COMMA expressionn");}
+#line 2103 "parser.tab.c"
+    break;
+
+  case 49: /* pars: expression  */
+#line 103 "parser.y"
+                                    {printf("pars -> expression\n");}
+#line 2109 "parser.tab.c"
+    break;
+
+  case 50: /* pars: %empty  */
+#line 104 "parser.y"
+                                {printf("pars -> epsilon\n");}
+#line 2115 "parser.tab.c"
+    break;
+
+  case 51: /* varibles: IDENTIFIER  */
+#line 106 "parser.y"
+                                    {printf("varibles -> IDENTIFIER\n");}
+#line 2121 "parser.tab.c"
+    break;
+
+  case 52: /* varibles: IDENTIFIER L_BRAKET expression R_BRAKET  */
+#line 107 "parser.y"
+                                                                 {printf("varibles -> IDENTIFIER L_BRAKET expression R_BRAKE\nT");}
+#line 2127 "parser.tab.c"
+    break;
+
+  case 53: /* print: PRT L_PAR expression R_PAR  */
+#line 109 "parser.y"
+                                                    {printf("print -> PRT L_PAR expression R_PAR\n");}
+#line 2133 "parser.tab.c"
+    break;
+
+  case 54: /* read_stm: READ L_PAR expression R_PAR  */
+#line 110 "parser.y"
+                                       {printf("read_stm -> READ L_PAR expression R_PAR\n");}
+#line 2139 "parser.tab.c"
+    break;
+
+  case 55: /* while_stm: WHILE L_PAR bool_expression R_PAR L_CURLY stms R_CURLY  */
+#line 111 "parser.y"
+                                                                          {printf("while_stm -> WHILE L_PAR bool_expression R_PAR L_CURLY stms R_CURLY\n");}
+#line 2145 "parser.tab.c"
     break;
 
 
-#line 1884 "parser.tab.c"
+#line 2149 "parser.tab.c"
 
         default: break;
       }
@@ -2120,7 +2385,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 76 "parser.y"
+#line 113 "parser.y"
 
 
 
