@@ -72,9 +72,9 @@ paramerter_declerations: paramerter_declerations paramerter_decleration {printf(
 		       | %empty {printf("paramerter_declerations -> epsilon\n");}
                        ;
 paramerter_decleration : INT IDENTIFIER {printf("paramerter_decleration -> INT IDENTIFIER\n");}
-             	       | INT IDENTIFIER COMMA {printf("paramerter_decleration -> INT IDENTIFIER COMMA\n");}
+             	       | INT IDENTIFIER COMMA paramerter_decleration {printf("paramerter_decleration -> INT IDENTIFIER COMMA paramerter_decleration\n");}
 		       | INT L_BRAKET R_BRAKET IDENTIFIER {printf("paramerter_decleration -> INT L_BRAKET R_BRAKET IDENTIFIER\n");}
-            	       | INT L_BRAKET R_BRAKET IDENTIFIER COMMA {printf("paramerter_decleration -> INT L_BRAKET R_BRAKET IDENTIFIER COMMA\n");}
+            	       | INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramerter_decleration {printf("paramerter_decleration -> INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramerter_decleration\n");}
 		       ; 
 function_decleration   : FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY {printf("function_decleration -> FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY\n");};
 var_assigment          : varibles ASSIGNMENT expression {printf("var_assigment -> varibles ASSIGNMENT expression\n");};
