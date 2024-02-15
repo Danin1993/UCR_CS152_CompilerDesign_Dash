@@ -50,7 +50,7 @@ paramerter_decleration : INT IDENTIFIER COMMA {printf("paramerter_decleration ->
 		       | INT IDENTIFIER {printf("paramerter_decleration -> INT INDENTIFIER\n");}
 		       | INT IDENTIFIER L_BRAKET R_BRAKET {printf("paramerter_decleration -> INT INDENTIFIER L_BRAKET R_BRAKET\n");}
 		       ; 
-/*
+
 statements	       : statements statement {printf("statements -> statemtnents statement\n");}
 		       | %empty			{printf("statemtnents -> epsilon\n");}
 		       ;
@@ -60,7 +60,15 @@ statement	       : var_decleration {printf("statement -> var_decleration\n");}
 		       | print {printf("statement -> print\n");}
 		       | SEMICOLON {printf("statement -> SEMICOLON\n");}
 		       ;  
-           */
+
+print		       : PRT L_PAR R_PAR {printf("print -> PRT L_PAR expression R_PAR\n");}
+
+var_decleration  : INT IDENTIFIER SEMICOLON {printf("var_decleration -> INT INDENTIFIER SEMICOLON\n");} 
+	               | INT var_assigment {printf("var_decleration -> INT var_assigment\n");};
+
+var_assigment          : IDENTIFIER ASSIGNMENT expression {printf("var_assigment -> IDENTIFER ASSIGNEMNT expression\n");}
+                       ;
+
 %%
 
 
