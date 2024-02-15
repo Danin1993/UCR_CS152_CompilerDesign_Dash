@@ -1,22 +1,33 @@
+Nonterminals useless in grammar
+
+    pars
+    if_statement
+    else_statement
+    multiplicative_expr
+    term
+    varibles
+    comparitors
+    bool_expression
+    return_statement
+    read_statement
+    while_statement
+
+
 Terminals unused in grammar
 
     SUBTRACTION
     ADD
-    MUTIPLY
+    MULTIPLY
     DIVIDE
     MOD
-    NUMBER
     RETURN
     RRETURN
-    PRT
     WHILE
     IF
     ELSE
     BREAK
     CONTINUE
     READ
-    SEMICOLON
-    ASSIGNMENT
     LESS
     LESS_EQ
     GREATER
@@ -28,12 +39,12 @@ Terminals unused in grammar
 
 Grammar
 
-    0 $accept: functions $end
+    0 $accept: function_declerations $end
 
-    1 functions: ε
-    2          | functions function_decleration
+    1 function_declerations: function_declerations function_decleration
+    2                      | ε
 
-    3 function_decleration: FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY R_CURLY
+    3 function_decleration: FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY
 
     4 paramerter_declerations: ε
     5                        | paramerter_declerations paramerter_decleration
@@ -43,6 +54,24 @@ Grammar
     8                       | INT IDENTIFIER
     9                       | INT IDENTIFIER L_BRAKET R_BRAKET
 
+   10 statements: statements statement
+   11           | ε
+
+   12 statement: var_decleration
+   13          | var_assigment
+   14          | print
+   15          | SEMICOLON
+
+   16 print: PRT L_PAR expression R_PAR
+
+   17 var_decleration: INT IDENTIFIER SEMICOLON
+   18                | INT var_assigment
+
+   19 var_assigment: IDENTIFIER ASSIGNMENT expression
+
+   20 expression: NUMBER
+   21           | IDENTIFIER
+
 
 Terminals, with rules where they appear
 
@@ -50,31 +79,31 @@ Terminals, with rules where they appear
     error (256)
     SUBTRACTION (258)
     ADD (259)
-    MUTIPLY (260)
+    MULTIPLY (260)
     DIVIDE (261)
     MOD (262)
-    FUNC (263) 3
-    NUMBER <double> (264)
-    L_PAR (265) 3
-    R_PAR (266) 3
+    L_PAR (263) 3 16
+    R_PAR (264) 3 16
+    IDENTIFIER (265) 3 6 7 8 9 17 19 21
+    NUMBER <double> (266) 20
     RETURN (267)
-    IDENTIFIER (268) 3 6 7 8 9
-    RRETURN (269)
-    INT (270) 6 7 8 9
-    PRT (271)
+    RRETURN (268)
+    INT (269) 6 7 8 9 17 18
+    PRT (270) 16
+    FUNC (271) 3
     WHILE (272)
     IF (273)
     ELSE (274)
     BREAK (275)
     CONTINUE (276)
     READ (277)
-    SEMICOLON (278)
+    SEMICOLON (278) 15 17
     COMMA (279) 6 7
     L_CURLY (280) 3
     R_CURLY (281) 3
     L_BRAKET (282) 7 9
     R_BRAKET (283) 7 9
-    ASSIGNMENT (284)
+    ASSIGNMENT (284) 19
     LESS (285)
     LESS_EQ (286)
     GREATER (287)
@@ -88,33 +117,51 @@ Nonterminals, with rules where they appear
 
     $accept (37)
         on left: 0
-    functions (38)
+    function_declerations (38)
         on left: 1 2
-        on right: 0 2
-    function_decleration (39)
+        on right: 0 1
+    function_decleration <double> (39)
         on left: 3
-        on right: 2
-    paramerter_declerations (40)
+        on right: 1
+    paramerter_declerations <double> (40)
         on left: 4 5
         on right: 3 5
     paramerter_decleration (41)
         on left: 6 7 8 9
         on right: 5
+    statements <double> (42)
+        on left: 10 11
+        on right: 3 10
+    statement <double> (43)
+        on left: 12 13 14 15
+        on right: 10
+    print (44)
+        on left: 16
+        on right: 14
+    var_decleration <double> (45)
+        on left: 17 18
+        on right: 12
+    var_assigment <double> (46)
+        on left: 19
+        on right: 13 18
+    expression <double> (47)
+        on left: 20 21
+        on right: 16 19
 
 
 State 0
 
-    0 $accept: • functions $end
+    0 $accept: • function_declerations $end
 
-    $default  reduce using rule 1 (functions)
+    $default  reduce using rule 2 (function_declerations)
 
-    functions  go to state 1
+    function_declerations  go to state 1
 
 
 State 1
 
-    0 $accept: functions • $end
-    2 functions: functions • function_decleration
+    0 $accept: function_declerations • $end
+    1 function_declerations: function_declerations • function_decleration
 
     $end  shift, and go to state 2
     FUNC  shift, and go to state 3
@@ -124,35 +171,35 @@ State 1
 
 State 2
 
-    0 $accept: functions $end •
+    0 $accept: function_declerations $end •
 
     $default  accept
 
 
 State 3
 
-    3 function_decleration: FUNC • IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY R_CURLY
+    3 function_decleration: FUNC • IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY
 
     IDENTIFIER  shift, and go to state 5
 
 
 State 4
 
-    2 functions: functions function_decleration •
+    1 function_declerations: function_declerations function_decleration •
 
-    $default  reduce using rule 2 (functions)
+    $default  reduce using rule 1 (function_declerations)
 
 
 State 5
 
-    3 function_decleration: FUNC IDENTIFIER • L_PAR paramerter_declerations R_PAR L_CURLY R_CURLY
+    3 function_decleration: FUNC IDENTIFIER • L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY
 
     L_PAR  shift, and go to state 6
 
 
 State 6
 
-    3 function_decleration: FUNC IDENTIFIER L_PAR • paramerter_declerations R_PAR L_CURLY R_CURLY
+    3 function_decleration: FUNC IDENTIFIER L_PAR • paramerter_declerations R_PAR L_CURLY statements R_CURLY
 
     $default  reduce using rule 4 (paramerter_declerations)
 
@@ -161,7 +208,7 @@ State 6
 
 State 7
 
-    3 function_decleration: FUNC IDENTIFIER L_PAR paramerter_declerations • R_PAR L_CURLY R_CURLY
+    3 function_decleration: FUNC IDENTIFIER L_PAR paramerter_declerations • R_PAR L_CURLY statements R_CURLY
     5 paramerter_declerations: paramerter_declerations • paramerter_decleration
 
     R_PAR  shift, and go to state 8
@@ -172,7 +219,7 @@ State 7
 
 State 8
 
-    3 function_decleration: FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR • L_CURLY R_CURLY
+    3 function_decleration: FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR • L_CURLY statements R_CURLY
 
     L_CURLY  shift, and go to state 11
 
@@ -196,9 +243,11 @@ State 10
 
 State 11
 
-    3 function_decleration: FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY • R_CURLY
+    3 function_decleration: FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY • statements R_CURLY
 
-    R_CURLY  shift, and go to state 13
+    $default  reduce using rule 11 (statements)
+
+    statements  go to state 13
 
 
 State 12
@@ -216,9 +265,19 @@ State 12
 
 State 13
 
-    3 function_decleration: FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY R_CURLY •
+    3 function_decleration: FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements • R_CURLY
+   10 statements: statements • statement
 
-    $default  reduce using rule 3 (function_decleration)
+    IDENTIFIER  shift, and go to state 16
+    INT         shift, and go to state 17
+    PRT         shift, and go to state 18
+    SEMICOLON   shift, and go to state 19
+    R_CURLY     shift, and go to state 20
+
+    statement        go to state 21
+    print            go to state 22
+    var_decleration  go to state 23
+    var_assigment    go to state 24
 
 
 State 14
@@ -233,21 +292,165 @@ State 15
     7 paramerter_decleration: INT IDENTIFIER L_BRAKET • R_BRAKET COMMA
     9                       | INT IDENTIFIER L_BRAKET • R_BRAKET
 
-    R_BRAKET  shift, and go to state 16
+    R_BRAKET  shift, and go to state 25
 
 
 State 16
 
-    7 paramerter_decleration: INT IDENTIFIER L_BRAKET R_BRAKET • COMMA
-    9                       | INT IDENTIFIER L_BRAKET R_BRAKET •
+   19 var_assigment: IDENTIFIER • ASSIGNMENT expression
 
-    COMMA  shift, and go to state 17
-
-    $default  reduce using rule 9 (paramerter_decleration)
+    ASSIGNMENT  shift, and go to state 26
 
 
 State 17
 
+   17 var_decleration: INT • IDENTIFIER SEMICOLON
+   18                | INT • var_assigment
+
+    IDENTIFIER  shift, and go to state 27
+
+    var_assigment  go to state 28
+
+
+State 18
+
+   16 print: PRT • L_PAR expression R_PAR
+
+    L_PAR  shift, and go to state 29
+
+
+State 19
+
+   15 statement: SEMICOLON •
+
+    $default  reduce using rule 15 (statement)
+
+
+State 20
+
+    3 function_decleration: FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY •
+
+    $default  reduce using rule 3 (function_decleration)
+
+
+State 21
+
+   10 statements: statements statement •
+
+    $default  reduce using rule 10 (statements)
+
+
+State 22
+
+   14 statement: print •
+
+    $default  reduce using rule 14 (statement)
+
+
+State 23
+
+   12 statement: var_decleration •
+
+    $default  reduce using rule 12 (statement)
+
+
+State 24
+
+   13 statement: var_assigment •
+
+    $default  reduce using rule 13 (statement)
+
+
+State 25
+
+    7 paramerter_decleration: INT IDENTIFIER L_BRAKET R_BRAKET • COMMA
+    9                       | INT IDENTIFIER L_BRAKET R_BRAKET •
+
+    COMMA  shift, and go to state 30
+
+    $default  reduce using rule 9 (paramerter_decleration)
+
+
+State 26
+
+   19 var_assigment: IDENTIFIER ASSIGNMENT • expression
+
+    IDENTIFIER  shift, and go to state 31
+    NUMBER      shift, and go to state 32
+
+    expression  go to state 33
+
+
+State 27
+
+   17 var_decleration: INT IDENTIFIER • SEMICOLON
+   19 var_assigment: IDENTIFIER • ASSIGNMENT expression
+
+    SEMICOLON   shift, and go to state 34
+    ASSIGNMENT  shift, and go to state 26
+
+
+State 28
+
+   18 var_decleration: INT var_assigment •
+
+    $default  reduce using rule 18 (var_decleration)
+
+
+State 29
+
+   16 print: PRT L_PAR • expression R_PAR
+
+    IDENTIFIER  shift, and go to state 31
+    NUMBER      shift, and go to state 32
+
+    expression  go to state 35
+
+
+State 30
+
     7 paramerter_decleration: INT IDENTIFIER L_BRAKET R_BRAKET COMMA •
 
     $default  reduce using rule 7 (paramerter_decleration)
+
+
+State 31
+
+   21 expression: IDENTIFIER •
+
+    $default  reduce using rule 21 (expression)
+
+
+State 32
+
+   20 expression: NUMBER •
+
+    $default  reduce using rule 20 (expression)
+
+
+State 33
+
+   19 var_assigment: IDENTIFIER ASSIGNMENT expression •
+
+    $default  reduce using rule 19 (var_assigment)
+
+
+State 34
+
+   17 var_decleration: INT IDENTIFIER SEMICOLON •
+
+    $default  reduce using rule 17 (var_decleration)
+
+
+State 35
+
+   16 print: PRT L_PAR expression • R_PAR
+
+    R_PAR  shift, and go to state 36
+
+
+State 36
+
+   16 print: PRT L_PAR expression R_PAR •
+
+    $default  reduce using rule 16 (print)

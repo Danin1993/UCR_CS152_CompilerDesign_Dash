@@ -5,6 +5,8 @@
 #include <math.h>
 extern int yylex();
 extern FILE* yyin;
+extern int yylineno;
+int error_count = 0;
 void yyerror(const char* s);
 int parCnt = 0;
 %}
@@ -15,59 +17,60 @@ int parCnt = 0;
 %define parse.lac full
 
 %left SUBTRACTION ADD
-%left MUTIPLY DIVIDE MOD
-%left FUNC 
+%left MULTIPLY DIVIDE MOD
+%left L_PAR R_PAR 
+%left IDENTIFIER NUMBER
 
 %token <double> NUMBER
 
-%token L_PAR R_PAR RETURN IDENTIFIER RRETURN INT PRT WHILE IF ELSE BREAK CONTINUE READ SEMICOLON COMMA 
+%token RETURN RRETURN INT PRT FUNC WHILE IF ELSE BREAK CONTINUE READ SEMICOLON COMMA 
 %token L_CURLY R_CURLY L_BRAKET R_BRAKET ASSIGNMENT LESS LESS_EQ GREATER GREATER_EQ EQUALITY NOT_EQ
 
 %token UNKNOWN_TOKEN
 
-/*
-%nterm <double> function_decleration paramerter_declerations paramerter_decleration statements statement 
-%nterm <double> var_decleration var_assigment expression
-*/
-
-%start functions
+%nterm <double> function_decleration statements statement paramerter_declerations pars if_statement else_statement 
+%nterm <double> var_decleration var_assigment expression multiplicative_expr term varibles comparitors bool_expression
+%nterm <double> return_statement read_statement while_statement
+%start function_declerations
 
 %%
 
-functions  	: %empty  {printf("functions -> epsilon\n");}
-|             functions function_decleration {printf("functions -> functions function_decleration\n");}
-;
+function_declerations  : function_declerations function_decleration {printf("function_declerations -> function_declerations function_decleration\n");}
+                       | %empty                 {printf("functions -> epsilon\n");}
+                       ;
 
 function_decleration   : FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY {printf("function_decleration -> FUNC IDENTIFIER L_PAR paramerter_declerationsR_PAR L_CURLY statements R_CURLY\n");}
 ;
 
-paramerter_declerations:    %empty {printf("paramerter_declerations -> epsilon\n");}
-|                           paramerter_declerations paramerter_decleration {printf("paramerter_declerations -> paramerter_declerations paramerter_decleration\n");}
-;
-
-paramerter_decleration : INT IDENTIFIER COMMA {printf("paramerter_decleration -> INT INDENTIFIER COMA\n");}
-		       | INT IDENTIFIER L_BRAKET R_BRAKET COMMA {printf("paramerter_decleration -> INT INDENTIFIER L_BRAKET R_BRAKET COMA\n");}
-		       | INT IDENTIFIER {printf("paramerter_decleration -> INT INDENTIFIER\n");}
-		       | INT IDENTIFIER L_BRAKET R_BRAKET {printf("paramerter_decleration -> INT INDENTIFIER L_BRAKET R_BRAKET\n");}
-		       ; 
-
-statements	       : statements statement {printf("statements -> statemtnents statement\n");}
-		       | %empty			{printf("statemtnents -> epsilon\n");}
+statements	       : statements statement {printf("statements -> statements statement\n");}
+		       | %empty			{printf("statements -> epsilon\n");}
 		       ;
-
-statement	       : var_decleration {printf("statement -> var_decleration\n");}
-	               | var_assigment {printf("statement -> var_assigment\n");}
-		       | print {printf("statement -> print\n");}
-		       | SEMICOLON {printf("statement -> SEMICOLON\n");}
+statement	       : var_decleration SEMICOLON {printf("statement -> var_decleration SEMICOLON\n");}
+	               | var_assigment SEMICOLON {printf("statement -> var_assigment SEMICOLON\n");}
+		       | print SEMICOLON {printf("statement -> print  SEMICOLON\n");}
+		       | if_statement {printf("statement -> if_statement\n");}
+		       | return_statement SEMICOLON {printf("statement -> return_statement SEMICOLON\n");}
+                       | read_statement SEMICOLON {printf("statement -> read_statement SEMICOLON\n");}
+		       | while_statement {printf("statement -> while_statement\n");}
+                       | BREAK SEMICOLON {printf("statement -> BREAK SEMICOLON\n");}
+                       | CONTINUE SEMICOLON {printf("statement -> CONTINUE SEMICOLON\n");}
 		       ;  
 
-print		       : PRT L_PAR R_PAR {printf("print -> PRT L_PAR expression R_PAR\n");}
+if_statement           : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {printf("if_statement -> IF L_PAR R_PAR L_CURLY statements R_CURLY else_statement\n");};
+else_statement         : ELSE L_CURLY statements R_CURLY {printf("else_statement -> ELSE L_CURLY statements R_CURLY\n");}
+		       | %empty {printf("else_statement -> epsilon\n");}
 
-var_decleration  : INT IDENTIFIER SEMICOLON {printf("var_decleration -> INT INDENTIFIER SEMICOLON\n");} 
-	               | INT var_assigment {printf("var_decleration -> INT var_assigment\n");};
-
-var_assigment          : IDENTIFIER ASSIGNMENT expression {printf("var_assigment -> IDENTIFER ASSIGNEMNT expression\n");}
+comparitors            : LESS {printf("comparitors -> LESS\n");}
+		       | LESS_EQ {printf("comparitors -> LESS_EQ\n");}
+		       | GREATER {printf("comparitors -> GREATER\n");}
+                       | GREATER_EQ {printf("comparitors -> GREATER_EQ\n");}
+                       | EQUALITY {printf("comparitors -> EQUALITY\n");} 
+                       | NOT_EQ {printf("comparitors -> NOT_EQ\n");}
                        ;
+return_statement       : RETURN expression {printf("return_statement -> RETURN expression\n");};
+var_decleration        : INT IDENTIFIER {printf("var_decleration -> INT IDENTIFIER\n");} 
+		       | INT L_BRAKET expression R_BRAKET IDENTIFIER {printf("var_decleration -> INT L_BRAKET expression R_BRAKET IDENTIFIER\n");} 
+	               | INT var_assigment {printf("var_decleration -> INT var_assigment\n");}
 
 %%
 

@@ -885,7 +885,7 @@ YY_RULE_SETUP
 case 7:
 YY_RULE_SETUP
 #line 81 "lexer.lex"
-{return MUTIPLY;}
+{return MULTIPLY;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP

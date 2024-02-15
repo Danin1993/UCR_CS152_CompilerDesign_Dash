@@ -56,18 +56,18 @@ extern int yydebug;
     YYUNDEF = 257,                 /* "invalid token"  */
     SUBTRACTION = 258,             /* SUBTRACTION  */
     ADD = 259,                     /* ADD  */
-    MUTIPLY = 260,                 /* MUTIPLY  */
+    MULTIPLY = 260,                /* MULTIPLY  */
     DIVIDE = 261,                  /* DIVIDE  */
     MOD = 262,                     /* MOD  */
-    FUNC = 263,                    /* FUNC  */
-    NUMBER = 264,                  /* NUMBER  */
-    L_PAR = 265,                   /* L_PAR  */
-    R_PAR = 266,                   /* R_PAR  */
+    L_PAR = 263,                   /* L_PAR  */
+    R_PAR = 264,                   /* R_PAR  */
+    IDENTIFIER = 265,              /* IDENTIFIER  */
+    NUMBER = 266,                  /* NUMBER  */
     RETURN = 267,                  /* RETURN  */
-    IDENTIFIER = 268,              /* IDENTIFIER  */
-    RRETURN = 269,                 /* RRETURN  */
-    INT = 270,                     /* INT  */
-    PRT = 271,                     /* PRT  */
+    RRETURN = 268,                 /* RRETURN  */
+    INT = 269,                     /* INT  */
+    PRT = 270,                     /* PRT  */
+    FUNC = 271,                    /* FUNC  */
     WHILE = 272,                   /* WHILE  */
     IF = 273,                      /* IF  */
     ELSE = 274,                    /* ELSE  */
@@ -97,8 +97,15 @@ extern int yydebug;
 union YYSTYPE
 {
   double NUMBER;                           /* NUMBER  */
+  double function_decleration;             /* function_decleration  */
+  double paramerter_declerations;          /* paramerter_declerations  */
+  double statements;                       /* statements  */
+  double statement;                        /* statement  */
+  double var_decleration;                  /* var_decleration  */
+  double var_assigment;                    /* var_assigment  */
+  double expression;                       /* expression  */
 
-#line 102 "parser.tab.h"
+#line 109 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

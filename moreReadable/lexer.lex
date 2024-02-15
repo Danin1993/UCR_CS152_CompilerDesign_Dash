@@ -17,7 +17,7 @@ SCINTIFICNUM    {NUMBER}[eE][+-]?{NUMBER}
 /* Operations */
 ADD             \+
 SUBTRACTION     \-
-MUTIPLY         \*
+MULTIPLY         \*
 DIVIDE          \/
 MOD             \%
 ASSIGNMENT      \=
@@ -73,12 +73,12 @@ ERRORCOM            {COMPARISON}[^ \t\n]|"=="
 {COMMENT}               {/* ignore */}
 {WHITESPACE}            { /*ignore*/ }
 
-{NUMBER}        {yylval.NUMBER = atof(yytext); return NUMBER;}
+{NUMBER}                {yylval.NUMBER = atof(yytext); return NUMBER;}
 {SCINTIFICNUM}	{ printf("SCINTIFIC NUMBER: %s\n", yytext);}
 
 {ADD}           {return ADD;}
 {SUBTRACTION}   {return SUBTRACTION;}
-{MUTIPLY}       {return MUTIPLY;}
+{MULTIPLY}      {return MULTIPLY;}
 {DIVIDE}        {return DIVIDE;}
 {MOD}           {return MOD;}
 {ASSIGNMENT}    {return ASSIGNMENT;}

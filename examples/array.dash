@@ -1,4 +1,4 @@
-main() {
+func main() {
     int [4] array;
 
     # Should print out '2'
