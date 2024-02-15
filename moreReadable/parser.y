@@ -78,11 +78,12 @@ paramDecs: paramDecs paramDec   {printf("paramDecs -> paramDecs paramDec\n");}
 		       | %empty             {printf("paramDecs -> epsilon\n");}
            ;
            
-paramDec : INT IDENTIFIER {printf("paramDec -> INT IDENTIFIER\n");}
-             	       | INT IDENTIFIER COMMA paramDec {printf("paramDec -> INT IDENTIFIER COMMA paramDec\n");}
+paramDec   : INT IDENTIFIER {printf("paramDec -> INT IDENTIFIER\n");}
+           | INT IDENTIFIER COMMA paramDec {printf("paramDec -> INT IDENTIFIER COMMA paramDec\n");}
 		       | INT L_BRAKET R_BRAKET IDENTIFIER {printf("paramDec -> INT L_BRAKET R_BRAKET IDENTIFIER\n");}
-            	       | INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramDec {printf("paramDec -> INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramDec\n");}
+           | INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramDec {printf("paramDec -> INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramDec\n");}
 		       ; 
+           
 funcDec   : FUNC IDENTIFIER L_PAR paramDecs R_PAR L_CURLY stms R_CURLY {printf("funcDec -> FUNC IDENTIFIER L_PAR paramDecs R_PAR L_CURLY stms R_CURLY\n");};
 var_assigment          : varibles ASSIGNMENT expression {printf("var_assigment -> varibles ASSIGNMENT expression\n");};
 expression             : multiplicative_expr {printf("expression -> multiplicative_expr\n");}
