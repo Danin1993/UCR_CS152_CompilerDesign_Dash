@@ -158,9 +158,9 @@ enum yysymbol_kind_t
   YYSYMBOL_paramDec = 47,                  /* paramDec  */
   YYSYMBOL_funcDec = 48,                   /* funcDec  */
   YYSYMBOL_var_assigment = 49,             /* var_assigment  */
-  YYSYMBOL_expression = 50,                /* expression  */
-  YYSYMBOL_bool_expression = 51,           /* bool_expression  */
-  YYSYMBOL_multiplicative_expr = 52,       /* multiplicative_expr  */
+  YYSYMBOL_expr = 50,                      /* expr  */
+  YYSYMBOL_bool_expr = 51,                 /* bool_expr  */
+  YYSYMBOL_mult_expr = 52,                 /* mult_expr  */
   YYSYMBOL_term = 53,                      /* term  */
   YYSYMBOL_pars = 54,                      /* pars  */
   YYSYMBOL_varibles = 55,                  /* varibles  */
@@ -539,9 +539,9 @@ static const yytype_int8 yyrline[] =
        0,    38,    38,    39,    42,    43,    46,    47,    48,    49,
       50,    51,    52,    53,    54,    57,    58,    59,    62,    63,
       64,    65,    66,    67,    70,    72,    73,    74,    77,    78,
-      80,    81,    82,    83,    85,    86,    87,    88,    89,    91,
-      92,    93,    94,    95,    97,    98,    99,   100,   102,   103,
-     104,   106,   107,   109,   110,   111
+      81,    82,    83,    84,    87,    89,    91,    92,    93,    96,
+      97,    98,    99,   100,   102,   103,   104,   105,   107,   108,
+     109,   111,   112,   114,   115,   116
 };
 #endif
 
@@ -564,9 +564,9 @@ static const char *const yytname[] =
   "L_BRAKET", "R_BRAKET", "ASSIGNMENT", "LESS", "LESS_EQ", "GREATER",
   "GREATER_EQ", "EQUALITY", "NOT_EQ", "UNKNOWN_TOKEN", "$accept",
   "funcDecs", "stms", "stm", "if_stm", "else_stm", "compers", "return_stm",
-  "varDec", "paramDecs", "paramDec", "funcDec", "var_assigment",
-  "expression", "bool_expression", "multiplicative_expr", "term", "pars",
-  "varibles", "print", "read_stm", "while_stm", YY_NULLPTR
+  "varDec", "paramDecs", "paramDec", "funcDec", "var_assigment", "expr",
+  "bool_expr", "mult_expr", "term", "pars", "varibles", "print",
+  "read_stm", "while_stm", YY_NULLPTR
 };
 
 static const char *
@@ -1898,9 +1898,9 @@ yyreduce:
 #line 1899 "parser.tab.c"
     break;
 
-  case 15: /* if_stm: IF L_PAR bool_expression R_PAR L_CURLY stms R_CURLY else_stm  */
+  case 15: /* if_stm: IF L_PAR bool_expr R_PAR L_CURLY stms R_CURLY else_stm  */
 #line 57 "parser.y"
-                                                                          {printf("if_stm -> IF L_PAR R_PAR L_CURLY stms R_CURLY else_stm\n");}
+                                                                    {printf("if_stm -> IF L_PAR R_PAR L_CURLY stms R_CURLY else_stm\n");}
 #line 1905 "parser.tab.c"
     break;
 
@@ -1952,9 +1952,9 @@ yyreduce:
 #line 1953 "parser.tab.c"
     break;
 
-  case 24: /* return_stm: RETURN expression  */
+  case 24: /* return_stm: RETURN expr  */
 #line 70 "parser.y"
-                               {printf("return_stm -> RETURN expression\n");}
+                         {printf("return_stm -> RETURN expr\n");}
 #line 1959 "parser.tab.c"
     break;
 
@@ -1964,9 +1964,9 @@ yyreduce:
 #line 1965 "parser.tab.c"
     break;
 
-  case 26: /* varDec: INT L_BRAKET expression R_BRAKET IDENTIFIER  */
+  case 26: /* varDec: INT L_BRAKET expr R_BRAKET IDENTIFIER  */
 #line 73 "parser.y"
-                                                                      {printf("varDec -> INT L_BRAKET expression R_BRAKET IDENTIFIER\n");}
+                                                                {printf("varDec -> INT L_BRAKET expr R_BRAKET IDENTIFIER\n");}
 #line 1971 "parser.tab.c"
     break;
 
@@ -1989,158 +1989,158 @@ yyreduce:
     break;
 
   case 30: /* paramDec: INT IDENTIFIER  */
-#line 80 "parser.y"
-                          {printf("paramDec -> INT IDENTIFIER\n");}
+#line 81 "parser.y"
+                            {printf("paramDec -> INT IDENTIFIER\n");}
 #line 1995 "parser.tab.c"
     break;
 
   case 31: /* paramDec: INT IDENTIFIER COMMA paramDec  */
-#line 81 "parser.y"
-                                                       {printf("paramDec -> INT IDENTIFIER COMMA paramDec\n");}
+#line 82 "parser.y"
+                                           {printf("paramDec -> INT IDENTIFIER COMMA paramDec\n");}
 #line 2001 "parser.tab.c"
     break;
 
   case 32: /* paramDec: INT L_BRAKET R_BRAKET IDENTIFIER  */
-#line 82 "parser.y"
+#line 83 "parser.y"
                                                           {printf("paramDec -> INT L_BRAKET R_BRAKET IDENTIFIER\n");}
 #line 2007 "parser.tab.c"
     break;
 
   case 33: /* paramDec: INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramDec  */
-#line 83 "parser.y"
-                                                                         {printf("paramDec -> INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramDec\n");}
+#line 84 "parser.y"
+                                                             {printf("paramDec -> INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramDec\n");}
 #line 2013 "parser.tab.c"
     break;
 
   case 34: /* funcDec: FUNC IDENTIFIER L_PAR paramDecs R_PAR L_CURLY stms R_CURLY  */
-#line 85 "parser.y"
-                                                                       {printf("funcDec -> FUNC IDENTIFIER L_PAR paramDecs R_PAR L_CURLY stms R_CURLY\n");}
+#line 87 "parser.y"
+                                                                           {printf("funcDec -> FUNC IDENTIFIER L_PAR paramDecs R_PAR L_CURLY stms R_CURLY\n");}
 #line 2019 "parser.tab.c"
     break;
 
-  case 35: /* var_assigment: varibles ASSIGNMENT expression  */
-#line 86 "parser.y"
-                                                        {printf("var_assigment -> varibles ASSIGNMENT expression\n");}
+  case 35: /* var_assigment: varibles ASSIGNMENT expr  */
+#line 89 "parser.y"
+                                         {printf("var_assigment -> varibles ASSIGNMENT expr\n");}
 #line 2025 "parser.tab.c"
     break;
 
-  case 36: /* expression: multiplicative_expr  */
-#line 87 "parser.y"
-                                             {printf("expression -> multiplicative_expr\n");}
+  case 36: /* expr: mult_expr  */
+#line 91 "parser.y"
+                    {printf("expr -> mult_expr\n");}
 #line 2031 "parser.tab.c"
     break;
 
-  case 37: /* expression: multiplicative_expr ADD multiplicative_expr  */
-#line 88 "parser.y"
-                                                                     {printf("expression -> multiplicative_expr ADD multiplicative_expr\n");}
+  case 37: /* expr: mult_expr ADD mult_expr  */
+#line 92 "parser.y"
+                                                    {printf("expr -> mult_expr ADD mult_expr\n");}
 #line 2037 "parser.tab.c"
     break;
 
-  case 38: /* expression: multiplicative_expr SUBTRACTION multiplicative_expr  */
-#line 89 "parser.y"
-                                                                             {printf("expression -> multiplicative_expr ADD multiplicative_expr\n");}
+  case 38: /* expr: mult_expr SUBTRACTION mult_expr  */
+#line 93 "parser.y"
+                                                            {printf("expr -> mult_expr ADD mult_expr\n");}
 #line 2043 "parser.tab.c"
     break;
 
-  case 39: /* bool_expression: expression compers expression  */
-#line 91 "parser.y"
-                                                       {printf("bool_expression -> expression compers expression \n");}
+  case 39: /* bool_expr: expr compers expr  */
+#line 96 "parser.y"
+                                     {printf("bool_expr -> expr compers expr \n");}
 #line 2049 "parser.tab.c"
     break;
 
-  case 40: /* multiplicative_expr: term  */
-#line 92 "parser.y"
-                              {printf("multiplicative_expr -> term\n");}
+  case 40: /* mult_expr: term  */
+#line 97 "parser.y"
+                    {printf("mult_expr -> term\n");}
 #line 2055 "parser.tab.c"
     break;
 
-  case 41: /* multiplicative_expr: term MOD term  */
-#line 93 "parser.y"
-                                       {printf("multiplicative_expr -> term MOD term\n");}
+  case 41: /* mult_expr: term MOD term  */
+#line 98 "parser.y"
+                                       {printf("mult_expr -> term MOD term\n");}
 #line 2061 "parser.tab.c"
     break;
 
-  case 42: /* multiplicative_expr: term MULTIPLY term  */
-#line 94 "parser.y"
-                                            {printf("multiplicative_expr -> term MULTIPLY term\n");}
+  case 42: /* mult_expr: term MULTIPLY term  */
+#line 99 "parser.y"
+                                            {printf("mult_expr -> term MULTIPLY term\n");}
 #line 2067 "parser.tab.c"
     break;
 
-  case 43: /* multiplicative_expr: term DIVIDE term  */
-#line 95 "parser.y"
-                                          {printf("multiplicative_expr -> term DIVIDE term\n");}
+  case 43: /* mult_expr: term DIVIDE term  */
+#line 100 "parser.y"
+                                          {printf("mult_expr -> term DIVIDE term\n");}
 #line 2073 "parser.tab.c"
     break;
 
-  case 44: /* term: L_PAR expression R_PAR  */
-#line 97 "parser.y"
-                                                {printf("term -> L_PAR expression R_PAR\n");}
+  case 44: /* term: L_PAR expr R_PAR  */
+#line 102 "parser.y"
+                                          {printf("term -> L_PAR expr R_PAR\n");}
 #line 2079 "parser.tab.c"
     break;
 
   case 45: /* term: NUMBER  */
-#line 98 "parser.y"
+#line 103 "parser.y"
                                 {printf("term -> NUMBER\n");}
 #line 2085 "parser.tab.c"
     break;
 
   case 46: /* term: IDENTIFIER L_PAR pars R_PAR  */
-#line 99 "parser.y"
+#line 104 "parser.y"
                                                      {printf("term -> IDENTIFIER L_PAR pars R_PAR\n");}
 #line 2091 "parser.tab.c"
     break;
 
   case 47: /* term: varibles  */
-#line 100 "parser.y"
+#line 105 "parser.y"
                                   {printf("term -> varibles\n");}
 #line 2097 "parser.tab.c"
     break;
 
-  case 48: /* pars: pars COMMA expression  */
-#line 102 "parser.y"
-                                               {printf("pars -> pars COMMA expressionn");}
+  case 48: /* pars: pars COMMA expr  */
+#line 107 "parser.y"
+                                         {printf("pars -> pars COMMA exprn");}
 #line 2103 "parser.tab.c"
     break;
 
-  case 49: /* pars: expression  */
-#line 103 "parser.y"
-                                    {printf("pars -> expression\n");}
+  case 49: /* pars: expr  */
+#line 108 "parser.y"
+                              {printf("pars -> expr\n");}
 #line 2109 "parser.tab.c"
     break;
 
   case 50: /* pars: %empty  */
-#line 104 "parser.y"
+#line 109 "parser.y"
                                 {printf("pars -> epsilon\n");}
 #line 2115 "parser.tab.c"
     break;
 
   case 51: /* varibles: IDENTIFIER  */
-#line 106 "parser.y"
+#line 111 "parser.y"
                                     {printf("varibles -> IDENTIFIER\n");}
 #line 2121 "parser.tab.c"
     break;
 
-  case 52: /* varibles: IDENTIFIER L_BRAKET expression R_BRAKET  */
-#line 107 "parser.y"
-                                                                 {printf("varibles -> IDENTIFIER L_BRAKET expression R_BRAKE\nT");}
+  case 52: /* varibles: IDENTIFIER L_BRAKET expr R_BRAKET  */
+#line 112 "parser.y"
+                                                           {printf("varibles -> IDENTIFIER L_BRAKET expr R_BRAKE\nT");}
 #line 2127 "parser.tab.c"
     break;
 
-  case 53: /* print: PRT L_PAR expression R_PAR  */
-#line 109 "parser.y"
-                                                    {printf("print -> PRT L_PAR expression R_PAR\n");}
+  case 53: /* print: PRT L_PAR expr R_PAR  */
+#line 114 "parser.y"
+                                              {printf("print -> PRT L_PAR expr R_PAR\n");}
 #line 2133 "parser.tab.c"
     break;
 
-  case 54: /* read_stm: READ L_PAR expression R_PAR  */
-#line 110 "parser.y"
-                                       {printf("read_stm -> READ L_PAR expression R_PAR\n");}
+  case 54: /* read_stm: READ L_PAR expr R_PAR  */
+#line 115 "parser.y"
+                                 {printf("read_stm -> READ L_PAR expr R_PAR\n");}
 #line 2139 "parser.tab.c"
     break;
 
-  case 55: /* while_stm: WHILE L_PAR bool_expression R_PAR L_CURLY stms R_CURLY  */
-#line 111 "parser.y"
-                                                                          {printf("while_stm -> WHILE L_PAR bool_expression R_PAR L_CURLY stms R_CURLY\n");}
+  case 55: /* while_stm: WHILE L_PAR bool_expr R_PAR L_CURLY stms R_CURLY  */
+#line 116 "parser.y"
+                                                                    {printf("while_stm -> WHILE L_PAR bool_expr R_PAR L_CURLY stms R_CURLY\n");}
 #line 2145 "parser.tab.c"
     break;
 
@@ -2385,7 +2385,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 113 "parser.y"
+#line 118 "parser.y"
 
 
 

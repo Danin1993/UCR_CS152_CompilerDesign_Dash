@@ -107,9 +107,9 @@ union YYSTYPE
   double paramDecs;                        /* paramDecs  */
   double funcDec;                          /* funcDec  */
   double var_assigment;                    /* var_assigment  */
-  double expression;                       /* expression  */
-  double bool_expression;                  /* bool_expression  */
-  double multiplicative_expr;              /* multiplicative_expr  */
+  double expr;                             /* expr  */
+  double bool_expr;                        /* bool_expr  */
+  double mult_expr;                        /* mult_expr  */
   double term;                             /* term  */
   double pars;                             /* pars  */
   double varibles;                         /* varibles  */

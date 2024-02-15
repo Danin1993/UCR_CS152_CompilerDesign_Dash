@@ -29,7 +29,7 @@ int parCnt = 0;
 %token UNKNOWN_TOKEN
 
 %nterm <double> funcDec stms stm paramDecs pars if_stm else_stm 
-%nterm <double> varDec var_assigment expression multiplicative_expr term varibles compers bool_expression
+%nterm <double> varDec var_assigment expr mult_expr term varibles compers bool_expr
 %nterm <double> return_stm read_stm while_stm
 %start funcDecs
 
@@ -54,7 +54,7 @@ stm	      : varDec SEMICOLON          {printf("stm -> varDec SEMICOLON\n");}
           | CONTINUE SEMICOLON        {printf("stm -> CONTINUE SEMICOLON\n");}
 		      ;  
 
-if_stm    : IF L_PAR bool_expression R_PAR L_CURLY stms R_CURLY else_stm  {printf("if_stm -> IF L_PAR R_PAR L_CURLY stms R_CURLY else_stm\n");};
+if_stm    : IF L_PAR bool_expr R_PAR L_CURLY stms R_CURLY else_stm  {printf("if_stm -> IF L_PAR R_PAR L_CURLY stms R_CURLY else_stm\n");};
 else_stm  : ELSE L_CURLY stms R_CURLY                                     {printf("else_stm -> ELSE L_CURLY stms R_CURLY\n");}
 		      | %empty                                                        {printf("else_stm -> epsilon\n");}
           ;
@@ -67,10 +67,10 @@ compers   : LESS        {printf("compers -> LESS\n");}
           | NOT_EQ      {printf("compers -> NOT_EQ\n");}
           ;
 
-return_stm : RETURN expression {printf("return_stm -> RETURN expression\n");};
+return_stm : RETURN expr {printf("return_stm -> RETURN expr\n");};
 
 varDec     : INT IDENTIFIER                               {printf("varDec -> INT IDENTIFIER\n");} 
-		       | INT L_BRAKET expression R_BRAKET IDENTIFIER  {printf("varDec -> INT L_BRAKET expression R_BRAKET IDENTIFIER\n");} 
+		       | INT L_BRAKET expr R_BRAKET IDENTIFIER  {printf("varDec -> INT L_BRAKET expr R_BRAKET IDENTIFIER\n");} 
 	         | INT var_assigment                            {printf("varDec -> INT var_assigment\n");}
 		       ;
 
@@ -83,34 +83,37 @@ paramDec   : INT IDENTIFIER {printf("paramDec -> INT IDENTIFIER\n");}
 		       | INT L_BRAKET R_BRAKET IDENTIFIER {printf("paramDec -> INT L_BRAKET R_BRAKET IDENTIFIER\n");}
            | INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramDec {printf("paramDec -> INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramDec\n");}
 		       ; 
-           
-funcDec   : FUNC IDENTIFIER L_PAR paramDecs R_PAR L_CURLY stms R_CURLY {printf("funcDec -> FUNC IDENTIFIER L_PAR paramDecs R_PAR L_CURLY stms R_CURLY\n");};
-var_assigment          : varibles ASSIGNMENT expression {printf("var_assigment -> varibles ASSIGNMENT expression\n");};
-expression             : multiplicative_expr {printf("expression -> multiplicative_expr\n");}
-		       | multiplicative_expr ADD multiplicative_expr {printf("expression -> multiplicative_expr ADD multiplicative_expr\n");}
-		       | multiplicative_expr SUBTRACTION multiplicative_expr {printf("expression -> multiplicative_expr ADD multiplicative_expr\n");}
-                       ;
-bool_expression        : expression compers expression {printf("bool_expression -> expression compers expression \n");};
-multiplicative_expr    : term {printf("multiplicative_expr -> term\n");}
-                       | term MOD term {printf("multiplicative_expr -> term MOD term\n");}
-		       | term MULTIPLY term {printf("multiplicative_expr -> term MULTIPLY term\n");}
-		       | term DIVIDE term {printf("multiplicative_expr -> term DIVIDE term\n");}
+
+funcDec       : FUNC IDENTIFIER L_PAR paramDecs R_PAR L_CURLY stms R_CURLY {printf("funcDec -> FUNC IDENTIFIER L_PAR paramDecs R_PAR L_CURLY stms R_CURLY\n");};
+
+var_assigment : varibles ASSIGNMENT expr {printf("var_assigment -> varibles ASSIGNMENT expr\n");};
+
+expr    : mult_expr {printf("expr -> mult_expr\n");}
+		          | mult_expr ADD mult_expr {printf("expr -> mult_expr ADD mult_expr\n");}
+		          | mult_expr SUBTRACTION mult_expr {printf("expr -> mult_expr ADD mult_expr\n");}
+              ;
+
+bool_expr        : expr compers expr {printf("bool_expr -> expr compers expr \n");};
+mult_expr    : term {printf("mult_expr -> term\n");}
+                       | term MOD term {printf("mult_expr -> term MOD term\n");}
+		       | term MULTIPLY term {printf("mult_expr -> term MULTIPLY term\n");}
+		       | term DIVIDE term {printf("mult_expr -> term DIVIDE term\n");}
 		       ;
-term                   : L_PAR expression R_PAR {printf("term -> L_PAR expression R_PAR\n");}
+term                   : L_PAR expr R_PAR {printf("term -> L_PAR expr R_PAR\n");}
 		       | NUMBER {printf("term -> NUMBER\n");}
                        | IDENTIFIER L_PAR pars R_PAR {printf("term -> IDENTIFIER L_PAR pars R_PAR\n");}
 		       | varibles {printf("term -> varibles\n");}
 		       ;
-pars                   : pars COMMA expression {printf("pars -> pars COMMA expressionn");}
-		       | expression {printf("pars -> expression\n");}
+pars                   : pars COMMA expr {printf("pars -> pars COMMA exprn");}
+		       | expr {printf("pars -> expr\n");}
                        | %empty {printf("pars -> epsilon\n");}
                        ;
 varibles               : IDENTIFIER {printf("varibles -> IDENTIFIER\n");}
-		       | IDENTIFIER L_BRAKET expression R_BRAKET {printf("varibles -> IDENTIFIER L_BRAKET expression R_BRAKE\nT");}
+		       | IDENTIFIER L_BRAKET expr R_BRAKET {printf("varibles -> IDENTIFIER L_BRAKET expr R_BRAKE\nT");}
                        ;
-print		       : PRT L_PAR expression R_PAR {printf("print -> PRT L_PAR expression R_PAR\n");};
-read_stm : READ L_PAR expression R_PAR {printf("read_stm -> READ L_PAR expression R_PAR\n");};
-while_stm        : WHILE L_PAR bool_expression R_PAR L_CURLY stms R_CURLY {printf("while_stm -> WHILE L_PAR bool_expression R_PAR L_CURLY stms R_CURLY\n");};
+print		       : PRT L_PAR expr R_PAR {printf("print -> PRT L_PAR expr R_PAR\n");};
+read_stm : READ L_PAR expr R_PAR {printf("read_stm -> READ L_PAR expr R_PAR\n");};
+while_stm        : WHILE L_PAR bool_expr R_PAR L_CURLY stms R_CURLY {printf("while_stm -> WHILE L_PAR bool_expr R_PAR L_CURLY stms R_CURLY\n");};
 
 %%
 
