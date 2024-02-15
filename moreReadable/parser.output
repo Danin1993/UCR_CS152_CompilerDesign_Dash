@@ -30,13 +30,13 @@ Grammar
 
     0 $accept: functions $end
 
-    1 functions: functions function_decleration
-    2          | ε
+    1 functions: ε
+    2          | functions function_decleration
 
     3 function_decleration: FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY R_CURLY
 
-    4 paramerter_declerations: paramerter_declerations paramerter_decleration
-    5                        | ε
+    4 paramerter_declerations: ε
+    5                        | paramerter_declerations paramerter_decleration
 
     6 paramerter_decleration: INT IDENTIFIER COMMA
     7                       | INT IDENTIFIER L_BRAKET R_BRAKET COMMA
@@ -90,23 +90,23 @@ Nonterminals, with rules where they appear
         on left: 0
     functions (38)
         on left: 1 2
-        on right: 0 1
+        on right: 0 2
     function_decleration (39)
         on left: 3
-        on right: 1
+        on right: 2
     paramerter_declerations (40)
         on left: 4 5
-        on right: 3 4
+        on right: 3 5
     paramerter_decleration (41)
         on left: 6 7 8 9
-        on right: 4
+        on right: 5
 
 
 State 0
 
     0 $accept: • functions $end
 
-    $default  reduce using rule 2 (functions)
+    $default  reduce using rule 1 (functions)
 
     functions  go to state 1
 
@@ -114,7 +114,7 @@ State 0
 State 1
 
     0 $accept: functions • $end
-    1 functions: functions • function_decleration
+    2 functions: functions • function_decleration
 
     $end  shift, and go to state 2
     FUNC  shift, and go to state 3
@@ -138,9 +138,9 @@ State 3
 
 State 4
 
-    1 functions: functions function_decleration •
+    2 functions: functions function_decleration •
 
-    $default  reduce using rule 1 (functions)
+    $default  reduce using rule 2 (functions)
 
 
 State 5
@@ -154,7 +154,7 @@ State 6
 
     3 function_decleration: FUNC IDENTIFIER L_PAR • paramerter_declerations R_PAR L_CURLY R_CURLY
 
-    $default  reduce using rule 5 (paramerter_declerations)
+    $default  reduce using rule 4 (paramerter_declerations)
 
     paramerter_declerations  go to state 7
 
@@ -162,7 +162,7 @@ State 6
 State 7
 
     3 function_decleration: FUNC IDENTIFIER L_PAR paramerter_declerations • R_PAR L_CURLY R_CURLY
-    4 paramerter_declerations: paramerter_declerations • paramerter_decleration
+    5 paramerter_declerations: paramerter_declerations • paramerter_decleration
 
     R_PAR  shift, and go to state 8
     INT    shift, and go to state 9
@@ -189,9 +189,9 @@ State 9
 
 State 10
 
-    4 paramerter_declerations: paramerter_declerations paramerter_decleration •
+    5 paramerter_declerations: paramerter_declerations paramerter_decleration •
 
-    $default  reduce using rule 4 (paramerter_declerations)
+    $default  reduce using rule 5 (paramerter_declerations)
 
 
 State 11

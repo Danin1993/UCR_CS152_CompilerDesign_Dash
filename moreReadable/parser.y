@@ -38,7 +38,7 @@ functions  	: %empty  {printf("functions -> epsilon\n");}
 |             functions function_decleration {printf("functions -> functions function_decleration\n");}
 ;
 
-function_decleration   : FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY R_CURLY {printf("function_decleration -> FUNC IDENTIFIER L_PAR paramerter_declerationsR_PAR L_CURLY statements R_CURLY\n");}
+function_decleration   : FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY {printf("function_decleration -> FUNC IDENTIFIER L_PAR paramerter_declerationsR_PAR L_CURLY statements R_CURLY\n");}
 ;
 
 paramerter_declerations:    %empty {printf("paramerter_declerations -> epsilon\n");}
@@ -50,7 +50,17 @@ paramerter_decleration : INT IDENTIFIER COMMA {printf("paramerter_decleration ->
 		       | INT IDENTIFIER {printf("paramerter_decleration -> INT INDENTIFIER\n");}
 		       | INT IDENTIFIER L_BRAKET R_BRAKET {printf("paramerter_decleration -> INT INDENTIFIER L_BRAKET R_BRAKET\n");}
 		       ; 
+/*
+statements	       : statements statement {printf("statements -> statemtnents statement\n");}
+		       | %empty			{printf("statemtnents -> epsilon\n");}
+		       ;
 
+statement	       : var_decleration {printf("statement -> var_decleration\n");}
+	               | var_assigment {printf("statement -> var_assigment\n");}
+		       | print {printf("statement -> print\n");}
+		       | SEMICOLON {printf("statement -> SEMICOLON\n");}
+		       ;  
+           */
 %%
 
 

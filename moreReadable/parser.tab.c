@@ -517,8 +517,8 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    37,    37,    38,    42,    45,    46,    49,    50,    51,
-      52
+       0,    37,    37,    38,    41,    44,    45,    48,    49,    50,
+      51
 };
 #endif
 
@@ -574,8 +574,8 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       3,     0,     1,     0,     2,     0,     6,     0,     0,     0,
-       5,     0,     9,     4,     7,     0,    10,     8
+       2,     0,     1,     0,     3,     0,     5,     0,     0,     0,
+       6,     0,     9,     4,     7,     0,    10,     8
 };
 
 /* YYPGOTO[NTERM-NUM].  */
@@ -623,7 +623,7 @@ static const yytype_int8 yyr1[] =
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     2,     0,     7,     2,     0,     3,     5,     2,
+       0,     2,     0,     2,     7,     0,     2,     3,     5,     2,
        4
 };
 
@@ -1731,56 +1731,56 @@ yyreduce:
     int yychar_backup = yychar;
     switch (yyn)
       {
-  case 2: /* functions: functions function_decleration  */
+  case 2: /* functions: %empty  */
 #line 37 "parser.y"
-                                                 {printf("functions -> functions function_decleration\n");}
+                          {printf("functions -> epsilon\n");}
 #line 1738 "parser.tab.c"
     break;
 
-  case 3: /* functions: %empty  */
+  case 3: /* functions: functions function_decleration  */
 #line 38 "parser.y"
-          {printf("functions -> epsilon\n");}
+                                             {printf("functions -> functions function_decleration\n");}
 #line 1744 "parser.tab.c"
     break;
 
   case 4: /* function_decleration: FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY R_CURLY  */
-#line 42 "parser.y"
+#line 41 "parser.y"
                                                                                              {printf("function_decleration -> FUNC IDENTIFIER L_PAR paramerter_declerationsR_PAR L_CURLY statements R_CURLY\n");}
 #line 1750 "parser.tab.c"
     break;
 
-  case 5: /* paramerter_declerations: paramerter_declerations paramerter_decleration  */
-#line 45 "parser.y"
-                                                                             {printf("paramerter_declerations -> paramerter_declerations paramerter_decleration\n");}
+  case 5: /* paramerter_declerations: %empty  */
+#line 44 "parser.y"
+                                   {printf("paramerter_declerations -> epsilon\n");}
 #line 1756 "parser.tab.c"
     break;
 
-  case 6: /* paramerter_declerations: %empty  */
-#line 46 "parser.y"
-         {printf("paramerter_declerations -> epsilon\n");}
+  case 6: /* paramerter_declerations: paramerter_declerations paramerter_decleration  */
+#line 45 "parser.y"
+                                                                           {printf("paramerter_declerations -> paramerter_declerations paramerter_decleration\n");}
 #line 1762 "parser.tab.c"
     break;
 
   case 7: /* paramerter_decleration: INT IDENTIFIER COMMA  */
-#line 49 "parser.y"
+#line 48 "parser.y"
                                               {printf("paramerter_decleration -> INT INDENTIFIER COMA\n");}
 #line 1768 "parser.tab.c"
     break;
 
   case 8: /* paramerter_decleration: INT IDENTIFIER L_BRAKET R_BRAKET COMMA  */
-#line 50 "parser.y"
+#line 49 "parser.y"
                                                                 {printf("paramerter_decleration -> INT INDENTIFIER L_BRAKET R_BRAKET COMA\n");}
 #line 1774 "parser.tab.c"
     break;
 
   case 9: /* paramerter_decleration: INT IDENTIFIER  */
-#line 51 "parser.y"
+#line 50 "parser.y"
                                         {printf("paramerter_decleration -> INT INDENTIFIER\n");}
 #line 1780 "parser.tab.c"
     break;
 
   case 10: /* paramerter_decleration: INT IDENTIFIER L_BRAKET R_BRAKET  */
-#line 52 "parser.y"
+#line 51 "parser.y"
                                                           {printf("paramerter_decleration -> INT INDENTIFIER L_BRAKET R_BRAKET\n");}
 #line 1786 "parser.tab.c"
     break;
@@ -2026,7 +2026,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 55 "parser.y"
+#line 64 "parser.y"
 
 
 
