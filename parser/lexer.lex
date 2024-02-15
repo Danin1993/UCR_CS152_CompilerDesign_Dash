@@ -25,7 +25,7 @@ L_BRAKET \[
 R_BRAKET \]
 ADD \+
 SUBTRACTION \-
-MUTIPLY \*
+MULTIPLY \*
 DIVIDE \/
 MOD \%
 ASSIGNMENT \=
@@ -71,7 +71,7 @@ ERRORCOM {COMPARISON}[^ \t\n]|"=="
 {R_BRAKET}            {return R_BRAKET;}
 {ADD}            {return ADD;}
 {SUBTRACTION}            {return SUBTRACTION;}
-{MUTIPLY}            {return MUTIPLY;}
+{MULTIPLY}            {return MULTIPLY;}
 {DIVIDE}            {return DIVIDE;}
 {MOD}            {return MOD;}
 {ASSIGNMENT}            {return ASSIGNMENT;}

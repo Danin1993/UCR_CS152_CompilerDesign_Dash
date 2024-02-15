@@ -7,6 +7,8 @@
 
 extern int yylex();
 extern FILE* yyin;
+extern int yylineno;
+int error_count = 0;
 
 void yyerror(const char* s);
 
@@ -19,7 +21,7 @@ int parCnt = 0;
 %define parse.lac full
 
 %left SUBTRACTION ADD
-%left MUTIPLY DIVIDE MOD
+%left MULTIPLY DIVIDE MOD
 %left L_PAR R_PAR 
 %left IDENTIFIER NUMBER
 
@@ -39,8 +41,8 @@ int parCnt = 0;
 function_declerations  : function_declerations function_decleration {printf("function_declerations -> function_declerations function_decleration\n");}
                        | %empty                 {printf("functions -> epsilon\n");}
                        ;
-statements	       : statements statement {printf("statements -> statemtnents statement\n");}
-		       | %empty			{printf("statemtnents -> epsilon\n");}
+statements	       : statements statement {printf("statements -> statements statement\n");}
+		       | %empty			{printf("statements -> epsilon\n");}
 		       ;
 statement	       : var_decleration SEMICOLON {printf("statement -> var_decleration SEMICOLON\n");}
 	               | var_assigment SEMICOLON {printf("statement -> var_assigment SEMICOLON\n");}
@@ -64,7 +66,7 @@ comparitors            : LESS {printf("comparitors -> LESS\n");}
                        | NOT_EQ {printf("comparitors -> NOT_EQ\n");}
                        ;
 return_statement       : RETURN expression {printf("return_statement -> RETURN expression\n");};
-var_decleration        : INT IDENTIFIER {printf("var_decleration -> INT INDENTIFIER\n");} 
+var_decleration        : INT IDENTIFIER {printf("var_decleration -> INT IDENTIFIER\n");} 
 		       | INT L_BRAKET expression R_BRAKET IDENTIFIER {printf("var_decleration -> INT L_BRAKET expression R_BRAKET IDENTIFIER\n");} 
 	               | INT var_assigment {printf("var_decleration -> INT var_assigment\n");}
 		       ;
@@ -85,7 +87,7 @@ expression             : multiplicative_expr {printf("expression -> multiplicati
 bool_expression        : expression comparitors expression {printf("bool_expression -> expression comparitors expression \n");};
 multiplicative_expr    : term {printf("multiplicative_expr -> term\n");}
                        | term MOD term {printf("multiplicative_expr -> term MOD term\n");}
-		       | term MUTIPLY term {printf("multiplicative_expr -> term MUTIPLY term\n");}
+		       | term MULTIPLY term {printf("multiplicative_expr -> term MULTIPLY term\n");}
 		       | term DIVIDE term {printf("multiplicative_expr -> term DIVIDE term\n");}
 		       ;
 term                   : L_PAR expression R_PAR {printf("term -> L_PAR expression R_PAR\n");}
@@ -95,35 +97,53 @@ term                   : L_PAR expression R_PAR {printf("term -> L_PAR expressio
 		       ;
 pars                   : pars COMMA expression {printf("pars -> pars COMMA expressionn");}
 		       | expression {printf("pars -> expression\n");}
-                       | %empty {printf("pars -> epsillion\n");}
+                       | %empty {printf("pars -> epsilon\n");}
                        ;
 varibles               : IDENTIFIER {printf("varibles -> IDENTIFIER\n");}
 		       | IDENTIFIER L_BRAKET expression R_BRAKET {printf("varibles -> IDENTIFIER L_BRAKET expression R_BRAKE\nT");}
                        ;
 print		       : PRT L_PAR expression R_PAR {printf("print -> PRT L_PAR expression R_PAR\n");};
-read_statement         : READ L_PAR expression R_PAR {printf("read_statement -> PRT L_PAR expression R_PAR\n");};
+read_statement : READ L_PAR expression R_PAR {printf("read_statement -> READ L_PAR expression R_PAR\n");};
 while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {printf("while_statement -> WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY\n");};
 %%
-int main(int argc, char** argv){
-	yyin = stdin;
 
-	bool interaction =true;
+int main(int argc, char** argv) {
+    yyin = stdin;
 
-	if(argc >= 2){
-		FILE* file_ptr = fopen(argv[1], "r");
-		if(file_ptr == NULL){
-			printf("Could not open file: %s\n", argv[1]);
-			exit(1);
-		}
-		yyin = file_ptr;
-		interaction = false;
-  	}
-	return yyparse();
+    if (argc >= 2) {
+        FILE* file_ptr = fopen(argv[1], "r");
+        if (file_ptr == NULL) {
+            printf("Could not open file: %s\n", argv[1]);
+            exit(1);
+        }
+        yyin = file_ptr;
+    }
+
+    yyparse();
+
+    if (argc >= 2) {
+        fclose(yyin);
+    }
+
+    if (error_count > 0) {
+        fprintf(stderr, "Parsing finished with %d error(s).\n", error_count);
+        return 1; 
+    }
+
+    return 0;
 }
 
-void yyerror(const char* s){
-fprintf(stderr, "Error encountered while parsing token at [%i,%i-%i,%i]: %s\n", yylloc.first_line, yylloc.first_column, yylloc.last_line, yylloc.last_column, s);
- exit(1);
+void yyerror(const char* s) {
+    if (strcmp(s, "syntax error") == 0) {
+        fprintf(stderr, "Syntax error at line %d: Unexpected token\n", yylineno);
+    } else if (strcmp(s, "type error") == 0) {
+        fprintf(stderr, "Type error at line %d: Incompatible types\n", yylineno);
+    } else if (strcmp(s, "undeclared variable") == 0) {
+        fprintf(stderr, "Error at line %d: Undeclared variable\n", yylineno);
+    } else {
+        fprintf(stderr, "Error at line %d: %s\n", yylineno, s);
+    }
+    error_count++;
 }
 
 
