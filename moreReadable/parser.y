@@ -38,7 +38,19 @@ functions  	: %empty  {printf("functions -> epsilon\n");}
 |             functions function_decleration {printf("functions -> functions function_decleration\n");}
 ;
 
-function_decleration   : FUNC IDENTIFIER L_PAR R_PAR L_CURLY R_CURLY {printf("function_decleration -> FUNC IDENTIFIER L_PAR paramerter_declerationsR_PAR L_CURLY statements R_CURLY\n");	       };
+function_decleration   : FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY R_CURLY {printf("function_decleration -> FUNC IDENTIFIER L_PAR paramerter_declerationsR_PAR L_CURLY statements R_CURLY\n");}
+;
+
+paramerter_declerations:    %empty {printf("paramerter_declerations -> epsilon\n");}
+|                           paramerter_declerations paramerter_decleration {printf("paramerter_declerations -> paramerter_declerations paramerter_decleration\n");}
+;
+
+paramerter_decleration : INT IDENTIFIER COMMA {printf("paramerter_decleration -> INT INDENTIFIER COMA\n");}
+		       | INT IDENTIFIER L_BRAKET R_BRAKET COMMA {printf("paramerter_decleration -> INT INDENTIFIER L_BRAKET R_BRAKET COMA\n");}
+		       | INT IDENTIFIER {printf("paramerter_decleration -> INT INDENTIFIER\n");}
+		       | INT IDENTIFIER L_BRAKET R_BRAKET {printf("paramerter_decleration -> INT INDENTIFIER L_BRAKET R_BRAKET\n");}
+		       ; 
+
 %%
 
 
