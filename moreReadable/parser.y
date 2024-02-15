@@ -34,9 +34,11 @@ int parCnt = 0;
 
 %%
 
-functions  	: %empty                 {printf("functions -> epsilon\n");}
+functions  	: %empty  {printf("functions -> epsilon\n");}
+|             functions function_decleration {printf("functions -> functions function_decleration\n");}
 ;
 
+function_decleration   : FUNC IDENTIFIER L_PAR R_PAR L_CURLY R_CURLY {printf("function_decleration -> FUNC IDENTIFIER L_PAR paramerter_declerationsR_PAR L_CURLY statements R_CURLY\n");	       };
 %%
 
 

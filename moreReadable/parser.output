@@ -5,12 +5,8 @@ Terminals unused in grammar
     MUTIPLY
     DIVIDE
     MOD
-    FUNC
     NUMBER
-    L_PAR
-    R_PAR
     RETURN
-    IDENTIFIER
     RRETURN
     INT
     PRT
@@ -22,8 +18,6 @@ Terminals unused in grammar
     READ
     SEMICOLON
     COMMA
-    L_CURLY
-    R_CURLY
     L_BRAKET
     R_BRAKET
     ASSIGNMENT
@@ -41,6 +35,9 @@ Grammar
     0 $accept: functions $end
 
     1 functions: ε
+    2          | functions function_decleration
+
+    3 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY R_CURLY
 
 
 Terminals, with rules where they appear
@@ -52,12 +49,12 @@ Terminals, with rules where they appear
     MUTIPLY (260)
     DIVIDE (261)
     MOD (262)
-    FUNC (263)
+    FUNC (263) 3
     NUMBER <double> (264)
-    L_PAR (265)
-    R_PAR (266)
+    L_PAR (265) 3
+    R_PAR (266) 3
     RETURN (267)
-    IDENTIFIER (268)
+    IDENTIFIER (268) 3
     RRETURN (269)
     INT (270)
     PRT (271)
@@ -69,8 +66,8 @@ Terminals, with rules where they appear
     READ (277)
     SEMICOLON (278)
     COMMA (279)
-    L_CURLY (280)
-    R_CURLY (281)
+    L_CURLY (280) 3
+    R_CURLY (281) 3
     L_BRAKET (282)
     R_BRAKET (283)
     ASSIGNMENT (284)
@@ -88,8 +85,11 @@ Nonterminals, with rules where they appear
     $accept (37)
         on left: 0
     functions (38)
-        on left: 1
-        on right: 0
+        on left: 1 2
+        on right: 0 2
+    function_decleration (39)
+        on left: 3
+        on right: 2
 
 
 State 0
@@ -104,8 +104,12 @@ State 0
 State 1
 
     0 $accept: functions • $end
+    2 functions: functions • function_decleration
 
     $end  shift, and go to state 2
+    FUNC  shift, and go to state 3
+
+    function_decleration  go to state 4
 
 
 State 2
@@ -113,3 +117,52 @@ State 2
     0 $accept: functions $end •
 
     $default  accept
+
+
+State 3
+
+    3 function_decleration: FUNC • IDENTIFIER L_PAR R_PAR L_CURLY R_CURLY
+
+    IDENTIFIER  shift, and go to state 5
+
+
+State 4
+
+    2 functions: functions function_decleration •
+
+    $default  reduce using rule 2 (functions)
+
+
+State 5
+
+    3 function_decleration: FUNC IDENTIFIER • L_PAR R_PAR L_CURLY R_CURLY
+
+    L_PAR  shift, and go to state 6
+
+
+State 6
+
+    3 function_decleration: FUNC IDENTIFIER L_PAR • R_PAR L_CURLY R_CURLY
+
+    R_PAR  shift, and go to state 7
+
+
+State 7
+
+    3 function_decleration: FUNC IDENTIFIER L_PAR R_PAR • L_CURLY R_CURLY
+
+    L_CURLY  shift, and go to state 8
+
+
+State 8
+
+    3 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY • R_CURLY
+
+    R_CURLY  shift, and go to state 9
+
+
+State 9
+
+    3 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY R_CURLY •
+
+    $default  reduce using rule 3 (function_decleration)
