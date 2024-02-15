@@ -54,26 +54,83 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    NUMBER = 258,                  /* NUMBER  */
-    PLUS = 259,                    /* PLUS  */
-    MINUS = 260,                   /* MINUS  */
-    TIMES = 261,                   /* TIMES  */
-    DIVIDE = 262,                  /* DIVIDE  */
-    EOL = 263                      /* EOL  */
+    SUBTRACTION = 258,             /* SUBTRACTION  */
+    ADD = 259,                     /* ADD  */
+    MUTIPLY = 260,                 /* MUTIPLY  */
+    DIVIDE = 261,                  /* DIVIDE  */
+    MOD = 262,                     /* MOD  */
+    FUNC = 263,                    /* FUNC  */
+    NUMBER = 264,                  /* NUMBER  */
+    L_PAR = 265,                   /* L_PAR  */
+    R_PAR = 266,                   /* R_PAR  */
+    RETURN = 267,                  /* RETURN  */
+    IDENTIFIER = 268,              /* IDENTIFIER  */
+    RRETURN = 269,                 /* RRETURN  */
+    INT = 270,                     /* INT  */
+    PRT = 271,                     /* PRT  */
+    WHILE = 272,                   /* WHILE  */
+    IF = 273,                      /* IF  */
+    ELSE = 274,                    /* ELSE  */
+    BREAK = 275,                   /* BREAK  */
+    CONTINUE = 276,                /* CONTINUE  */
+    READ = 277,                    /* READ  */
+    SEMICOLON = 278,               /* SEMICOLON  */
+    COMMA = 279,                   /* COMMA  */
+    L_CURLY = 280,                 /* L_CURLY  */
+    R_CURLY = 281,                 /* R_CURLY  */
+    L_BRAKET = 282,                /* L_BRAKET  */
+    R_BRAKET = 283,                /* R_BRAKET  */
+    ASSIGNMENT = 284,              /* ASSIGNMENT  */
+    LESS = 285,                    /* LESS  */
+    LESS_EQ = 286,                 /* LESS_EQ  */
+    GREATER = 287,                 /* GREATER  */
+    GREATER_EQ = 288,              /* GREATER_EQ  */
+    EQUALITY = 289,                /* EQUALITY  */
+    NOT_EQ = 290,                  /* NOT_EQ  */
+    UNKNOWN_TOKEN = 291            /* UNKNOWN_TOKEN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+  double NUMBER;                           /* NUMBER  */
+  double paramerter_declerations;          /* paramerter_declerations  */
+  double statements;                       /* statements  */
+  double statement;                        /* statement  */
+  double var_decleration;                  /* var_decleration  */
+  double paramerter_decleration;           /* paramerter_decleration  */
+  double function_decleration;             /* function_decleration  */
+  double var_assigment;                    /* var_assigment  */
+  double expression;                       /* expression  */
+
+#line 110 "parser.tab.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
+/* Location type.  */
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE YYLTYPE;
+struct YYLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+};
+# define YYLTYPE_IS_DECLARED 1
+# define YYLTYPE_IS_TRIVIAL 1
+#endif
+
 
 extern YYSTYPE yylval;
-
+extern YYLTYPE yylloc;
 
 int yyparse (void);
 

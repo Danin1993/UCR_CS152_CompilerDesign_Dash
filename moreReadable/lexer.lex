@@ -1,17 +1,123 @@
+/** ---------------------
+/* The Language Table
+/*  --------------------- */
+
+/* Other */
+COMMENT     [#].*\n
+WHITESPACE  [ \t\n]+
+
+/* Alphabetical */
+ALPHA       [a-zA-Z]
+
+/* Numerical */
+DIGIT           [0-9]
+NUMBER          [+-]?{DIGIT}+(\.{DIGIT}+)?
+SCINTIFICNUM    {NUMBER}[eE][+-]?{NUMBER}
+
+/* Operations */
+ADD             \+
+SUBTRACTION     \-
+MUTIPLY         \*
+DIVIDE          \/
+MOD             \%
+ASSIGNMENT      \=
+LESS            <
+LESS_EQ         <=
+GREATER         >
+GREATER_EQ      >=
+EQUALITY        ===
+NOT_EQ          !=
+
+/* expressions */
+SEMICOLON       ;
+COMMA           ,
+L_PAR           \(
+R_PAR           \)
+L_CURLY         \{
+R_CURLY         \}
+L_BRAKET        \[
+R_BRAKET        \]
+
+/* Language Tokens */
+IDENTIFIER  {ALPHA}+(({ALPHA}|{DIGIT})+)?
+FUNC        func
+RETURN      return
+INT         int
+PRT         prt
+READ        read
+WHILE       while
+IF          if
+ELSE        else
+BREAK       break
+CONTINUE    continue
+
+/* Helper */
+COMPARISON {LESS}|{LESS_EQ}|{GREATER}|{GREATER_EQ}|{EQUALITY}|{NOT_EQ}
+
+/* Error */
+IDENTIFIER_INVALID  {DIGIT}+({ALPHA}|{DIGIT})+
+ASSIGNMENT_ERROR    [=][^ \t\n]	 
+ERRORCOM            {COMPARISON}[^ \t\n]|"=="
+
 %{
+#include <stdio.h>
+
+#define YY_DECL int yylex()
 #include "parser.tab.h"
 %}
 
-%%
-
-[0-9]+      { yylval = atoi(yytext); return NUMBER; }
-"-"         { return MINUS; }
-"+"         { return PLUS; }
-"*"         { return TIMES; }
-"/"         { return DIVIDE; }
-\n          { return EOL; }
-[ \t]       { /* ignore whitespace */ }
-[#].*\n       { /* ignore comments */ }
-.           { printf("Unknown character: %s\n", yytext); }
+%option yylineno
 
 %%
+
+{COMMENT}               {/* ignore */}
+{WHITESPACE}            { /*ignore*/ }
+
+{NUMBER}        {yylval.NUMBER = atof(yytext); return NUMBER;}
+{SCINTIFICNUM}	{ printf("SCINTIFIC NUMBER: %s\n", yytext);}
+
+{ADD}           {return ADD;}
+{SUBTRACTION}   {return SUBTRACTION;}
+{MUTIPLY}       {return MUTIPLY;}
+{DIVIDE}        {return DIVIDE;}
+{MOD}           {return MOD;}
+{ASSIGNMENT}    {return ASSIGNMENT;}
+{LESS}          {return LESS;}
+{LESS_EQ}       {return LESS_EQ;}
+{GREATER}       {return GREATER;}
+{GREATER_EQ}    {return GREATER_EQ;}
+{EQUALITY}      {return EQUALITY;}
+{NOT_EQ}        {return NOT_EQ;}
+
+{FUNC}          {return FUNC;}
+{RETURN}        {return RETURN;}
+{INT}           {return INT;}
+{PRT}           {return PRT;}
+{WHILE}         {return WHILE;}
+{IF}            {return IF;}
+{ELSE}          {return ELSE;}
+{BREAK}         {return BREAK;}
+{CONTINUE}      {return CONTINUE;}
+{READ}          {return READ;}
+
+{SEMICOLON}     {return SEMICOLON;}
+{COMMA}         {return COMMA;}
+{L_PAR}         {return L_PAR;}
+{R_PAR}         {return R_PAR;}
+{L_CURLY}       {return L_CURLY;}
+{R_CURLY}       {return R_CURLY;}
+{L_BRAKET}      {return L_BRAKET;}
+{R_BRAKET}      {return R_BRAKET;}
+
+{IDENTIFIER}    {return IDENTIFIER;}
+
+{ASSIGNMENT_ERROR}      {printf("Error: unrecognized symbol \"%s\"\n", yytext); return -1; }
+{IDENTIFIER_INVALID}    {printf("Error: unrecognized symbol \"%s\"\n", yytext); return -1; }
+{ERRORCOM}              {printf("Error: unrecognized symbol \"%s\"\n", yytext); return -1; }
+.                       {printf("Error: unrecognized symbol \"%s\"\n", yytext); return -1; }
+ 
+%%
+int yywrap(void)
+{
+    return 1;
+}
