@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
+#include <string.h>
 
 extern int yylex();
 extern FILE* yyin;
@@ -40,25 +41,37 @@ Symbol* findSymbol(char* name) {
 %}
 
 %locations 
-%define api.value.type union
 %define parse.error verbose
 %define parse.lac full
 
 %left SUBTRACTION ADD
 %left MULTIPLY DIVIDE MOD
 %left L_PAR R_PAR 
-%left IDENTIFIER NUMBER
 
-%token <double> NUMBER
+
+%union {
+    char* sval;
+    double dval;
+}
+
+%token <sval> IDENTIFIER
+%token <dval> NUMBER 
+
+%type <sval> var_decleration var_assigment
+%type <dval> expression
+
+%left '-' '+'
+%left '*' '/'
+%nonassoc LESS GREATER LESS_EQ GREATER_EQ EQUALITY NOT_EQ
+%right ASSIGNMENT
+
 
 %token RETURN RRETURN INT PRT FUNC WHILE IF ELSE BREAK CONTINUE READ SEMICOLON COMMA 
 %token L_CURLY R_CURLY L_BRAKET R_BRAKET ASSIGNMENT LESS LESS_EQ GREATER GREATER_EQ EQUALITY NOT_EQ
 
 %token UNKNOWN_TOKEN
 
-%nterm <double> function_decleration statements statement paramerter_declerations pars if_statement else_statement 
-%nterm <double> var_decleration var_assigment expression multiplicative_expr term varibles comparitors bool_expression
-%nterm <double> return_statement read_statement while_statement
+
 %start function_declerations
 
 %%
@@ -133,20 +146,19 @@ var_decleration: INT IDENTIFIER {
     addSymbol($2);
     printf(". %s\n", $2);
 }
+
 var_assigment: IDENTIFIER ASSIGNMENT expression {
     if (!findSymbol($1)) {
         fprintf(stderr, "Error: undeclared variable %s\n", $1);
     } else {
-        printf("= %s, %s\n", $1,  "$3");
+        printf("= %s, %lf\n", $1, $3); 
     }
 }
+
 expression: expression ADD expression {
-    char tempVarName[20];
-    static int tempVarCounter = 0;
-    sprintf(tempVarName, "temp%d", tempVarCounter++);
-    printf("+ %s, %s, %s\n", tempVarName, $1, $3);
-    $$ = strdup(tempVarName);
+    $$ = $1 + $3;
 }
+
 
 %%
 

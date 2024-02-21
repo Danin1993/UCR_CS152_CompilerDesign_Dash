@@ -88,9 +88,10 @@ ERRORCOM {COMPARISON}[^ \t\n]|"=="
 
 
 
-{IDENTIFIER}            { return IDENTIFIER;}
+{IDENTIFIER}            { yylval.sval = strdup(yytext); return IDENTIFIER; }
 {ASSIGNMENT_ERROR}      {printf("Error: unrecognized symbol \"%s\"\n", yytext); return -1; }
-{NUMBER}                {yylval.NUMBER = atof(yytext); return NUMBER;}
+{NUMBER}                { yylval.dval = atof(yytext); return NUMBER; }
+
 {SCINTIFICNUM}		{ printf("SCINTIFIC NUMBER: %s\n", yytext);}
 {COMMENT}               {/* ignore */}
 {WHITESPACE}            { /*ignore*/ }
