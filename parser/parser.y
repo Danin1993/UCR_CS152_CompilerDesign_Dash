@@ -11,6 +11,8 @@ extern FILE* yyin;
 extern int yylineno;
 int error_count = 0;
 
+FILE *milFile;
+
 void yyerror(const char* s);
 
 int parCnt = 0;
@@ -165,6 +167,13 @@ expression: expression ADD expression {
 int main(int argc, char** argv) {
     yyin = stdin;
 
+     milFile = fopen("output.mil", "w");
+    if (!milFile) {
+        perror("Failed to open output file");
+        return EXIT_FAILURE;
+    }
+
+
     if (argc >= 2) {
         FILE* file_ptr = fopen(argv[1], "r");
         if (file_ptr == NULL) {
@@ -184,8 +193,8 @@ int main(int argc, char** argv) {
         fprintf(stderr, "Parsing finished with %d error(s).\n", error_count);
         return 1; 
     }
-
-    return 0;
+    fclose(milFile);
+    return EXIT_SUCCESS;
 }
 
 void yyerror(const char* s) {
