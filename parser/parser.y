@@ -13,6 +13,30 @@ int error_count = 0;
 void yyerror(const char* s);
 
 int parCnt = 0;
+
+typedef struct Symbol {
+    char* name;
+    struct Symbol* next;
+} Symbol;
+
+Symbol* symbolTable = NULL;
+
+Symbol* addSymbol(char* name) {
+    Symbol* symbol = (Symbol*)malloc(sizeof(Symbol));
+    symbol->name = strdup(name);
+    symbol->next = symbolTable;
+    symbolTable = symbol;
+    return symbol;
+}
+
+Symbol* findSymbol(char* name) {
+    for (Symbol* sym = symbolTable; sym != NULL; sym = sym->next) {
+        if (strcmp(sym->name, name) == 0) {
+            return sym;
+        }
+    }
+    return NULL;
+}
 %}
 
 %locations 
