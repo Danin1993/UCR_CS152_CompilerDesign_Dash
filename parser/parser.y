@@ -129,6 +129,25 @@ varibles               : IDENTIFIER {printf("varibles -> IDENTIFIER\n");}
 print		       : PRT L_PAR expression R_PAR {printf("print -> PRT L_PAR expression R_PAR\n");};
 read_statement : READ L_PAR expression R_PAR {printf("read_statement -> READ L_PAR expression R_PAR\n");};
 while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {printf("while_statement -> WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY\n");};
+var_decleration: INT IDENTIFIER {
+    addSymbol($2);
+    printf(". %s\n", $2);
+}
+var_assigment: IDENTIFIER ASSIGNMENT expression {
+    if (!findSymbol($1)) {
+        fprintf(stderr, "Error: undeclared variable %s\n", $1);
+    } else {
+        printf("= %s, %s\n", $1,  "$3");
+    }
+}
+expression: expression ADD expression {
+    char tempVarName[20];
+    static int tempVarCounter = 0;
+    sprintf(tempVarName, "temp%d", tempVarCounter++);
+    printf("+ %s, %s, %s\n", tempVarName, $1, $3);
+    $$ = strdup(tempVarName);
+}
+
 %%
 
 int main(int argc, char** argv) {
