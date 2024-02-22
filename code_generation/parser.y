@@ -1,0 +1,239 @@
+%{
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+#include <string>
+
+struct CodeNode{
+std :: string code;
+std :: string name;
+};
+int varCount = 0;
+extern int yylex();
+extern FILE* yyin;
+extern int yylineno;
+int error_count = 0;
+void yyerror(const char* s);
+int parCnt = 0;
+std::string createTempVarible(){
+ static int cnt = 0;
+ return std::string("_temp") + std::to_string(cnt++);
+}
+%}
+
+%locations 
+%define parse.error verbose
+%define parse.lac full
+%union{
+ struct CodeNode *codenode;
+ char *op_value;
+}
+
+%left SUBTRACTION ADD
+%left MULTIPLY DIVIDE MOD
+%left L_PAR R_PAR 
+%left IDENTIFIER NUMBER
+
+%token <op_value> NUMBER
+%token <op_value> IDENTIFIER
+
+%token RETURN RRETURN INT PRT FUNC WHILE IF ELSE BREAK CONTINUE READ SEMICOLON COMMA 
+%token L_CURLY R_CURLY L_BRAKET R_BRAKET ASSIGNMENT LESS LESS_EQ GREATER GREATER_EQ EQUALITY NOT_EQ
+
+%token UNKNOWN_TOKEN
+
+%nterm <double> paramerter_decleration pars if_statement else_statement 
+%nterm <double> comparitors bool_expression
+%nterm <double> return_statement read_statement while_statement 
+
+%start program
+%type <codenode> function_declerations function_decleration statements statement var_decleration
+%type <codenode> var_assigment expression multiplicative_expr term varibles
+%%
+program                : function_declerations { struct CodeNode *node = $1;
+                         printf("%s\n", node->code.c_str());}
+function_declerations  : function_declerations function_decleration {
+ struct CodeNode *function_declerations = $1;
+ struct CodeNode *function_decleration = $2;
+ struct CodeNode *node = new CodeNode;
+ node -> code = function_declerations-> code + function_decleration -> code;
+ $$ = node; }
+                       | %empty{
+ struct CodeNode *node = new CodeNode;
+ $$ = node;}
+                       ;
+statements	       : statements statement { 
+ struct CodeNode *statements = $1;
+ struct CodeNode *statement = $2;
+ struct CodeNode *node = new CodeNode;
+ node -> code = statements-> code + statement -> code;
+ $$ = node;}
+		       | %empty		      {
+  struct CodeNode *node = new CodeNode;
+ $$ = node;
+ }
+		       ;
+statement	       : var_decleration SEMICOLON {$$ = $1;}
+	               | var_assigment SEMICOLON { $$ = $1; }
+		       | print SEMICOLON {
+struct CodeNode *node = new CodeNode;
+ $$ = node;}
+		       | if_statement {
+struct CodeNode *node = new CodeNode;
+ $$ = node;}
+		       | return_statement SEMICOLON {
+struct CodeNode *node = new CodeNode;
+ $$ = node;}
+                       | read_statement SEMICOLON {
+struct CodeNode *node = new CodeNode;
+ $$ = node;}
+		       | while_statement {
+struct CodeNode *node = new CodeNode;
+ $$ = node;}
+                       | BREAK SEMICOLON {
+struct CodeNode *node = new CodeNode;
+ $$ = node;}
+                       | CONTINUE SEMICOLON {
+struct CodeNode *node = new CodeNode;
+ $$ = node;}
+		       ;  
+if_statement           : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {};
+else_statement         : ELSE L_CURLY statements R_CURLY {}
+		       | %empty {}
+                       ;
+comparitors            : LESS {}
+		       | LESS_EQ {}
+		       | GREATER {}
+                       | GREATER_EQ {}
+                       | EQUALITY {} 
+                       | NOT_EQ {}
+                       ;
+return_statement       : RETURN expression {};
+var_decleration        : INT IDENTIFIER {
+ struct CodeNode *node= new CodeNode;
+ node->code = std:: string(". ") + std::string($2) + std::string("\n");
+ $$ = node;
+ 
+ } 
+		       | INT L_BRAKET expression R_BRAKET IDENTIFIER {} 
+	               | INT IDENTIFIER ASSIGNMENT expression  {}
+		       ;
+paramerter_decleration : INT IDENTIFIER {}
+             	       | INT IDENTIFIER COMMA paramerter_decleration {}
+		       | INT L_BRAKET R_BRAKET IDENTIFIER {}
+            	       | INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramerter_decleration {}
+		       | %empty {}
+		       ; 
+function_decleration   : FUNC IDENTIFIER L_PAR paramerter_decleration R_PAR L_CURLY statements R_CURLY {
+struct CodeNode *node = new CodeNode;
+struct CodeNode *statements = $7; 
+node->code = std::string("func ") + std::string($2) + std::string("\n");
+node->code += statements->code;
+node->code += std::string("endfunc\n\n");
+$$ = node;};
+var_assigment          : varibles ASSIGNMENT expression {
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *varibles = $1;
+ struct CodeNode *expression = $3;
+ node -> code = expression -> code;
+ node-> code += std:: string("= ")+ varibles->name + std::string(", ")+ expression->name+ std::string("\n"); 
+ $$ = node;
+ 
+ };
+expression             : multiplicative_expr {$$ = $1;}
+		       | multiplicative_expr ADD expression {
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *multiplicative_expr = $1; 
+ struct CodeNode *expression = $3;
+ node -> code = multiplicative_expr -> code + expression->code;
+ std:: string tempVarible = createTempVarible();
+ node -> code +=  std:: string(". ") + tempVarible + std::string("\n");
+ node -> code += std::string("+ ") + tempVarible + std::string(", ") + multiplicative_expr->name  + std::string(", ") + expression->name + std::string("\n");
+ node -> name = tempVarible; 
+ $$ = node;}
+		       | multiplicative_expr SUBTRACTION expression {}
+                       ;
+bool_expression        : expression comparitors expression {};
+multiplicative_expr    : term {$$ = $1;}
+                       | term MOD multiplicative_expr {
+ struct CodeNode *node = new CodeNode;
+ $$ = node;}
+		       | term MULTIPLY multiplicative_expr {
+ struct CodeNode *node = new CodeNode;
+ $$ = node;}
+		       | term DIVIDE multiplicative_expr {
+ struct CodeNode *node = new CodeNode;
+ $$ = node;}
+		       ;
+term                   : L_PAR expression R_PAR {
+ struct CodeNode *node = new CodeNode;
+ $$ = node;}
+		       | NUMBER {
+ struct CodeNode *node = new CodeNode;
+ node -> name = std::string($1); 
+ $$ = node;}
+                       | IDENTIFIER L_PAR pars R_PAR {
+ struct CodeNode *node = new CodeNode;
+ $$ = node;}
+		       | varibles {$$ = $1;}
+		       ;
+pars                   : pars COMMA expression {}
+		       | expression {}
+                       | %empty {}
+                       ;
+varibles               : IDENTIFIER {
+ struct CodeNode *node = new CodeNode;
+ node -> name = std::string($1);
+ $$ = node;}
+		       | IDENTIFIER L_BRAKET expression R_BRAKET {
+ struct CodeNode *node = new CodeNode;
+ $$ = node;}
+                       ;
+print		       : PRT L_PAR expression R_PAR {};
+read_statement 	       : READ L_PAR expression R_PAR {};
+while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {};
+%%
+
+int main(int argc, char** argv) {
+    yyin = stdin;
+
+    if (argc >= 2) {
+        FILE* file_ptr = fopen(argv[1], "r");
+        if (file_ptr == NULL) {
+            printf("Could not open file: %s\n", argv[1]);
+            exit(1);
+        }
+        yyin = file_ptr;
+    }
+
+    yyparse();
+
+    if (argc >= 2) {
+        fclose(yyin);
+    }
+
+    if (error_count > 0) {
+        fprintf(stderr, "Parsing finished with %d error(s).\n", error_count);
+        return 1; 
+    }
+
+    return 0;
+}
+
+void yyerror(const char *s) {
+  printf("Error: %s\n", s);
+}
+
+
+
+
+
+
+
+
+
+
+
+
