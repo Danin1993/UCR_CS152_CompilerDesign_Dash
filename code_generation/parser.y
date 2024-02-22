@@ -44,13 +44,13 @@ std::string createTempVarible(){
 
 %token UNKNOWN_TOKEN
 
-%nterm <double> paramerter_decleration pars if_statement else_statement 
+%nterm <double> paramerter_decleration if_statement else_statement 
 %nterm <double> comparitors bool_expression
 %nterm <double> return_statement read_statement while_statement 
 
 %start program
 %type <codenode> function_declerations function_decleration statements statement var_decleration
-%type <codenode> var_assigment expression multiplicative_expr term varibles
+%type <codenode> var_assigment expression multiplicative_expr term varibles print_statement pars
 %%
 program                : function_declerations { struct CodeNode *node = $1;
                          printf("%s\n", node->code.c_str());}
@@ -77,9 +77,7 @@ statements	       : statements statement {
 		       ;
 statement	       : var_decleration SEMICOLON {$$ = $1;}
 	               | var_assigment SEMICOLON { $$ = $1; }
-		       | print SEMICOLON {
-struct CodeNode *node = new CodeNode;
- $$ = node;}
+		       | print_statement SEMICOLON {$$ = $1;}
 		       | if_statement {
 struct CodeNode *node = new CodeNode;
  $$ = node;}
@@ -153,23 +151,51 @@ expression             : multiplicative_expr {$$ = $1;}
  node -> code += std::string("+ ") + tempVarible + std::string(", ") + multiplicative_expr->name  + std::string(", ") + expression->name + std::string("\n");
  node -> name = tempVarible; 
  $$ = node;}
-		       | multiplicative_expr SUBTRACTION expression {}
+		       | multiplicative_expr SUBTRACTION expression { 
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *multiplicative_expr = $1;
+ struct CodeNode *expression = $3;
+ node -> code = multiplicative_expr -> code + expression->code;
+ std:: string tempVarible = createTempVarible();
+ node -> code +=  std:: string(". ") + tempVarible + std::string("\n");
+ node -> code += std::string("- ") + tempVarible + std::string(", ") + multiplicative_expr->name  + std::string(", ") + expression->name + std::string("\n");
+ node -> name = tempVarible;
+ $$ = node;}
                        ;
 bool_expression        : expression comparitors expression {};
 multiplicative_expr    : term {$$ = $1;}
                        | term MOD multiplicative_expr {
  struct CodeNode *node = new CodeNode;
+ struct CodeNode *term = $1;
+ struct CodeNode *multiplicative_expr = $3;
+ node -> code = term -> code + multiplicative_expr->code;
+ std:: string tempVarible = createTempVarible();
+ node -> code +=  std:: string(". ") + tempVarible + std::string("\n");
+ node -> code += std::string("% ") + tempVarible + std::string(", ") + term->name  + std::string(", ") + multiplicative_expr->name + std::string("\n");
+ node -> name = tempVarible;
  $$ = node;}
 		       | term MULTIPLY multiplicative_expr {
  struct CodeNode *node = new CodeNode;
+ struct CodeNode *term = $1;
+ struct CodeNode *multiplicative_expr = $3;
+ node -> code = term -> code + multiplicative_expr->code;
+ std:: string tempVarible = createTempVarible();
+ node -> code +=  std:: string(". ") + tempVarible + std::string("\n");
+ node -> code += std::string("* ") + tempVarible + std::string(", ") + term->name  + std::string(", ") + multiplicative_expr->name + std::string("\n");
+ node -> name = tempVarible;
  $$ = node;}
 		       | term DIVIDE multiplicative_expr {
  struct CodeNode *node = new CodeNode;
+ struct CodeNode *term = $1;
+ struct CodeNode *multiplicative_expr = $3;
+ node -> code = term -> code + multiplicative_expr->code;
+ std:: string tempVarible = createTempVarible();
+ node -> code +=  std:: string(". ") + tempVarible + std::string("\n");
+ node -> code += std::string("/ ") + tempVarible + std::string(", ") + term->name  + std::string(", ") + multiplicative_expr->name + std::string("\n");
+ node -> name = tempVarible;
  $$ = node;}
 		       ;
-term                   : L_PAR expression R_PAR {
- struct CodeNode *node = new CodeNode;
- $$ = node;}
+term                   : L_PAR expression R_PAR {$$ = $2; }
 		       | NUMBER {
  struct CodeNode *node = new CodeNode;
  node -> name = std::string($1); 
@@ -180,7 +206,8 @@ term                   : L_PAR expression R_PAR {
 		       | varibles {$$ = $1;}
 		       ;
 pars                   : pars COMMA expression {}
-		       | expression {}
+		       | expression { struct CodeNode *node = new CodeNode;
+ $$ = node;}
                        | %empty {}
                        ;
 varibles               : IDENTIFIER {
@@ -191,7 +218,13 @@ varibles               : IDENTIFIER {
  struct CodeNode *node = new CodeNode;
  $$ = node;}
                        ;
-print		       : PRT L_PAR expression R_PAR {};
+ print_statement		       : PRT L_PAR expression R_PAR {
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *expression = $3;
+ node->code = expression->code;
+ node-> code += std::string(".> ") + expression->name + std::string("\n");
+ $$ = node;
+};
 read_statement 	       : READ L_PAR expression R_PAR {};
 while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {};
 %%
