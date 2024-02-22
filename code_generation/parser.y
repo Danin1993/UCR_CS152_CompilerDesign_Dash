@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include <string>
+#include <string.h>
 
 struct CodeNode{
 std :: string code;
@@ -115,7 +116,16 @@ var_decleration        : INT IDENTIFIER {
  $$ = node;
  
  } 
-		       | INT L_BRAKET expression R_BRAKET IDENTIFIER {} 
+		       | INT L_BRAKET NUMBER R_BRAKET IDENTIFIER {
+  if(atoi($3) <= 0){
+  fprintf(stderr, "Sematic error at line %d: array decleared of size less than or equal to 0\n", yylineno);
+  return -1;
+ }
+  struct CodeNode *node= new CodeNode;
+  node -> code =  std:: string(".[] ") + std::string($5) + std::string(", ")+std::string($3)+ std::string("\n");
+  $$ = node;
+  
+ } 
 	               | INT IDENTIFIER ASSIGNMENT expression  {}
 		       ;
 paramerter_decleration : INT IDENTIFIER {}
@@ -131,15 +141,22 @@ node->code = std::string("func ") + std::string($2) + std::string("\n");
 node->code += statements->code;
 node->code += std::string("endfunc\n\n");
 $$ = node;};
-var_assigment          : varibles ASSIGNMENT expression {
+var_assigment          : IDENTIFIER ASSIGNMENT expression {
  struct CodeNode *node = new CodeNode;
- struct CodeNode *varibles = $1;
  struct CodeNode *expression = $3;
  node -> code = expression -> code;
- node-> code += std:: string("= ")+ varibles->name + std::string(", ")+ expression->name+ std::string("\n"); 
+ node-> code += std:: string("= ")+ std::string($1) + std::string(", ")+ expression->name+ std::string("\n"); 
  $$ = node;
- 
- };
+ }
+                       | IDENTIFIER L_BRAKET NUMBER R_BRAKET ASSIGNMENT expression{
+
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *expression = $6;
+ node -> code = expression -> code; 
+ node-> code += std:: string("[]= ") + std::string($1) + std::string(", ") + std::string($3) + std::string(", ") + expression->name + std::string("\n");
+ $$= node;
+}
+                       ;
 expression             : multiplicative_expr {$$ = $1;}
 		       | multiplicative_expr ADD expression {
  struct CodeNode *node = new CodeNode;
@@ -214,8 +231,12 @@ varibles               : IDENTIFIER {
  struct CodeNode *node = new CodeNode;
  node -> name = std::string($1);
  $$ = node;}
-		       | IDENTIFIER L_BRAKET expression R_BRAKET {
+		       | IDENTIFIER L_BRAKET NUMBER R_BRAKET {
  struct CodeNode *node = new CodeNode;
+ std:: string tempVarible = createTempVarible();
+ node -> code =  std:: string(". ") + tempVarible + std::string("\n");
+ node -> code += std:: string("=[] ")+tempVarible + std:: string(", ") +std::string($1) + std:: string(", ") + std::string($3) +  std::string("\n");
+ node->name = tempVarible;
  $$ = node;}
                        ;
  print_statement		       : PRT L_PAR expression R_PAR {
@@ -256,7 +277,16 @@ int main(int argc, char** argv) {
 }
 
 void yyerror(const char *s) {
-  printf("Error: %s\n", s);
+  if (strcmp(s, "syntax error") == 0) {
+        fprintf(stderr, "Syntax error at line %d: Unexpected token\n", yylineno);
+    } else if (strcmp(s, "type error") == 0) {
+        fprintf(stderr, "Type error at line %d: Incompatible types\n", yylineno);
+    } else if (strcmp(s, "undeclared variable") == 0) {
+        fprintf(stderr, "Error at line %d: Undeclared variable\n", yylineno);
+    } else {
+        fprintf(stderr, "Error at line %d: %s\n", yylineno, s);
+    }
+    error_count++;
 }
 
 
