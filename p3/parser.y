@@ -7,6 +7,7 @@
 */
 
 %{
+    
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -108,9 +109,7 @@ statement   : NUMBER {
    $$ = node;
 }
 */
-statement   : return_statement SEMICOLON    {$$ = $1;}
 
-/*
 
 statement   : var_decleration SEMICOLON     {$$ = $1;}
             | var_assigment   SEMICOLON     {$$ = $1;}
@@ -136,18 +135,19 @@ if_statement    : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else
 else_statement  : ELSE L_CURLY statements R_CURLY {}
 		        | %empty {};
 
-
 comparitors     : LESS {}
                 | LESS_EQ {}
                 | GREATER {}
                 | GREATER_EQ {}
                 | EQUALITY {} 
                 | NOT_EQ {};
-*/
-return_statement    : RETURN NUMBER 
+
+return_statement    : RETURN expression 
 {
     struct CodeNode *node= new CodeNode;
-    node->code+= std::string("ret ") + std::string($2) +std::string("\n");
+    struct CodeNode *expression= $2;
+    node->code=expression->code;
+    node->code+= std::string("ret ") + expression->name +std::string("\n");
     $$=node;
 };
 
