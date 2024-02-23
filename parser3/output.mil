@@ -1,0 +1,14 @@
+. a
+. b
+. c
+= a, 10
+= b, 25
+. _temp0
++ _temp0, a, b
+. _temp0
++ _temp0, a, b
+= c, _temp0
+.> c
+func main
+endfunc
+
