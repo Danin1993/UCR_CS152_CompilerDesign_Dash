@@ -1,7 +1,4 @@
-func add(){
-    
+func add() {
+    return 10;
 }
 
-func main() {
-    10
-}

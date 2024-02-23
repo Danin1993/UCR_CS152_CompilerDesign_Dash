@@ -15,7 +15,6 @@ Nonterminals useless in grammar
     print_statement
     pars
     paramerter_decleration
-    return_statement
 
 
 Terminals unused in grammar
@@ -25,7 +24,6 @@ Terminals unused in grammar
     MULTIPLY
     DIVIDE
     MOD
-    RETURN
     RRETURN
     INT
     PRT
@@ -35,7 +33,6 @@ Terminals unused in grammar
     BREAK
     CONTINUE
     READ
-    SEMICOLON
     COMMA
     L_BRAKET
     R_BRAKET
@@ -61,9 +58,11 @@ Grammar
     4 statements: statements statement
     5           | ε
 
-    6 statement: NUMBER
+    6 statement: return_statement SEMICOLON
 
-    7 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY statements R_CURLY
+    7 return_statement: RETURN NUMBER
+
+    8 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY statements R_CURLY
 
 
 Terminals, with rules where they appear
@@ -75,25 +74,25 @@ Terminals, with rules where they appear
     MULTIPLY (260)
     DIVIDE (261)
     MOD (262)
-    L_PAR (263) 7
-    R_PAR (264) 7
-    NUMBER <op_value> (265) 6
-    IDENTIFIER <op_value> (266) 7
-    RETURN (267)
+    L_PAR (263) 8
+    R_PAR (264) 8
+    NUMBER <op_value> (265) 7
+    IDENTIFIER <op_value> (266) 8
+    RETURN (267) 7
     RRETURN (268)
     INT (269)
     PRT (270)
-    FUNC (271) 7
+    FUNC (271) 8
     WHILE (272)
     IF (273)
     ELSE (274)
     BREAK (275)
     CONTINUE (276)
     READ (277)
-    SEMICOLON (278)
+    SEMICOLON (278) 6
     COMMA (279)
-    L_CURLY (280) 7
-    R_CURLY (281) 7
+    L_CURLY (280) 8
+    R_CURLY (281) 8
     L_BRAKET (282)
     R_BRAKET (283)
     ASSIGNMENT (284)
@@ -118,12 +117,15 @@ Nonterminals, with rules where they appear
         on right: 1 2
     statements <codenode> (40)
         on left: 4 5
-        on right: 4 7
+        on right: 4 8
     statement <codenode> (41)
         on left: 6
         on right: 4
-    function_decleration <codenode> (42)
+    return_statement <codenode> (42)
         on left: 7
+        on right: 6
+    function_decleration <codenode> (43)
+        on left: 8
         on right: 2
 
 
@@ -165,7 +167,7 @@ State 3
 
 State 4
 
-    7 function_decleration: FUNC • IDENTIFIER L_PAR R_PAR L_CURLY statements R_CURLY
+    8 function_decleration: FUNC • IDENTIFIER L_PAR R_PAR L_CURLY statements R_CURLY
 
     IDENTIFIER  shift, and go to state 6
 
@@ -179,28 +181,28 @@ State 5
 
 State 6
 
-    7 function_decleration: FUNC IDENTIFIER • L_PAR R_PAR L_CURLY statements R_CURLY
+    8 function_decleration: FUNC IDENTIFIER • L_PAR R_PAR L_CURLY statements R_CURLY
 
     L_PAR  shift, and go to state 7
 
 
 State 7
 
-    7 function_decleration: FUNC IDENTIFIER L_PAR • R_PAR L_CURLY statements R_CURLY
+    8 function_decleration: FUNC IDENTIFIER L_PAR • R_PAR L_CURLY statements R_CURLY
 
     R_PAR  shift, and go to state 8
 
 
 State 8
 
-    7 function_decleration: FUNC IDENTIFIER L_PAR R_PAR • L_CURLY statements R_CURLY
+    8 function_decleration: FUNC IDENTIFIER L_PAR R_PAR • L_CURLY statements R_CURLY
 
     L_CURLY  shift, and go to state 9
 
 
 State 9
 
-    7 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY • statements R_CURLY
+    8 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY • statements R_CURLY
 
     $default  reduce using rule 5 (statements)
 
@@ -210,26 +212,27 @@ State 9
 State 10
 
     4 statements: statements • statement
-    7 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY statements • R_CURLY
+    8 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY statements • R_CURLY
 
-    NUMBER   shift, and go to state 11
+    RETURN   shift, and go to state 11
     R_CURLY  shift, and go to state 12
 
-    statement  go to state 13
+    statement         go to state 13
+    return_statement  go to state 14
 
 
 State 11
 
-    6 statement: NUMBER •
+    7 return_statement: RETURN • NUMBER
 
-    $default  reduce using rule 6 (statement)
+    NUMBER  shift, and go to state 15
 
 
 State 12
 
-    7 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY statements R_CURLY •
+    8 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY statements R_CURLY •
 
-    $default  reduce using rule 7 (function_decleration)
+    $default  reduce using rule 8 (function_decleration)
 
 
 State 13
@@ -237,3 +240,24 @@ State 13
     4 statements: statements statement •
 
     $default  reduce using rule 4 (statements)
+
+
+State 14
+
+    6 statement: return_statement • SEMICOLON
+
+    SEMICOLON  shift, and go to state 16
+
+
+State 15
+
+    7 return_statement: RETURN NUMBER •
+
+    $default  reduce using rule 7 (return_statement)
+
+
+State 16
+
+    6 statement: return_statement SEMICOLON •
+
+    $default  reduce using rule 6 (statement)

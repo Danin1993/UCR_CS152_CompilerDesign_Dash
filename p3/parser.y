@@ -67,6 +67,10 @@ std::string createTempVarible(){
 
 %%
 
+/********************
+/* Finalized
+********************/
+
 program : function_declerations { 
     struct CodeNode *node = $1;
     printf("%s\n", node->code.c_str());
@@ -92,17 +96,27 @@ statements  : statements statement
     }
 	| %empty {struct CodeNode *node = new CodeNode; $$ = node;}
 
+/********************
+/* Construction
+********************/
+
+
+/*
 statement   : NUMBER {
    struct CodeNode *node = new CodeNode;
    node->code = std::string("... ") + std::string($1) + std::string("\n");
    $$ = node;
 }
+*/
+statement   : return_statement SEMICOLON    {$$ = $1;}
+
 /*
-            : var_decleration SEMICOLON     {$$ = $1;}
+
+statement   : var_decleration SEMICOLON     {$$ = $1;}
             | var_assigment   SEMICOLON     {$$ = $1;}
             | print_statement SEMICOLON     {$$ = $1;}
             | return_statement SEMICOLON    {$$ = $1;}
-/*
+
             | if_statement 
                 {struct CodeNode *node = new CodeNode; $$ = node;}
 
@@ -118,10 +132,28 @@ statement   : NUMBER {
             | CONTINUE SEMICOLON 
                 {struct CodeNode *node = new CodeNode; $$ = node;}
 
-if_statement   : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {};
-else_statement : ELSE L_CURLY statements R_CURLY {}
-		       | %empty {};
+if_statement    : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {};
+else_statement  : ELSE L_CURLY statements R_CURLY {}
+		        | %empty {};
+
+
+comparitors     : LESS {}
+                | LESS_EQ {}
+                | GREATER {}
+                | GREATER_EQ {}
+                | EQUALITY {} 
+                | NOT_EQ {};
 */
+return_statement    : RETURN NUMBER 
+{
+    struct CodeNode *node= new CodeNode;
+    node->code+= std::string("ret ") + std::string($2) +std::string("\n");
+    $$=node;
+};
+
+/********************
+/* TEST
+********************/
 
  function_decleration : FUNC IDENTIFIER L_PAR R_PAR  L_CURLY statements R_CURLY {
     struct CodeNode *node = new CodeNode;
@@ -134,22 +166,6 @@ else_statement : ELSE L_CURLY statements R_CURLY {}
 
 /*
 
-
-comparitors            : LESS {}
-		       | LESS_EQ {}
-		       | GREATER {}
-                       | GREATER_EQ {}
-                       | EQUALITY {} 
-                       | NOT_EQ {}
-                       ;
-return_statement       : RETURN expression {
- struct CodeNode *node= new CodeNode;
- struct CodeNode *expression= $2;
- node->code=expression->code;
- node->code+= std::string("ret ")+expression->name +std::string("\n");
- $$=node;
-
-};
 var_decleration        : INT IDENTIFIER {
  struct CodeNode *node= new CodeNode;
  node->code = std:: string(". ") + std::string($2) + std::string("\n");
