@@ -1,4 +1,5 @@
 %{
+
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +12,7 @@ struct CodeNode{
 std :: string code;
 std :: string name;
 };
+
 int parCnt = 0;
 int varCount = 0;
 extern int yylex();
@@ -22,11 +24,13 @@ std::string createTempVarible(){
  static int cnt = 0;
  return std::string("_temp") + std::to_string(cnt++);
 }
+
 %}
 
 %locations 
 %define parse.error verbose
 %define parse.lac full
+
 %union{
  struct CodeNode *codenode;
  char *op_value;
@@ -39,10 +43,8 @@ std::string createTempVarible(){
 
 %token <op_value> NUMBER
 %token <op_value> IDENTIFIER
-
 %token RETURN RRETURN INT PRT FUNC WHILE IF ELSE BREAK CONTINUE READ SEMICOLON COMMA 
 %token L_CURLY R_CURLY L_BRAKET R_BRAKET ASSIGNMENT LESS LESS_EQ GREATER GREATER_EQ EQUALITY NOT_EQ
-
 %token UNKNOWN_TOKEN
 
 %nterm <double> if_statement else_statement 
@@ -54,6 +56,7 @@ std::string createTempVarible(){
 %type <codenode> var_assigment expression multiplicative_expr term varibles print_statement pars
 %type <codenode> paramerter_decleration return_statement
 %%
+
 program                : function_declerations { struct CodeNode *node = $1;
                          printf("%s\n", node->code.c_str());}
 function_declerations  : function_declerations function_decleration {
