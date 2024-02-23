@@ -97,8 +97,8 @@ void generate_table_and_verify_code(std::string &code){
         Type t= getVarType(s);
         s=getVarName(t,s);
         add_variable_to_symbol_table(s,t);
-        startLine= i+1;
       }
+       startLine = i+1;
     }
   }
 }
