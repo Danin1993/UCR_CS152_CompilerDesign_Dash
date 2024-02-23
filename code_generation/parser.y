@@ -47,12 +47,12 @@ std::string createTempVarible(){
 
 %nterm <double> if_statement else_statement 
 %nterm <double> comparitors bool_expression
-%nterm <double> return_statement read_statement while_statement 
+%nterm <double> read_statement while_statement 
 
 %start program
 %type <codenode> function_declerations function_decleration statements statement var_decleration
 %type <codenode> var_assigment expression multiplicative_expr term varibles print_statement pars
-%type <codenode> paramerter_decleration 
+%type <codenode> paramerter_decleration return_statement
 %%
 program                : function_declerations { struct CodeNode *node = $1;
                          printf("%s\n", node->code.c_str());}
@@ -83,9 +83,7 @@ statement	       : var_decleration SEMICOLON {$$ = $1;}
 		       | if_statement {
 struct CodeNode *node = new CodeNode;
  $$ = node;}
-		       | return_statement SEMICOLON {
-struct CodeNode *node = new CodeNode;
- $$ = node;}
+		       | return_statement SEMICOLON {$$ = $1;}
                        | read_statement SEMICOLON {
 struct CodeNode *node = new CodeNode;
  $$ = node;}
@@ -110,7 +108,14 @@ comparitors            : LESS {}
                        | EQUALITY {} 
                        | NOT_EQ {}
                        ;
-return_statement       : RETURN expression {};
+return_statement       : RETURN expression {
+ struct CodeNode *node= new CodeNode;
+ struct CodeNode *expression= $2;
+ node->code=expression->code;
+ node->code+= std::string("ret ")+expression->name +std::string("\n");
+ $$=node;
+
+};
 var_decleration        : INT IDENTIFIER {
  struct CodeNode *node= new CodeNode;
  node->code = std:: string(". ") + std::string($2) + std::string("\n");
@@ -246,6 +251,7 @@ term                   : L_PAR expression R_PAR {$$ = $2; }
  struct CodeNode *pars = $3;
  std:: string tempVarible = createTempVarible();
  node->code=pars->code;
+ node -> code +=  std:: string(". ") + tempVarible + std::string("\n");
  node->code+=std::string("call ")+ std::string($1) + std::string(", ") + tempVarible +  std::string("\n");
  node->name = tempVarible; 
  $$ = node;}
