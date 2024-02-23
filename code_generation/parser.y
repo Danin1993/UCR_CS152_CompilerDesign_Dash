@@ -6,6 +6,7 @@
 #include <math.h>
 #include <string>
 #include <string.h>
+#include <vector>
 
 struct CodeNode{
 std :: string code;
@@ -22,6 +23,68 @@ std::string createTempVarible(){
  static int cnt = 0;
  return std::string("_temp") + std::to_string(cnt++);
 }
+enum Type { Integer, Array };
+
+struct Symbol {
+  std::string name;
+  Type type;
+};
+struct Function {
+  std::string name;
+  std::vector<Symbol> declarations;
+};
+std::vector <Function> symbol_table;
+Function *get_function() {
+  int last = symbol_table.size()-1;
+  if (last < 0) {
+    printf("***Error. Attempt to call get_function with an empty symbol table\n");
+    printf("Create a 'Function' object using 'add_function_to_symbol_table' before\n");
+    printf("calling 'find' or 'add_variable_to_symbol_table'");
+    exit(1);
+  }
+  return &symbol_table[last];
+}
+bool find(std::string &value) {
+  Function *f = get_function();
+  for(int i=0; i < f->declarations.size(); i++) {
+    Symbol *s = &f->declarations[i];
+    if (s->name == value) {
+      return true;
+    }
+  }
+  return false;
+}
+void add_function_to_symbol_table(std::string &value) {
+  Function f; 
+  f.name = value; 
+  symbol_table.push_back(f);
+}
+void add_variable_to_symbol_table(std::string &value, Type t) {
+  Symbol s;
+  s.name = value;
+  s.type = t;
+  Function *f = get_function();
+  f->declarations.push_back(s);
+}
+bool checkMainFunc(){
+ for(int i=0; i<symbol_table.size();i++){
+  if(symbol_table.at(i).name.compare("main") == 0) return true;
+ }
+ return false;
+}
+void print_symbol_table(void) {
+  printf("symbol table:\n");
+  printf("--------------------\n");
+  for(int i=0; i<symbol_table.size(); i++) {
+    printf("function: %s\n", symbol_table[i].name.c_str());
+    for(int j=0; j<symbol_table[i].declarations.size(); j++) {
+      printf("  locals: %s\n", symbol_table[i].declarations[j].name.c_str());
+    }
+  }
+  printf("--------------------\n");
+}
+
+
 %}
 
 %locations 
@@ -63,7 +126,7 @@ function_declerations  : function_declerations function_decleration {
  node -> code = function_declerations-> code + function_decleration -> code;
  $$ = node; }
                        | %empty{
- struct CodeNode *node = new CodeNode;
+  struct CodeNode *node = new CodeNode;
  $$ = node;}
                        ;
 statements	       : statements statement { 
@@ -125,7 +188,7 @@ var_decleration        : INT IDENTIFIER {
 		       | INT L_BRAKET NUMBER R_BRAKET IDENTIFIER {
   if(atoi($3) <= 0){
   fprintf(stderr, "Sematic error at line %d: array decleared of size less than or equal to 0\n", yylineno);
-  return -1;
+  exit(1);
  }
   struct CodeNode *node= new CodeNode;
   node -> code =  std:: string(".[] ") + std::string($5) + std::string(", ")+std::string($3)+ std::string("\n");
@@ -151,7 +214,9 @@ struct CodeNode *paramerter_decleration = $4;
 		       | %empty {struct CodeNode *node = new CodeNode; $$ = node;}
 		       ; 
 function_decleration   : FUNC IDENTIFIER L_PAR paramerter_decleration R_PAR L_CURLY statements R_CURLY {
-std::string subS="";
+
+std::string subS= std::string($2);
+add_function_to_symbol_table(subS);
 int cnt=0;
 int dotPlace=0;
 struct CodeNode *node = new CodeNode;
@@ -310,7 +375,13 @@ int main(int argc, char** argv) {
     }
 
     yyparse();
+if(!checkMainFunc()){
+  fprintf(stderr, "Sematic error at line %d: no main fuction declared\n", yylineno);
+  exit(1);
 
+ }
+
+   print_symbol_table();
     if (argc >= 2) {
         fclose(yyin);
     }
