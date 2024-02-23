@@ -11,13 +11,13 @@ struct CodeNode{
 std :: string code;
 std :: string name;
 };
+int parCnt = 0;
 int varCount = 0;
 extern int yylex();
 extern FILE* yyin;
 extern int yylineno;
 int error_count = 0;
 void yyerror(const char* s);
-int parCnt = 0;
 std::string createTempVarible(){
  static int cnt = 0;
  return std::string("_temp") + std::to_string(cnt++);
@@ -45,13 +45,14 @@ std::string createTempVarible(){
 
 %token UNKNOWN_TOKEN
 
-%nterm <double> paramerter_decleration if_statement else_statement 
+%nterm <double> if_statement else_statement 
 %nterm <double> comparitors bool_expression
 %nterm <double> return_statement read_statement while_statement 
 
 %start program
 %type <codenode> function_declerations function_decleration statements statement var_decleration
 %type <codenode> var_assigment expression multiplicative_expr term varibles print_statement pars
+%type <codenode> paramerter_decleration 
 %%
 program                : function_declerations { struct CodeNode *node = $1;
                          printf("%s\n", node->code.c_str());}
@@ -128,16 +129,39 @@ var_decleration        : INT IDENTIFIER {
  } 
 	               | INT IDENTIFIER ASSIGNMENT expression  {}
 		       ;
-paramerter_decleration : INT IDENTIFIER {}
-             	       | INT IDENTIFIER COMMA paramerter_decleration {}
+paramerter_decleration : INT IDENTIFIER {
+ struct CodeNode *node = new CodeNode;
+ node->code = std:: string(". ") + std::string($2) + std::string("\n");
+ $$ = node;
+}
+            	       | INT IDENTIFIER COMMA paramerter_decleration{ 
+struct CodeNode *node = new CodeNode;
+struct CodeNode *paramerter_decleration = $4;
+ node->code = std:: string(". ") + std::string($2) + std::string("\n");
+ node->code += paramerter_decleration->code;
+ $$ = node;
+}
 		       | INT L_BRAKET R_BRAKET IDENTIFIER {}
             	       | INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramerter_decleration {}
-		       | %empty {}
+		       | %empty {struct CodeNode *node = new CodeNode; $$ = node;}
 		       ; 
 function_decleration   : FUNC IDENTIFIER L_PAR paramerter_decleration R_PAR L_CURLY statements R_CURLY {
+std::string subS="";
+int cnt=0;
+int dotPlace=0;
 struct CodeNode *node = new CodeNode;
 struct CodeNode *statements = $7; 
+struct CodeNode *paramerter_decleration = $4;
 node->code = std::string("func ") + std::string($2) + std::string("\n");
+node->code += paramerter_decleration->code;
+for(int i=0; i< paramerter_decleration->code.length();i++){
+	if(paramerter_decleration->code.at(i) == '\n'){
+	   subS = paramerter_decleration->code.substr(dotPlace + 1 , i-dotPlace-1);
+           node->code += std::string("= ")+subS+std::string(", $")+std::to_string(cnt) + std::string("\n");
+	   cnt++;
+           dotPlace =i+1;
+	}
+}
 node->code += statements->code;
 node->code += std::string("endfunc\n\n");
 $$ = node;};
@@ -219,13 +243,30 @@ term                   : L_PAR expression R_PAR {$$ = $2; }
  $$ = node;}
                        | IDENTIFIER L_PAR pars R_PAR {
  struct CodeNode *node = new CodeNode;
+ struct CodeNode *pars = $3;
+ std:: string tempVarible = createTempVarible();
+ node->code=pars->code;
+ node->code+=std::string("call ")+ std::string($1) + std::string(", ") + tempVarible +  std::string("\n");
+ node->name = tempVarible; 
  $$ = node;}
 		       | varibles {$$ = $1;}
 		       ;
-pars                   : pars COMMA expression {}
-		       | expression { struct CodeNode *node = new CodeNode;
+pars                   : pars COMMA expression {
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *expression = $3;
+  struct CodeNode *pars = $1;
+  node->code = pars->code;
+ node->code += expression->code;
+  node->code += std::string("param ") + expression->name +std::string("\n");
+ $$ = node;
+}
+		       | expression { 
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *expression = $1;
+ node->code += expression->code;
+ node->code += std::string("param ") + expression->name +std::string("\n");
  $$ = node;}
-                       | %empty {}
+                       | %empty {struct CodeNode *node = new CodeNode; $$ = node;}
                        ;
 varibles               : IDENTIFIER {
  struct CodeNode *node = new CodeNode;
