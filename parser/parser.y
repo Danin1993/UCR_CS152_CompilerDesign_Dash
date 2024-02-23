@@ -1,178 +1,309 @@
 %{
-
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
+#include <string>
 #include <string.h>
+#include <fstream>
 
+std::ofstream milFile("output.mil");
+struct CodeNode{
+std :: string code;
+std :: string name;
+};
+int parCnt = 0;
+int varCount = 0;
 extern int yylex();
 extern FILE* yyin;
 extern int yylineno;
 int error_count = 0;
-
-FILE *milFile;
-
 void yyerror(const char* s);
-
-int parCnt = 0;
-
-typedef struct Symbol {
-    char* name;
-    struct Symbol* next;
-} Symbol;
-
-Symbol* symbolTable = NULL;
-
-Symbol* addSymbol(char* name) {
-    Symbol* symbol = (Symbol*)malloc(sizeof(Symbol));
-    symbol->name = strdup(name);
-    symbol->next = symbolTable;
-    symbolTable = symbol;
-    return symbol;
-}
-
-Symbol* findSymbol(char* name) {
-    for (Symbol* sym = symbolTable; sym != NULL; sym = sym->next) {
-        if (strcmp(sym->name, name) == 0) {
-            return sym;
-        }
-    }
-    return NULL;
+std::string createTempVarible(){
+ static int cnt = 0;
+ return std::string("_temp") + std::to_string(cnt++);
 }
 %}
 
 %locations 
 %define parse.error verbose
 %define parse.lac full
+%union{
+ struct CodeNode *codenode;
+ char *op_value;
+}
 
 %left SUBTRACTION ADD
 %left MULTIPLY DIVIDE MOD
 %left L_PAR R_PAR 
+%left IDENTIFIER NUMBER
 
-
-%union {
-    char* sval;
-    double dval;
-}
-
-%token <sval> IDENTIFIER
-%token <dval> NUMBER 
-
-%type <sval> var_decleration var_assigment
-%type <dval> expression
-
-%left '-' '+'
-%left '*' '/'
-%nonassoc LESS GREATER LESS_EQ GREATER_EQ EQUALITY NOT_EQ
-%right ASSIGNMENT
-
+%token <op_value> NUMBER
+%token <op_value> IDENTIFIER
 
 %token RETURN RRETURN INT PRT FUNC WHILE IF ELSE BREAK CONTINUE READ SEMICOLON COMMA 
 %token L_CURLY R_CURLY L_BRAKET R_BRAKET ASSIGNMENT LESS LESS_EQ GREATER GREATER_EQ EQUALITY NOT_EQ
 
 %token UNKNOWN_TOKEN
 
+%nterm <double> if_statement else_statement 
+%nterm <double> comparitors bool_expression
+%nterm <double> read_statement while_statement 
 
-%start function_declerations
-
+%start program
+%type <codenode> function_declerations function_decleration statements statement var_decleration
+%type <codenode> var_assigment expression multiplicative_expr term varibles print_statement pars
+%type <codenode> paramerter_decleration return_statement
 %%
-function_declerations  : function_declerations function_decleration {printf("function_declerations -> function_declerations function_decleration\n");}
-                       | %empty                 {printf("functions -> epsilon\n");}
+program                : function_declerations { 
+                        struct CodeNode *node = $1;
+                         printf("%s\n", node->code.c_str());
+                         milFile << node->code; 
+                        milFile.close();}
+function_declerations  : function_declerations function_decleration {
+ struct CodeNode *function_declerations = $1;
+ struct CodeNode *function_decleration = $2;
+ struct CodeNode *node = new CodeNode;
+ node -> code = function_declerations-> code + function_decleration -> code;
+ $$ = node; }
+                       | %empty{
+ struct CodeNode *node = new CodeNode;
+ $$ = node;}
                        ;
-statements	       : statements statement {printf("statements -> statements statement\n");}
-		       | %empty			{printf("statements -> epsilon\n");}
+statements	       : statements statement { 
+ struct CodeNode *statements = $1;
+ struct CodeNode *statement = $2;
+ struct CodeNode *node = new CodeNode;
+ node -> code = statements-> code + statement -> code;
+ $$ = node;}
+		       | %empty		      {
+  struct CodeNode *node = new CodeNode;
+ $$ = node;
+ }
 		       ;
-statement	       : var_decleration SEMICOLON {printf("statement -> var_decleration SEMICOLON\n");}
-	               | var_assigment SEMICOLON {printf("statement -> var_assigment SEMICOLON\n");}
-		       | print SEMICOLON {printf("statement -> print  SEMICOLON\n");}
-		       | if_statement {printf("statement -> if_statement\n");}
-		       | return_statement SEMICOLON {printf("statement -> return_statement SEMICOLON\n");}
-                       | read_statement SEMICOLON {printf("statement -> read_statement SEMICOLON\n");}
-		       | while_statement {printf("statement -> while_statement\n");}
-                       | BREAK SEMICOLON {printf("statement -> BREAK SEMICOLON\n");}
-                       | CONTINUE SEMICOLON {printf("statement -> CONTINUE SEMICOLON\n");}
+statement	       : var_decleration SEMICOLON {$$ = $1;}
+	               | var_assigment SEMICOLON { $$ = $1; }
+		       | print_statement SEMICOLON {$$ = $1;}
+		       | if_statement {
+struct CodeNode *node = new CodeNode;
+ $$ = node;}
+		       | return_statement SEMICOLON {$$ = $1;}
+                       | read_statement SEMICOLON {
+struct CodeNode *node = new CodeNode;
+ $$ = node;}
+		       | while_statement {
+struct CodeNode *node = new CodeNode;
+ $$ = node;}
+                       | BREAK SEMICOLON {
+struct CodeNode *node = new CodeNode;
+ $$ = node;}
+                       | CONTINUE SEMICOLON {
+struct CodeNode *node = new CodeNode;
+ $$ = node;}
 		       ;  
-if_statement           : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {printf("if_statement -> IF L_PAR R_PAR L_CURLY statements R_CURLY else_statement\n");};
-else_statement         : ELSE L_CURLY statements R_CURLY {printf("else_statement -> ELSE L_CURLY statements R_CURLY\n");}
-		       | %empty {printf("else_statement -> epsilon\n");}
+if_statement           : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {};
+else_statement         : ELSE L_CURLY statements R_CURLY {}
+		       | %empty {}
                        ;
-comparitors            : LESS {printf("comparitors -> LESS\n");}
-		       | LESS_EQ {printf("comparitors -> LESS_EQ\n");}
-		       | GREATER {printf("comparitors -> GREATER\n");}
-                       | GREATER_EQ {printf("comparitors -> GREATER_EQ\n");}
-                       | EQUALITY {printf("comparitors -> EQUALITY\n");} 
-                       | NOT_EQ {printf("comparitors -> NOT_EQ\n");}
+comparitors            : LESS {}
+		       | LESS_EQ {}
+		       | GREATER {}
+                       | GREATER_EQ {}
+                       | EQUALITY {} 
+                       | NOT_EQ {}
                        ;
-return_statement       : RETURN expression {printf("return_statement -> RETURN expression\n");};
-var_decleration        : INT IDENTIFIER {printf("var_decleration -> INT IDENTIFIER\n");} 
-		       | INT L_BRAKET expression R_BRAKET IDENTIFIER {printf("var_decleration -> INT L_BRAKET expression R_BRAKET IDENTIFIER\n");} 
-	               | INT var_assigment {printf("var_decleration -> INT var_assigment\n");}
+return_statement       : RETURN expression {
+ struct CodeNode *node= new CodeNode;
+ struct CodeNode *expression= $2;
+ node->code=expression->code;
+ node->code+= std::string("ret ")+expression->name +std::string("\n");
+ $$=node;
+
+};
+var_decleration        : INT IDENTIFIER {
+ struct CodeNode *node= new CodeNode;
+ node->code = std:: string(". ") + std::string($2) + std::string("\n");
+ $$ = node;
+ 
+ } 
+		       | INT L_BRAKET NUMBER R_BRAKET IDENTIFIER {
+  if(atoi($3) <= 0){
+  fprintf(stderr, "Sematic error at line %d: array decleared of size less than or equal to 0\n", yylineno);
+  return -1;
+ }
+  struct CodeNode *node= new CodeNode;
+  node -> code =  std:: string(".[] ") + std::string($5) + std::string(", ")+std::string($3)+ std::string("\n");
+  $$ = node;
+  
+ } 
+	               | INT IDENTIFIER ASSIGNMENT expression  {}
 		       ;
-paramerter_declerations: paramerter_declerations paramerter_decleration {printf("paramerter_declerations -> paramerter_declerations paramerter_decleration\n");}
-		       | %empty {printf("paramerter_declerations -> epsilon\n");}
-                       ;
-paramerter_decleration : INT IDENTIFIER {printf("paramerter_decleration -> INT IDENTIFIER\n");}
-             	       | INT IDENTIFIER COMMA {printf("paramerter_decleration -> INT IDENTIFIER COMMA\n");}
-		       | INT L_BRAKET R_BRAKET IDENTIFIER {printf("paramerter_decleration -> INT L_BRAKET R_BRAKET IDENTIFIER\n");}
-            	       | INT L_BRAKET R_BRAKET IDENTIFIER COMMA {printf("paramerter_decleration -> INT L_BRAKET R_BRAKET IDENTIFIER COMMA\n");}
+paramerter_decleration : INT IDENTIFIER {
+ struct CodeNode *node = new CodeNode;
+ node->code = std:: string(". ") + std::string($2) + std::string("\n");
+ $$ = node;
+}
+            	       | INT IDENTIFIER COMMA paramerter_decleration{ 
+struct CodeNode *node = new CodeNode;
+struct CodeNode *paramerter_decleration = $4;
+ node->code = std:: string(". ") + std::string($2) + std::string("\n");
+ node->code += paramerter_decleration->code;
+ $$ = node;
+}
+		       | INT L_BRAKET R_BRAKET IDENTIFIER {}
+            	       | INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramerter_decleration {}
+		       | %empty {struct CodeNode *node = new CodeNode; $$ = node;}
 		       ; 
-function_decleration   : FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY {printf("function_decleration -> FUNC IDENTIFIER L_PAR paramerter_declerations R_PAR L_CURLY statements R_CURLY\n");};
-var_assigment          : varibles ASSIGNMENT expression {printf("var_assigment -> varibles ASSIGNMENT expression\n");};
-expression             : multiplicative_expr {printf("expression -> multiplicative_expr\n");}
-		       | multiplicative_expr ADD multiplicative_expr {printf("expression -> multiplicative_expr ADD multiplicative_expr\n");}
-		       | multiplicative_expr SUBTRACTION multiplicative_expr {printf("expression -> multiplicative_expr ADD multiplicative_expr\n");}
+function_decleration   : FUNC IDENTIFIER L_PAR paramerter_decleration R_PAR L_CURLY statements R_CURLY {
+std::string subS="";
+int cnt=0;
+int dotPlace=0;
+struct CodeNode *node = new CodeNode;
+struct CodeNode *statements = $7; 
+struct CodeNode *paramerter_decleration = $4;
+node->code = std::string("func ") + std::string($2) + std::string("\n");
+node->code += paramerter_decleration->code;
+for(int i=0; i< paramerter_decleration->code.length();i++){
+	if(paramerter_decleration->code.at(i) == '\n'){
+	   subS = paramerter_decleration->code.substr(dotPlace + 1 , i-dotPlace-1);
+           node->code += std::string("= ")+subS+std::string(", $")+std::to_string(cnt) + std::string("\n");
+	   cnt++;
+           dotPlace =i+1;
+	}
+}
+node->code += statements->code;
+node->code += std::string("endfunc\n\n");
+$$ = node;};
+var_assigment          : IDENTIFIER ASSIGNMENT expression {
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *expression = $3;
+ node -> code = expression -> code;
+ node-> code += std:: string("= ")+ std::string($1) + std::string(", ")+ expression->name+ std::string("\n");
+ $$ = node;
+ }
+                       | IDENTIFIER L_BRAKET NUMBER R_BRAKET ASSIGNMENT expression{
+
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *expression = $6;
+ node -> code = expression -> code; 
+ node-> code += std:: string("[]= ") + std::string($1) + std::string(", ") + std::string($3) + std::string(", ") + expression->name + std::string("\n");
+ $$= node;
+}
                        ;
-bool_expression        : expression comparitors expression {printf("bool_expression -> expression comparitors expression \n");};
-multiplicative_expr    : term {printf("multiplicative_expr -> term\n");}
-                       | term MOD term {printf("multiplicative_expr -> term MOD term\n");}
-		       | term MULTIPLY term {printf("multiplicative_expr -> term MULTIPLY term\n");}
-		       | term DIVIDE term {printf("multiplicative_expr -> term DIVIDE term\n");}
+expression             : multiplicative_expr {$$ = $1;}
+		       | multiplicative_expr ADD expression {
+    struct CodeNode *node = new CodeNode;
+    struct CodeNode *left = $1; 
+    struct CodeNode *right = $3;
+    std::string tempVarible = createTempVarible();
+    node->code = left->code + right->code;
+    node->code += std::string(". ") + tempVarible + std::string("\n");
+    node->code += std::string("+ ") + tempVarible + std::string(", ") + left->name  + std::string(", ") + right->name + std::string("\n");
+    node->name = tempVarible;
+ $$ = node;}
+		       | multiplicative_expr SUBTRACTION expression { 
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *multiplicative_expr = $1;
+ struct CodeNode *expression = $3;
+ node -> code = multiplicative_expr -> code + expression->code;
+ std:: string tempVarible = createTempVarible();
+ node -> code +=  std:: string(". ") + tempVarible + std::string("\n");
+ node -> code += std::string("- ") + tempVarible + std::string(", ") + multiplicative_expr->name  + std::string(", ") + expression->name + std::string("\n");
+ node -> name = tempVarible;
+ $$ = node;}
+                       ;
+bool_expression        : expression comparitors expression {};
+multiplicative_expr    : term {$$ = $1;}
+                       | term MOD multiplicative_expr {
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *term = $1;
+ struct CodeNode *multiplicative_expr = $3;
+ node -> code = term -> code + multiplicative_expr->code;
+ std:: string tempVarible = createTempVarible();
+ node -> code +=  std:: string(". ") + tempVarible + std::string("\n");
+ node -> code += std::string("% ") + tempVarible + std::string(", ") + term->name  + std::string(", ") + multiplicative_expr->name + std::string("\n");
+ node -> name = tempVarible;
+ $$ = node;}
+		       | term MULTIPLY multiplicative_expr {
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *term = $1;
+ struct CodeNode *multiplicative_expr = $3;
+ node -> code = term -> code + multiplicative_expr->code;
+ std:: string tempVarible = createTempVarible();
+ node -> code +=  std:: string(". ") + tempVarible + std::string("\n");
+ node -> code += std::string("* ") + tempVarible + std::string(", ") + term->name  + std::string(", ") + multiplicative_expr->name + std::string("\n");
+ node -> name = tempVarible;
+ $$ = node;}
+		       | term DIVIDE multiplicative_expr {
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *term = $1;
+ struct CodeNode *multiplicative_expr = $3;
+ node -> code = term -> code + multiplicative_expr->code;
+ std:: string tempVarible = createTempVarible();
+ node -> code +=  std:: string(". ") + tempVarible + std::string("\n");
+ node -> code += std::string("/ ") + tempVarible + std::string(", ") + term->name  + std::string(", ") + multiplicative_expr->name + std::string("\n");
+ node -> name = tempVarible;
+ $$ = node;}
 		       ;
-term                   : L_PAR expression R_PAR {printf("term -> L_PAR expression R_PAR\n");}
-		       | NUMBER {printf("term -> NUMBER\n");}
-                       | IDENTIFIER L_PAR pars R_PAR {printf("term -> IDENTIFIER L_PAR pars R_PAR\n");}
-		       | varibles {printf("term -> varibles\n");}
+term                   : L_PAR expression R_PAR {$$ = $2; }
+		       | NUMBER {
+ struct CodeNode *node = new CodeNode;
+ node -> name = std::string($1); 
+ $$ = node;}
+                       | IDENTIFIER L_PAR pars R_PAR {
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *pars = $3;
+ std:: string tempVarible = createTempVarible();
+ node->code=pars->code;
+ node -> code +=  std:: string(". ") + tempVarible + std::string("\n");
+ node->code+=std::string("call ")+ std::string($1) + std::string(", ") + tempVarible +  std::string("\n");
+ node->name = tempVarible; 
+ $$ = node;}
+		       | varibles {$$ = $1;}
 		       ;
-pars                   : pars COMMA expression {printf("pars -> pars COMMA expressionn");}
-		       | expression {printf("pars -> expression\n");}
-                       | %empty {printf("pars -> epsilon\n");}
+pars                   : pars COMMA expression {
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *expression = $3;
+  struct CodeNode *pars = $1;
+  node->code = pars->code;
+ node->code += expression->code;
+  node->code += std::string("param ") + expression->name +std::string("\n");
+ $$ = node;
+}
+		       | expression { 
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *expression = $1;
+ node->code += expression->code;
+ node->code += std::string("param ") + expression->name +std::string("\n");
+ $$ = node;}
+                       | %empty {struct CodeNode *node = new CodeNode; $$ = node;}
                        ;
-varibles               : IDENTIFIER {printf("varibles -> IDENTIFIER\n");}
-		       | IDENTIFIER L_BRAKET expression R_BRAKET {printf("varibles -> IDENTIFIER L_BRAKET expression R_BRAKE\nT");}
+varibles               : IDENTIFIER {
+ struct CodeNode *node = new CodeNode;
+ node -> name = std::string($1);
+ $$ = node;}
+		       | IDENTIFIER L_BRAKET NUMBER R_BRAKET {
+ struct CodeNode *node = new CodeNode;
+ std:: string tempVarible = createTempVarible();
+ node -> code =  std:: string(". ") + tempVarible + std::string("\n");
+ node -> code += std:: string("=[] ")+tempVarible + std:: string(", ") +std::string($1) + std:: string(", ") + std::string($3) +  std::string("\n");
+ node->name = tempVarible;
+ $$ = node;}
                        ;
-print		       : PRT L_PAR expression R_PAR {printf("print -> PRT L_PAR expression R_PAR\n");};
-read_statement : READ L_PAR expression R_PAR {printf("read_statement -> READ L_PAR expression R_PAR\n");};
-while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {printf("while_statement -> WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY\n");};
-var_decleration: INT IDENTIFIER {
-    addSymbol($2);
-    printf(". %s\n", $2);
-}
-
-var_assigment: IDENTIFIER ASSIGNMENT expression {
-    if (!findSymbol($1)) {
-        fprintf(stderr, "Error: undeclared variable %s\n", $1);
-    } else {
-        printf("= %s, %lf\n", $1, $3); 
-    }
-}
-
-expression: expression ADD expression {
-    $$ = $1 + $3;
-}
-
-
+ print_statement		       : PRT L_PAR expression R_PAR {
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *expression = $3;
+ node->code = expression->code;
+ node-> code += std::string(".> ") + expression->name + std::string("\n");
+ $$ = node;
+};
+read_statement 	       : READ L_PAR expression R_PAR {};
+while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {};
 %%
 
 int main(int argc, char** argv) {
     yyin = stdin;
-
-     milFile = fopen("output.mil", "w");
-    if (!milFile) {
-        perror("Failed to open output file");
-        return EXIT_FAILURE;
-    }
-
 
     if (argc >= 2) {
         FILE* file_ptr = fopen(argv[1], "r");
@@ -193,12 +324,12 @@ int main(int argc, char** argv) {
         fprintf(stderr, "Parsing finished with %d error(s).\n", error_count);
         return 1; 
     }
-    fclose(milFile);
-    return EXIT_SUCCESS;
+
+    return 0;
 }
 
-void yyerror(const char* s) {
-    if (strcmp(s, "syntax error") == 0) {
+void yyerror(const char *s) {
+  if (strcmp(s, "syntax error") == 0) {
         fprintf(stderr, "Syntax error at line %d: Unexpected token\n", yylineno);
     } else if (strcmp(s, "type error") == 0) {
         fprintf(stderr, "Type error at line %d: Incompatible types\n", yylineno);
@@ -209,16 +340,3 @@ void yyerror(const char* s) {
     }
     error_count++;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
