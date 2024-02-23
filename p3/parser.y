@@ -33,7 +33,7 @@ struct Function {
   std::string name;
   std::vector<Symbol> declarations;
 };
-/*
+
 std::vector <Function> symbol_table;
 Function *get_function() {
   int last = symbol_table.size()-1;
@@ -114,7 +114,7 @@ void print_symbol_table(void) {
   }
   printf("--------------------\n");
 }
-*/
+
 
 %}
 
@@ -160,6 +160,7 @@ program : function_declerations
     printf("%s\n", node->code.c_str());
   }
 
+
 function_declerations  : function_declerations function_decleration 
   {
     struct CodeNode *function_declerations = $1;
@@ -170,6 +171,7 @@ function_declerations  : function_declerations function_decleration
   }
   | %empty {struct CodeNode *node = new CodeNode; $$ = node;}
 
+
 statements  : statements statement 
   { 
     struct CodeNode *statements = $1;
@@ -179,6 +181,7 @@ statements  : statements statement
     $$ = node;
   }
 	| %empty {struct CodeNode *node = new CodeNode; $$ = node;}
+
 
 statement   
   : var_decleration SEMICOLON     {$$ = $1;}
@@ -201,12 +204,15 @@ statement
   | CONTINUE SEMICOLON 
     {struct CodeNode *node = new CodeNode; $$ = node;}
 
+
 if_statement    
   : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {};
+
 
 else_statement  
   : ELSE L_CURLY statements R_CURLY {}
   | %empty {};
+
 
 comparitors 
   : LESS {}
@@ -216,6 +222,7 @@ comparitors
   | EQUALITY {} 
   | NOT_EQ {};
 
+
 return_statement  : RETURN expression 
   {
     struct CodeNode *node= new CodeNode;
@@ -224,6 +231,7 @@ return_statement  : RETURN expression
     node->code+= std::string("ret ")+expression->name +std::string("\n");
     $$=node;
   };
+
 
 var_decleration : INT IDENTIFIER // int a -> . 2
   {
@@ -245,12 +253,59 @@ var_decleration : INT IDENTIFIER // int a -> . 2
   } 
 	| INT IDENTIFIER ASSIGNMENT expression  {}
 
+
+paramerter_decleration : INT IDENTIFIER 
+  {
+    struct CodeNode *node = new CodeNode;
+    node->code = std:: string(". ") + std::string($2) + std::string("\n");
+    $$ = node;
+  }
+  | INT IDENTIFIER COMMA paramerter_decleration // in a,
+  { 
+    struct CodeNode *node = new CodeNode;
+    struct CodeNode *paramerter_decleration = $4;
+    node->code = std:: string(". ") + std::string($2) + std::string("\n");
+    node->code += paramerter_decleration->code;
+    $$ = node;
+  }
+	| INT L_BRAKET R_BRAKET IDENTIFIER {}
+  | INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramerter_decleration {}
+	| %empty {struct CodeNode *node = new CodeNode; $$ = node;}
+
+
+function_decleration  : FUNC IDENTIFIER L_PAR paramerter_decleration R_PAR L_CURLY statements R_CURLY 
+  {
+    std::string subS= std::string($2);
+    add_function_to_symbol_table(subS);
+
+    int cnt=0;
+    int dotPlace=0;
+    
+    struct CodeNode *node = new CodeNode;
+    struct CodeNode *statements = $7; 
+    struct CodeNode *paramerter_decleration = $4;
+    node->code = std::string("func ") + std::string($2) + std::string("\n");
+    node->code += paramerter_decleration->code;
+    for(int i=0; i< paramerter_decleration->code.length();i++){
+      if(paramerter_decleration->code.at(i) == '\n'){
+        subS = paramerter_decleration->code.substr(dotPlace + 1 , i-dotPlace-1);
+              node->code += std::string("= ")+subS+std::string(", $")+std::to_string(cnt) + std::string("\n");
+        cnt++; 
+              subS= subS.substr(1);
+              add_variable_to_symbol_table(subS, Integer);
+              dotPlace =i+1;
+      }
+    }
+    node->code += statements->code;
+    generate_table_and_verify_code(statements->code);
+    node->code += std::string("endfunc\n\n");
+    $$ = node;
+  }
+
 /********************
 /* Construction
 ********************/
 
-paramerter_decleration : {}
-function_decleration:{}
 var_assigment:{}
 expression:{}
 bool_expression:{}
@@ -260,81 +315,18 @@ pars:{}
 varibles:{}
 print_statement:{}
 
-read_statement 	       : READ L_PAR expression R_PAR {};
-while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {};
+read_statement 	       : READ L_PAR expression R_PAR {}
+
+
+while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {}
 /********************
 /* TEST
 ********************/
 
 
 /*
-var_decleration        : INT IDENTIFIER {
- struct CodeNode *node= new CodeNode;
- node->code = std:: string(". ") + std::string($2) + std::string("\n");
- $$ = node;
- 
- } 
-		       | INT L_BRAKET NUMBER R_BRAKET IDENTIFIER {
-  if(atoi($3) <= 0){
-  fprintf(stderr, "Sematic error at line %d: array decleared of size less than or equal to 0\n", yylineno);
-  exit(1);
- }
-  struct CodeNode *node= new CodeNode;
-  node -> code =  std:: string(".[] ") + std::string($5) + std::string(", ")+std::string($3)+ std::string("\n");
-  $$ = node;
-  
- } 
-	               | INT IDENTIFIER ASSIGNMENT expression  {}
-		       ;
 
 
-
-
-paramerter_decleration : INT IDENTIFIER {
- struct CodeNode *node = new CodeNode;
- node->code = std:: string(". ") + std::string($2) + std::string("\n");
- $$ = node;
-}
-            	       | INT IDENTIFIER COMMA paramerter_decleration{ 
-struct CodeNode *node = new CodeNode;
-struct CodeNode *paramerter_decleration = $4;
- node->code = std:: string(". ") + std::string($2) + std::string("\n");
- node->code += paramerter_decleration->code;
- $$ = node;
-}
-		       | INT L_BRAKET R_BRAKET IDENTIFIER {}
-            	       | INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramerter_decleration {}
-		       | %empty {struct CodeNode *node = new CodeNode; $$ = node;}
-		       ; 
-
-
-
-
-function_decleration   : FUNC IDENTIFIER L_PAR paramerter_decleration R_PAR L_CURLY statements R_CURLY {
-
-std::string subS= std::string($2);
-add_function_to_symbol_table(subS);
-int cnt=0;
-int dotPlace=0;
-struct CodeNode *node = new CodeNode;
-struct CodeNode *statements = $7; 
-struct CodeNode *paramerter_decleration = $4;
-node->code = std::string("func ") + std::string($2) + std::string("\n");
-node->code += paramerter_decleration->code;
-for(int i=0; i< paramerter_decleration->code.length();i++){
-	if(paramerter_decleration->code.at(i) == '\n'){
-	   subS = paramerter_decleration->code.substr(dotPlace + 1 , i-dotPlace-1);
-           node->code += std::string("= ")+subS+std::string(", $")+std::to_string(cnt) + std::string("\n");
-	   cnt++; 
-           subS= subS.substr(1);
-           add_variable_to_symbol_table(subS, Integer);
-           dotPlace =i+1;
-	}
-}
-node->code += statements->code;
-generate_table_and_verify_code(statements->code);
-node->code += std::string("endfunc\n\n");
-$$ = node;};
 
 
 var_assigment          : IDENTIFIER ASSIGNMENT expression {
