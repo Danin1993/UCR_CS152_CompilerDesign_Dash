@@ -56,10 +56,14 @@ std::string createTempVarible(){
 
 %token UNKNOWN_TOKEN
 
-
+%nterm <double> if_statement else_statement 
+%nterm <double> comparitors bool_expression
+%nterm <double> read_statement while_statement 
 
 %start program
-%type <codenode> function_declerations function_decleration 
+%type <codenode> function_declerations function_decleration statements statement var_decleration
+%type <codenode> var_assigment expression multiplicative_expr term varibles print_statement pars
+%type <codenode> paramerter_decleration return_statement
 
 %%
 
@@ -68,62 +72,69 @@ program : function_declerations {
     printf("%s\n", node->code.c_str());
     }
 
-function_declerations  : function_declerations function_decleration {
-    struct CodeNode *function_declerations = $1;
-    struct CodeNode *function_decleration = $2;
-    struct CodeNode *node = new CodeNode;
-    node -> code = function_declerations-> code + function_decleration -> code;
-    $$ = node; 
-    }
-    | %empty {
+function_declerations  : function_declerations function_decleration 
+    {
+        struct CodeNode *function_declerations = $1;
+        struct CodeNode *function_decleration = $2;
         struct CodeNode *node = new CodeNode;
-        $$ = node;
-        }
+        node -> code = function_declerations-> code + function_decleration -> code;
+        $$ = node; 
+    }
+    | %empty {struct CodeNode *node = new CodeNode; $$ = node;}
 
- function_decleration : FUNC IDENTIFIER L_PAR R_PAR L_CURLY R_CURLY {
+statements  : statements statement 
+    { 
+        struct CodeNode *statements = $1;
+        struct CodeNode *statement = $2;
+        struct CodeNode *node = new CodeNode;
+        node -> code = statements-> code + statement -> code;
+        $$ = node;
+    }
+	| %empty {struct CodeNode *node = new CodeNode; $$ = node;}
+
+statement   : NUMBER {
+   struct CodeNode *node = new CodeNode;
+   node->code = std::string("... ") + std::string($1) + std::string("\n");
+   $$ = node;
+}
+/*
+            : var_decleration SEMICOLON     {$$ = $1;}
+            | var_assigment   SEMICOLON     {$$ = $1;}
+            | print_statement SEMICOLON     {$$ = $1;}
+            | return_statement SEMICOLON    {$$ = $1;}
+/*
+            | if_statement 
+                {struct CodeNode *node = new CodeNode; $$ = node;}
+
+            | read_statement SEMICOLON 
+                {struct CodeNode *node = new CodeNode; $$ = node;}
+
+		    | while_statement 
+                {struct CodeNode *node = new CodeNode; $$ = node;}
+
+            | BREAK SEMICOLON 
+                {struct CodeNode *node = new CodeNode; $$ = node;}
+
+            | CONTINUE SEMICOLON 
+                {struct CodeNode *node = new CodeNode; $$ = node;}
+
+if_statement   : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {};
+else_statement : ELSE L_CURLY statements R_CURLY {}
+		       | %empty {};
+*/
+
+ function_decleration : FUNC IDENTIFIER L_PAR R_PAR  L_CURLY statements R_CURLY {
     struct CodeNode *node = new CodeNode;
-    node->code += std::string("HellYea") + std::string($2) + std::string("\n");
+    struct CodeNode *stm = $6;
+    node->code += std::string("func ") + std::string($2) + std::string("\n");
+    node->code += stm->code;
+    node->code += std::string("endfunc") + std::string("\n");
     $$ = node; 
  }
 
 /*
 
-                       ;
-statements	       : statements statement { 
- struct CodeNode *statements = $1;
- struct CodeNode *statement = $2;
- struct CodeNode *node = new CodeNode;
- node -> code = statements-> code + statement -> code;
- $$ = node;}
-		       | %empty		      {
-  struct CodeNode *node = new CodeNode;
- $$ = node;
- }
-		       ;
-statement	       : var_decleration SEMICOLON {$$ = $1;}
-	               | var_assigment SEMICOLON { $$ = $1; }
-		       | print_statement SEMICOLON {$$ = $1;}
-		       | if_statement {
-struct CodeNode *node = new CodeNode;
- $$ = node;}
-		       | return_statement SEMICOLON {$$ = $1;}
-                       | read_statement SEMICOLON {
-struct CodeNode *node = new CodeNode;
- $$ = node;}
-		       | while_statement {
-struct CodeNode *node = new CodeNode;
- $$ = node;}
-                       | BREAK SEMICOLON {
-struct CodeNode *node = new CodeNode;
- $$ = node;}
-                       | CONTINUE SEMICOLON {
-struct CodeNode *node = new CodeNode;
- $$ = node;}
-		       ;  
-if_statement           : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {};
-else_statement         : ELSE L_CURLY statements R_CURLY {}
-		       | %empty {}
-                       ;
+
 comparitors            : LESS {}
 		       | LESS_EQ {}
 		       | GREATER {}

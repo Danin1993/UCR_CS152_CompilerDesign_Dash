@@ -164,7 +164,9 @@ enum yysymbol_kind_t
   YYSYMBOL_YYACCEPT = 37,                  /* $accept  */
   YYSYMBOL_program = 38,                   /* program  */
   YYSYMBOL_function_declerations = 39,     /* function_declerations  */
-  YYSYMBOL_function_decleration = 40       /* function_decleration  */
+  YYSYMBOL_statements = 40,                /* statements  */
+  YYSYMBOL_statement = 41,                 /* statement  */
+  YYSYMBOL_function_decleration = 42       /* function_decleration  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -472,16 +474,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  3
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   6
+#define YYLAST   16
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  37
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  4
+#define YYNNTS  6
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  5
+#define YYNRULES  8
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  11
+#define YYNSTATES  14
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   291
@@ -534,7 +536,7 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    66,    66,    71,    78,    83
+       0,    70,    70,    75,    83,    85,    93,    95,   126
 };
 #endif
 
@@ -556,7 +558,8 @@ static const char *const yytname[] =
   "BREAK", "CONTINUE", "READ", "SEMICOLON", "COMMA", "L_CURLY", "R_CURLY",
   "L_BRAKET", "R_BRAKET", "ASSIGNMENT", "LESS", "LESS_EQ", "GREATER",
   "GREATER_EQ", "EQUALITY", "NOT_EQ", "UNKNOWN_TOKEN", "$accept",
-  "program", "function_declerations", "function_decleration", YY_NULLPTR
+  "program", "function_declerations", "statements", "statement",
+  "function_decleration", YY_NULLPTR
 };
 
 static const char *
@@ -566,7 +569,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-22)
+#define YYPACT_NINF (-21)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -580,8 +583,8 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-     -22,     0,   -15,   -22,    -9,   -22,    -5,    -4,   -21,   -20,
-     -22
+     -21,     1,   -14,   -21,    -8,   -21,    -4,    -3,   -20,   -21,
+     -10,   -21,   -21,   -21
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -589,20 +592,20 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       4,     0,     2,     1,     0,     3,     0,     0,     0,     0,
-       5
+       4,     0,     2,     1,     0,     3,     0,     0,     0,     6,
+       0,     7,     8,     5
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -22,   -22,   -22,   -22
+     -21,   -21,   -21,   -21,   -21,   -21
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     1,     2,     5
+       0,     1,     2,    10,    13,     5
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -610,32 +613,34 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       3,     4,     6,     7,     9,     8,    10
+      11,     3,     4,     6,     7,     9,     8,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,    12
 };
 
 static const yytype_int8 yycheck[] =
 {
-       0,    16,    11,     8,    25,     9,    26
+      10,     0,    16,    11,     8,    25,     9,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    26
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    38,    39,     0,    16,    40,    11,     8,     9,    25,
-      26
+       0,    38,    39,     0,    16,    42,    11,     8,     9,    25,
+      40,    10,    26,    41
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    37,    38,    39,    39,    40
+       0,    37,    38,    39,    39,    40,    40,    41,    42
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     2,     0,     6
+       0,     2,     1,     2,     0,     2,     0,     1,     7
 };
 
 
@@ -1743,47 +1748,75 @@ yyreduce:
     switch (yyn)
       {
   case 2: /* program: function_declerations  */
-#line 66 "parser.y"
+#line 70 "parser.y"
                                 { 
     struct CodeNode *node = (yyvsp[0].codenode);
     printf("%s\n", node->code.c_str());
     }
-#line 1752 "parser.tab.c"
+#line 1757 "parser.tab.c"
     break;
 
   case 3: /* function_declerations: function_declerations function_decleration  */
-#line 71 "parser.y"
-                                                                    {
-    struct CodeNode *function_declerations = (yyvsp[-1].codenode);
-    struct CodeNode *function_decleration = (yyvsp[0].codenode);
-    struct CodeNode *node = new CodeNode;
-    node -> code = function_declerations-> code + function_decleration -> code;
-    (yyval.codenode) = node; 
+#line 76 "parser.y"
+    {
+        struct CodeNode *function_declerations = (yyvsp[-1].codenode);
+        struct CodeNode *function_decleration = (yyvsp[0].codenode);
+        struct CodeNode *node = new CodeNode;
+        node -> code = function_declerations-> code + function_decleration -> code;
+        (yyval.codenode) = node; 
     }
-#line 1764 "parser.tab.c"
+#line 1769 "parser.tab.c"
     break;
 
   case 4: /* function_declerations: %empty  */
-#line 78 "parser.y"
-             {
-        struct CodeNode *node = new CodeNode;
-        (yyval.codenode) = node;
-        }
-#line 1773 "parser.tab.c"
+#line 83 "parser.y"
+             {struct CodeNode *node = new CodeNode; (yyval.codenode) = node;}
+#line 1775 "parser.tab.c"
     break;
 
-  case 5: /* function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY R_CURLY  */
-#line 83 "parser.y"
-                                                                    {
+  case 5: /* statements: statements statement  */
+#line 86 "parser.y"
+    { 
+        struct CodeNode *statements = (yyvsp[-1].codenode);
+        struct CodeNode *statement = (yyvsp[0].codenode);
+        struct CodeNode *node = new CodeNode;
+        node -> code = statements-> code + statement -> code;
+        (yyval.codenode) = node;
+    }
+#line 1787 "parser.tab.c"
+    break;
+
+  case 6: /* statements: %empty  */
+#line 93 "parser.y"
+                 {struct CodeNode *node = new CodeNode; (yyval.codenode) = node;}
+#line 1793 "parser.tab.c"
+    break;
+
+  case 7: /* statement: NUMBER  */
+#line 95 "parser.y"
+                     {
+   struct CodeNode *node = new CodeNode;
+   node->code = std::string("... ") + std::string((yyvsp[0].op_value)) + std::string("\n");
+   (yyval.codenode) = node;
+}
+#line 1803 "parser.tab.c"
+    break;
+
+  case 8: /* function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY statements R_CURLY  */
+#line 126 "parser.y"
+                                                                                {
     struct CodeNode *node = new CodeNode;
-    node->code += std::string("HellYea") + std::string((yyvsp[-4].op_value)) + std::string("\n");
+    struct CodeNode *stm = (yyvsp[-1].codenode);
+    node->code += std::string("func ") + std::string((yyvsp[-5].op_value)) + std::string("\n");
+    node->code += stm->code;
+    node->code += std::string("endfunc") + std::string("\n");
     (yyval.codenode) = node; 
  }
-#line 1783 "parser.tab.c"
+#line 1816 "parser.tab.c"
     break;
 
 
-#line 1787 "parser.tab.c"
+#line 1820 "parser.tab.c"
 
         default: break;
       }
@@ -2023,7 +2056,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 324 "parser.y"
+#line 335 "parser.y"
 
 
 int main(int argc, char** argv) {

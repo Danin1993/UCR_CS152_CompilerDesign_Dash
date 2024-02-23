@@ -1,3 +1,23 @@
+Nonterminals useless in grammar
+
+    if_statement
+    else_statement
+    comparitors
+    bool_expression
+    read_statement
+    while_statement
+    var_decleration
+    var_assigment
+    expression
+    multiplicative_expr
+    term
+    varibles
+    print_statement
+    pars
+    paramerter_decleration
+    return_statement
+
+
 Terminals unused in grammar
 
     SUBTRACTION
@@ -5,7 +25,6 @@ Terminals unused in grammar
     MULTIPLY
     DIVIDE
     MOD
-    NUMBER
     RETURN
     RRETURN
     INT
@@ -39,7 +58,12 @@ Grammar
     2 function_declerations: function_declerations function_decleration
     3                      | ε
 
-    4 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY R_CURLY
+    4 statements: statements statement
+    5           | ε
+
+    6 statement: NUMBER
+
+    7 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY statements R_CURLY
 
 
 Terminals, with rules where they appear
@@ -51,15 +75,15 @@ Terminals, with rules where they appear
     MULTIPLY (260)
     DIVIDE (261)
     MOD (262)
-    L_PAR (263) 4
-    R_PAR (264) 4
-    NUMBER <op_value> (265)
-    IDENTIFIER <op_value> (266) 4
+    L_PAR (263) 7
+    R_PAR (264) 7
+    NUMBER <op_value> (265) 6
+    IDENTIFIER <op_value> (266) 7
     RETURN (267)
     RRETURN (268)
     INT (269)
     PRT (270)
-    FUNC (271) 4
+    FUNC (271) 7
     WHILE (272)
     IF (273)
     ELSE (274)
@@ -68,8 +92,8 @@ Terminals, with rules where they appear
     READ (277)
     SEMICOLON (278)
     COMMA (279)
-    L_CURLY (280) 4
-    R_CURLY (281) 4
+    L_CURLY (280) 7
+    R_CURLY (281) 7
     L_BRAKET (282)
     R_BRAKET (283)
     ASSIGNMENT (284)
@@ -92,8 +116,14 @@ Nonterminals, with rules where they appear
     function_declerations <codenode> (39)
         on left: 2 3
         on right: 1 2
-    function_decleration <codenode> (40)
-        on left: 4
+    statements <codenode> (40)
+        on left: 4 5
+        on right: 4 7
+    statement <codenode> (41)
+        on left: 6
+        on right: 4
+    function_decleration <codenode> (42)
+        on left: 7
         on right: 2
 
 
@@ -135,7 +165,7 @@ State 3
 
 State 4
 
-    4 function_decleration: FUNC • IDENTIFIER L_PAR R_PAR L_CURLY R_CURLY
+    7 function_decleration: FUNC • IDENTIFIER L_PAR R_PAR L_CURLY statements R_CURLY
 
     IDENTIFIER  shift, and go to state 6
 
@@ -149,34 +179,61 @@ State 5
 
 State 6
 
-    4 function_decleration: FUNC IDENTIFIER • L_PAR R_PAR L_CURLY R_CURLY
+    7 function_decleration: FUNC IDENTIFIER • L_PAR R_PAR L_CURLY statements R_CURLY
 
     L_PAR  shift, and go to state 7
 
 
 State 7
 
-    4 function_decleration: FUNC IDENTIFIER L_PAR • R_PAR L_CURLY R_CURLY
+    7 function_decleration: FUNC IDENTIFIER L_PAR • R_PAR L_CURLY statements R_CURLY
 
     R_PAR  shift, and go to state 8
 
 
 State 8
 
-    4 function_decleration: FUNC IDENTIFIER L_PAR R_PAR • L_CURLY R_CURLY
+    7 function_decleration: FUNC IDENTIFIER L_PAR R_PAR • L_CURLY statements R_CURLY
 
     L_CURLY  shift, and go to state 9
 
 
 State 9
 
-    4 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY • R_CURLY
+    7 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY • statements R_CURLY
 
-    R_CURLY  shift, and go to state 10
+    $default  reduce using rule 5 (statements)
+
+    statements  go to state 10
 
 
 State 10
 
-    4 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY R_CURLY •
+    4 statements: statements • statement
+    7 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY statements • R_CURLY
 
-    $default  reduce using rule 4 (function_decleration)
+    NUMBER   shift, and go to state 11
+    R_CURLY  shift, and go to state 12
+
+    statement  go to state 13
+
+
+State 11
+
+    6 statement: NUMBER •
+
+    $default  reduce using rule 6 (statement)
+
+
+State 12
+
+    7 function_decleration: FUNC IDENTIFIER L_PAR R_PAR L_CURLY statements R_CURLY •
+
+    $default  reduce using rule 7 (function_decleration)
+
+
+State 13
+
+    4 statements: statements statement •
+
+    $default  reduce using rule 4 (statements)
