@@ -72,6 +72,36 @@ bool checkMainFunc(){
  }
  return false;
 }
+Type getVarType(std:: string &code){
+ if(code.at(1) == '[') return Array;
+ return Integer;
+}
+std:: string getVarName(Type t, std:: string &code){
+ if(t == Integer){
+  return code.substr(2,code.find('\n')-2);
+ }
+ else{
+  for(int i = 4;i<code.length();i++){
+   if(code.at(i) == ','){
+     return code.substr(4,i-4);
+   }
+  }
+ }
+}
+void generate_table_and_verify_code(std::string &code){
+ int startLine=0;
+ for(int i=0;i<code.length();i++){
+   if(code.at(i) == '\n'){
+     if(code.at(startLine) == '.' && code.at(startLine+1) != '>' && code.at(startLine+2) != '_'){
+        std::string s = code.substr(startLine,i+1);
+        Type t= getVarType(s);
+        s=getVarName(t,s);
+        add_variable_to_symbol_table(s,t);
+        startLine= i+1;
+      }
+    }
+  }
+}
 void print_symbol_table(void) {
   printf("symbol table:\n");
   printf("--------------------\n");
@@ -228,11 +258,14 @@ for(int i=0; i< paramerter_decleration->code.length();i++){
 	if(paramerter_decleration->code.at(i) == '\n'){
 	   subS = paramerter_decleration->code.substr(dotPlace + 1 , i-dotPlace-1);
            node->code += std::string("= ")+subS+std::string(", $")+std::to_string(cnt) + std::string("\n");
-	   cnt++;
+	   cnt++; 
+           subS= subS.substr(1);
+           add_variable_to_symbol_table(subS, Integer);
            dotPlace =i+1;
 	}
 }
 node->code += statements->code;
+generate_table_and_verify_code(statements->code);
 node->code += std::string("endfunc\n\n");
 $$ = node;};
 var_assigment          : IDENTIFIER ASSIGNMENT expression {
