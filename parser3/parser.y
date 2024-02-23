@@ -58,7 +58,6 @@ std::string createTempVarible(){
 %%
 program                : function_declerations { 
                         struct CodeNode *node = $1;
-                         printf("%s\n", node->code.c_str());
                          milFile << node->code; 
                         milFile.close();}
 function_declerations  : function_declerations function_decleration {

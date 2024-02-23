@@ -9,7 +9,7 @@ func mul(int a, int b) {
 func main() {
 int a;
 int b;
-a = add(10, 2);
+a = add(5, 2);
 prt(a);
 b = mul(a, a + b);
 prt(b);
