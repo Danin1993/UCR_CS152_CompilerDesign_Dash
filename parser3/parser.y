@@ -56,8 +56,11 @@ std::string createTempVarible(){
 %type <codenode> var_assigment expression multiplicative_expr term varibles print_statement pars
 %type <codenode> paramerter_decleration return_statement
 %%
-program                : function_declerations { struct CodeNode *node = $1;
-                         printf("%s\n", node->code.c_str());}
+program                : function_declerations { 
+                        struct CodeNode *node = $1;
+                         printf("%s\n", node->code.c_str());
+                         milFile << node->code; 
+                        milFile.close();}
 function_declerations  : function_declerations function_decleration {
  struct CodeNode *function_declerations = $1;
  struct CodeNode *function_decleration = $2;
@@ -121,7 +124,6 @@ return_statement       : RETURN expression {
 var_decleration        : INT IDENTIFIER {
  struct CodeNode *node= new CodeNode;
  node->code = std:: string(". ") + std::string($2) + std::string("\n");
- milFile << ". " << $2 << "\n";
  $$ = node;
  
  } 
@@ -161,7 +163,6 @@ struct CodeNode *node = new CodeNode;
 struct CodeNode *statements = $7; 
 struct CodeNode *paramerter_decleration = $4;
 node->code = std::string("func ") + std::string($2) + std::string("\n");
-milFile << "func " << $2 << "\n";
 node->code += paramerter_decleration->code;
 for(int i=0; i< paramerter_decleration->code.length();i++){
 	if(paramerter_decleration->code.at(i) == '\n'){
@@ -173,14 +174,12 @@ for(int i=0; i< paramerter_decleration->code.length();i++){
 }
 node->code += statements->code;
 node->code += std::string("endfunc\n\n");
-milFile << "endfunc\n\n";
 $$ = node;};
 var_assigment          : IDENTIFIER ASSIGNMENT expression {
  struct CodeNode *node = new CodeNode;
  struct CodeNode *expression = $3;
  node -> code = expression -> code;
  node-> code += std:: string("= ")+ std::string($1) + std::string(", ")+ expression->name+ std::string("\n");
- milFile << node->code;
  $$ = node;
  }
                        | IDENTIFIER L_BRAKET NUMBER R_BRAKET ASSIGNMENT expression{
@@ -194,15 +193,14 @@ var_assigment          : IDENTIFIER ASSIGNMENT expression {
                        ;
 expression             : multiplicative_expr {$$ = $1;}
 		       | multiplicative_expr ADD expression {
- struct CodeNode *node = new CodeNode;
- struct CodeNode *multiplicative_expr = $1; 
- struct CodeNode *expression = $3;
- node -> code = multiplicative_expr -> code + expression->code;
- std:: string tempVarible = createTempVarible();
- node -> code +=  std:: string(". ") + tempVarible + std::string("\n");
- node -> code += std::string("+ ") + tempVarible + std::string(", ") + multiplicative_expr->name  + std::string(", ") + expression->name + std::string("\n");
- node -> name = tempVarible;
- milFile << node->code;
+    struct CodeNode *node = new CodeNode;
+    struct CodeNode *left = $1; 
+    struct CodeNode *right = $3;
+    std::string tempVarible = createTempVarible();
+    node->code = left->code + right->code;
+    node->code += std::string(". ") + tempVarible + std::string("\n");
+    node->code += std::string("+ ") + tempVarible + std::string(", ") + left->name  + std::string(", ") + right->name + std::string("\n");
+    node->name = tempVarible;
  $$ = node;}
 		       | multiplicative_expr SUBTRACTION expression { 
  struct CodeNode *node = new CodeNode;
@@ -298,7 +296,6 @@ varibles               : IDENTIFIER {
  struct CodeNode *expression = $3;
  node->code = expression->code;
  node-> code += std::string(".> ") + expression->name + std::string("\n");
- milFile << ".> " << expression->name << "\n";
  $$ = node;
 };
 read_statement 	       : READ L_PAR expression R_PAR {};
