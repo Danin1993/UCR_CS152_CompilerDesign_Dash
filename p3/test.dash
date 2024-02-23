@@ -1,4 +1,4 @@
-func add() {
+func main() {
     return 10;
 }
 

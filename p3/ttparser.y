@@ -1,4 +1,13 @@
+
+/*
+/* --------------------------------------------------
+/* Phase 3 - Start Here
+/* Header
+/*--------------------------------------------------
+*/
+
 %{
+    
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,12 +15,12 @@
 #include <math.h>
 #include <string>
 #include <string.h>
-#include <vector>
 
 struct CodeNode{
 std :: string code;
 std :: string name;
 };
+
 int parCnt = 0;
 int varCount = 0;
 extern int yylex();
@@ -19,102 +28,11 @@ extern FILE* yyin;
 extern int yylineno;
 int error_count = 0;
 void yyerror(const char* s);
+
 std::string createTempVarible(){
  static int cnt = 0;
  return std::string("_temp") + std::to_string(cnt++);
 }
-enum Type { Integer, Array };
-
-struct Symbol {
-  std::string name;
-  Type type;
-};
-struct Function {
-  std::string name;
-  std::vector<Symbol> declarations;
-};
-/*
-std::vector <Function> symbol_table;
-Function *get_function() {
-  int last = symbol_table.size()-1;
-  if (last < 0) {
-    printf("***Error. Attempt to call get_function with an empty symbol table\n");
-    printf("Create a 'Function' object using 'add_function_to_symbol_table' before\n");
-    printf("calling 'find' or 'add_variable_to_symbol_table'");
-    exit(1);
-  }
-  return &symbol_table[last];
-}
-bool find(std::string &value) {
-  Function *f = get_function();
-  for(int i=0; i < f->declarations.size(); i++) {
-    Symbol *s = &f->declarations[i];
-    if (s->name == value) {
-      return true;
-    }
-  }
-  return false;
-}
-void add_function_to_symbol_table(std::string &value) {
-  Function f; 
-  f.name = value; 
-  symbol_table.push_back(f);
-}
-void add_variable_to_symbol_table(std::string &value, Type t) {
-  Symbol s;
-  s.name = value;
-  s.type = t;
-  Function *f = get_function();
-  f->declarations.push_back(s);
-}
-bool checkMainFunc(){
- for(int i=0; i<symbol_table.size();i++){
-  if(symbol_table.at(i).name.compare("main") == 0) return true;
- }
- return false;
-}
-Type getVarType(std:: string &code){
- if(code.at(1) == '[') return Array;
- return Integer;
-}
-std:: string getVarName(Type t, std:: string &code){
- if(t == Integer){
-  return code.substr(2,code.find('\n')-2);
- }
- else{
-  for(int i = 4;i<code.length();i++){
-   if(code.at(i) == ','){
-     return code.substr(4,i-4);
-   }
-  }
- }
-}
-void generate_table_and_verify_code(std::string &code){
- int startLine=0;
- for(int i=0;i<code.length();i++){
-   if(code.at(i) == '\n'){
-     if(code.at(startLine) == '.' && code.at(startLine+1) != '>' && code.at(startLine+2) != '_'){
-        std::string s = code.substr(startLine,i+1);
-        Type t= getVarType(s);
-        s=getVarName(t,s);
-        add_variable_to_symbol_table(s,t);
-      }
-       startLine = i+1;
-    }
-  }
-}
-void print_symbol_table(void) {
-  printf("symbol table:\n");
-  printf("--------------------\n");
-  for(int i=0; i<symbol_table.size(); i++) {
-    printf("function: %s\n", symbol_table[i].name.c_str());
-    for(int j=0; j<symbol_table[i].declarations.size(); j++) {
-      printf("  locals: %s\n", symbol_table[i].declarations[j].name.c_str());
-    }
-  }
-  printf("--------------------\n");
-}
-*/
 
 %}
 
@@ -154,120 +72,100 @@ void print_symbol_table(void) {
 /* Finalized
 ********************/
 
-program : function_declerations 
-  { 
+program : function_declerations { 
     struct CodeNode *node = $1;
     printf("%s\n", node->code.c_str());
-  }
-
-function_declerations  : function_declerations function_decleration 
-  {
-    struct CodeNode *function_declerations = $1;
-    struct CodeNode *function_decleration = $2;
-    struct CodeNode *node = new CodeNode;
-    node -> code = function_declerations-> code + function_decleration -> code;
-    $$ = node; 
-  }
-  | %empty {struct CodeNode *node = new CodeNode; $$ = node;}
-
-statements  : statements statement 
-  { 
-    struct CodeNode *statements = $1;
-    struct CodeNode *statement = $2;
-    struct CodeNode *node = new CodeNode;
-    node -> code = statements-> code + statement -> code;
-    $$ = node;
-  }
-	| %empty {struct CodeNode *node = new CodeNode; $$ = node;}
-
-statement   
-  : var_decleration SEMICOLON     {$$ = $1;}
-  | var_assigment   SEMICOLON     {$$ = $1;}
-  | print_statement SEMICOLON     {$$ = $1;}
-  | return_statement SEMICOLON    {$$ = $1;}
-
-  | if_statement 
-    {struct CodeNode *node = new CodeNode; $$ = node;}
-
-  | read_statement SEMICOLON 
-    {struct CodeNode *node = new CodeNode; $$ = node;}
-
-  | while_statement 
-    {struct CodeNode *node = new CodeNode; $$ = node;}
-
-  | BREAK SEMICOLON 
-    {struct CodeNode *node = new CodeNode; $$ = node;}
-
-  | CONTINUE SEMICOLON 
-    {struct CodeNode *node = new CodeNode; $$ = node;}
-
-if_statement    
-  : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {};
-
-else_statement  
-  : ELSE L_CURLY statements R_CURLY {}
-  | %empty {};
-
-comparitors 
-  : LESS {}
-  | LESS_EQ {}
-  | GREATER {}
-  | GREATER_EQ {}
-  | EQUALITY {} 
-  | NOT_EQ {};
-
-return_statement  : RETURN expression 
-  {
-    struct CodeNode *node= new CodeNode;
-    struct CodeNode *expression= $2;
-    node->code=expression->code;
-    node->code+= std::string("ret ")+expression->name +std::string("\n");
-    $$=node;
-  };
-
-var_decleration : INT IDENTIFIER // int a -> . 2
-  {
-    struct CodeNode *node= new CodeNode;
-    node->code = std:: string(". ") + std::string($2) + std::string("\n");
-    $$ = node;
-  } 
-	| INT L_BRAKET NUMBER R_BRAKET IDENTIFIER  // int [1]a  -> .[] , 1
-  {
-    if(atoi($3) <= 0)
-    {
-    fprintf(stderr, "Sematic error: line %d: array size <= 0\n", yylineno);
-    exit(1);
     }
 
-    struct CodeNode *node= new CodeNode;
-    node -> code =  std:: string(".[] ") + std::string($5) + std::string(", ")+std::string($3)+ std::string("\n");
-    $$ = node;
-  } 
-	| INT IDENTIFIER ASSIGNMENT expression  {}
+function_declerations  : function_declerations function_decleration 
+    {
+        struct CodeNode *function_declerations = $1;
+        struct CodeNode *function_decleration = $2;
+        struct CodeNode *node = new CodeNode;
+        node -> code = function_declerations-> code + function_decleration -> code;
+        $$ = node; 
+    }
+    | %empty {struct CodeNode *node = new CodeNode; $$ = node;}
+
+statements  : statements statement 
+    { 
+        struct CodeNode *statements = $1;
+        struct CodeNode *statement = $2;
+        struct CodeNode *node = new CodeNode;
+        node -> code = statements-> code + statement -> code;
+        $$ = node;
+    }
+	| %empty {struct CodeNode *node = new CodeNode; $$ = node;}
 
 /********************
 /* Construction
 ********************/
 
-paramerter_decleration : {}
-function_decleration:{}
-var_assigment:{}
-expression:{}
-bool_expression:{}
-multiplicative_expr:{}
-term:{}
-pars:{}
-varibles:{}
-print_statement:{}
 
-read_statement 	       : READ L_PAR expression R_PAR {};
-while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {};
+/*
+statement   : NUMBER {
+   struct CodeNode *node = new CodeNode;
+   node->code = std::string("... ") + std::string($1) + std::string("\n");
+   $$ = node;
+}
+*/
+
+
+statement   : var_decleration SEMICOLON     {$$ = $1;}
+            | var_assigment   SEMICOLON     {$$ = $1;}
+            | print_statement SEMICOLON     {$$ = $1;}
+            | return_statement SEMICOLON    {$$ = $1;}
+
+            | if_statement 
+                {struct CodeNode *node = new CodeNode; $$ = node;}
+
+            | read_statement SEMICOLON 
+                {struct CodeNode *node = new CodeNode; $$ = node;}
+
+		    | while_statement 
+                {struct CodeNode *node = new CodeNode; $$ = node;}
+
+            | BREAK SEMICOLON 
+                {struct CodeNode *node = new CodeNode; $$ = node;}
+
+            | CONTINUE SEMICOLON 
+                {struct CodeNode *node = new CodeNode; $$ = node;}
+
+if_statement    : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {};
+else_statement  : ELSE L_CURLY statements R_CURLY {}
+		        | %empty {};
+
+comparitors     : LESS {}
+                | LESS_EQ {}
+                | GREATER {}
+                | GREATER_EQ {}
+                | EQUALITY {} 
+                | NOT_EQ {};
+
+return_statement    : RETURN expression 
+{
+    struct CodeNode *node= new CodeNode;
+    struct CodeNode *expression= $2;
+    node->code=expression->code;
+    node->code+= std::string("ret ") + expression->name +std::string("\n");
+    $$=node;
+};
+
 /********************
 /* TEST
 ********************/
 
+ function_decleration : FUNC IDENTIFIER L_PAR R_PAR  L_CURLY statements R_CURLY {
+    struct CodeNode *node = new CodeNode;
+    struct CodeNode *stm = $6;
+    node->code += std::string("func ") + std::string($2) + std::string("\n");
+    node->code += stm->code;
+    node->code += std::string("endfunc") + std::string("\n");
+    $$ = node; 
+ }
 
 /*
+
 var_decleration        : INT IDENTIFIER {
  struct CodeNode *node= new CodeNode;
  node->code = std:: string(". ") + std::string($2) + std::string("\n");
@@ -277,7 +175,7 @@ var_decleration        : INT IDENTIFIER {
 		       | INT L_BRAKET NUMBER R_BRAKET IDENTIFIER {
   if(atoi($3) <= 0){
   fprintf(stderr, "Sematic error at line %d: array decleared of size less than or equal to 0\n", yylineno);
-  exit(1);
+  return -1;
  }
   struct CodeNode *node= new CodeNode;
   node -> code =  std:: string(".[] ") + std::string($5) + std::string(", ")+std::string($3)+ std::string("\n");
@@ -286,10 +184,6 @@ var_decleration        : INT IDENTIFIER {
  } 
 	               | INT IDENTIFIER ASSIGNMENT expression  {}
 		       ;
-
-
-
-
 paramerter_decleration : INT IDENTIFIER {
  struct CodeNode *node = new CodeNode;
  node->code = std:: string(". ") + std::string($2) + std::string("\n");
@@ -306,14 +200,8 @@ struct CodeNode *paramerter_decleration = $4;
             	       | INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramerter_decleration {}
 		       | %empty {struct CodeNode *node = new CodeNode; $$ = node;}
 		       ; 
-
-
-
-
 function_decleration   : FUNC IDENTIFIER L_PAR paramerter_decleration R_PAR L_CURLY statements R_CURLY {
-
-std::string subS= std::string($2);
-add_function_to_symbol_table(subS);
+std::string subS="";
 int cnt=0;
 int dotPlace=0;
 struct CodeNode *node = new CodeNode;
@@ -325,18 +213,13 @@ for(int i=0; i< paramerter_decleration->code.length();i++){
 	if(paramerter_decleration->code.at(i) == '\n'){
 	   subS = paramerter_decleration->code.substr(dotPlace + 1 , i-dotPlace-1);
            node->code += std::string("= ")+subS+std::string(", $")+std::to_string(cnt) + std::string("\n");
-	   cnt++; 
-           subS= subS.substr(1);
-           add_variable_to_symbol_table(subS, Integer);
+	   cnt++;
            dotPlace =i+1;
 	}
 }
 node->code += statements->code;
-generate_table_and_verify_code(statements->code);
 node->code += std::string("endfunc\n\n");
 $$ = node;};
-
-
 var_assigment          : IDENTIFIER ASSIGNMENT expression {
  struct CodeNode *node = new CodeNode;
  struct CodeNode *expression = $3;
@@ -353,9 +236,6 @@ var_assigment          : IDENTIFIER ASSIGNMENT expression {
  $$= node;
 }
                        ;
-
-
-
 expression             : multiplicative_expr {$$ = $1;}
 		       | multiplicative_expr ADD expression {
  struct CodeNode *node = new CodeNode;
@@ -378,12 +258,7 @@ expression             : multiplicative_expr {$$ = $1;}
  node -> name = tempVarible;
  $$ = node;}
                        ;
-
-
-
 bool_expression        : expression comparitors expression {};
-
-
 multiplicative_expr    : term {$$ = $1;}
                        | term MOD multiplicative_expr {
  struct CodeNode *node = new CodeNode;
@@ -416,9 +291,6 @@ multiplicative_expr    : term {$$ = $1;}
  node -> name = tempVarible;
  $$ = node;}
 		       ;
-
-
-
 term                   : L_PAR expression R_PAR {$$ = $2; }
 		       | NUMBER {
  struct CodeNode *node = new CodeNode;
@@ -435,10 +307,6 @@ term                   : L_PAR expression R_PAR {$$ = $2; }
  $$ = node;}
 		       | varibles {$$ = $1;}
 		       ;
-
-
-
-
 pars                   : pars COMMA expression {
  struct CodeNode *node = new CodeNode;
  struct CodeNode *expression = $3;
@@ -456,8 +324,6 @@ pars                   : pars COMMA expression {
  $$ = node;}
                        | %empty {struct CodeNode *node = new CodeNode; $$ = node;}
                        ;
-
-
 varibles               : IDENTIFIER {
  struct CodeNode *node = new CodeNode;
  node -> name = std::string($1);
@@ -470,8 +336,6 @@ varibles               : IDENTIFIER {
  node->name = tempVarible;
  $$ = node;}
                        ;
-
-
  print_statement		       : PRT L_PAR expression R_PAR {
  struct CodeNode *node = new CodeNode;
  struct CodeNode *expression = $3;
@@ -479,10 +343,8 @@ varibles               : IDENTIFIER {
  node-> code += std::string(".> ") + expression->name + std::string("\n");
  $$ = node;
 };
-
-
-
-
+read_statement 	       : READ L_PAR expression R_PAR {};
+while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {};
 
 */
 
@@ -501,13 +363,7 @@ int main(int argc, char** argv) {
     }
 
     yyparse();
-if(!checkMainFunc()){
-  fprintf(stderr, "Sematic error at line %d: no main fuction declared\n", yylineno);
-  exit(1);
 
- }
-
-   print_symbol_table();
     if (argc >= 2) {
         fclose(yyin);
     }
