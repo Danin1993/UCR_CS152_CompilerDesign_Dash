@@ -1,3 +1,11 @@
+
+/*
+/* --------------------------------------------------
+/* Phase 3 - Start Here
+/* Header
+/*--------------------------------------------------
+*/
+
 %{
 #include <iostream>
 #include <stdio.h>
@@ -11,6 +19,7 @@ struct CodeNode{
 std :: string code;
 std :: string name;
 };
+
 int parCnt = 0;
 int varCount = 0;
 extern int yylex();
@@ -18,10 +27,12 @@ extern FILE* yyin;
 extern int yylineno;
 int error_count = 0;
 void yyerror(const char* s);
+
 std::string createTempVarible(){
  static int cnt = 0;
  return std::string("_temp") + std::to_string(cnt++);
 }
+
 %}
 
 %locations 
@@ -45,26 +56,38 @@ std::string createTempVarible(){
 
 %token UNKNOWN_TOKEN
 
-%nterm <double> if_statement else_statement 
-%nterm <double> comparitors bool_expression
-%nterm <double> read_statement while_statement 
+
 
 %start program
-%type <codenode> function_declerations function_decleration statements statement var_decleration
-%type <codenode> var_assigment expression multiplicative_expr term varibles print_statement pars
-%type <codenode> paramerter_decleration return_statement
+%type <codenode> function_declerations function_decleration 
+
 %%
-program                : function_declerations { struct CodeNode *node = $1;
-                         printf("%s\n", node->code.c_str());}
+
+program : function_declerations { 
+    struct CodeNode *node = $1;
+    printf("%s\n", node->code.c_str());
+    }
+
 function_declerations  : function_declerations function_decleration {
- struct CodeNode *function_declerations = $1;
- struct CodeNode *function_decleration = $2;
- struct CodeNode *node = new CodeNode;
- node -> code = function_declerations-> code + function_decleration -> code;
- $$ = node; }
-                       | %empty{
- struct CodeNode *node = new CodeNode;
- $$ = node;}
+    struct CodeNode *function_declerations = $1;
+    struct CodeNode *function_decleration = $2;
+    struct CodeNode *node = new CodeNode;
+    node -> code = function_declerations-> code + function_decleration -> code;
+    $$ = node; 
+    }
+    | %empty {
+        struct CodeNode *node = new CodeNode;
+        $$ = node;
+        }
+
+ function_decleration : FUNC IDENTIFIER L_PAR R_PAR L_CURLY R_CURLY {
+    struct CodeNode *node = new CodeNode;
+    node->code += std::string("HellYea") + std::string($2) + std::string("\n");
+    $$ = node; 
+ }
+
+/*
+
                        ;
 statements	       : statements statement { 
  struct CodeNode *statements = $1;
@@ -295,6 +318,9 @@ varibles               : IDENTIFIER {
 };
 read_statement 	       : READ L_PAR expression R_PAR {};
 while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {};
+
+*/
+
 %%
 
 int main(int argc, char** argv) {
