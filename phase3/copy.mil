@@ -1,0 +1,7 @@
+func main
+. x
+. y
+= x, 1000
+= y, x
+.> y
+endfunc
