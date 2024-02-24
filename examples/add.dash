@@ -1,12 +1,7 @@
 #Chcked, Done
 func main() {
-  if(){
-
-  }
-  if(){
-
-  }
-  else{
-
-  }
+int a;
+int a;
+int c;
+int [4] array;
 }
