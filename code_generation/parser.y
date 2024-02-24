@@ -54,6 +54,12 @@ bool find(std::string &value) {
   }
   return false;
 }
+bool find_function(std:: string &value){
+ for(int i=0;i<symbol_table.size();i++){
+  if(symbol_table.at(i).name.compare(value) == 0){ return true;}
+ }
+ return false;
+}
 void add_function_to_symbol_table(std::string &value) {
   Function f; 
   f.name = value; 
@@ -96,6 +102,10 @@ void generate_table_and_verify_code(std::string &code){
         std::string s = code.substr(startLine,i+1);
         Type t= getVarType(s);
         s=getVarName(t,s);
+        if(find(s)){
+          fprintf(stderr, "Sematic error at line %d: redeclaring a know varible\n", yylineno);
+  	   exit(1);
+	 }
         add_variable_to_symbol_table(s,t);
       }
        startLine = i+1;
@@ -347,6 +357,11 @@ term                   : L_PAR expression R_PAR {$$ = $2; }
                        | IDENTIFIER L_PAR pars R_PAR {
  struct CodeNode *node = new CodeNode;
  struct CodeNode *pars = $3;
+ std:: string s = $1;
+ if(!find_function(s)){
+  fprintf(stderr, "Sematic error at line %d: called an underclared function\n", yylineno);
+  exit(1);
+ }
  std:: string tempVarible = createTempVarible();
  node->code=pars->code;
  node -> code +=  std:: string(". ") + tempVarible + std::string("\n");
