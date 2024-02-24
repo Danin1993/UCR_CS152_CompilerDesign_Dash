@@ -2,8 +2,7 @@
 func add(int a, int b) {
     int c;
     return a + b;
-    }
-
+        }
 func mul(int a, int b) {
    int d;
     return a * b;
@@ -16,5 +15,6 @@ prt(a);
 b = mul(a, a + b);
 prt(b);
 }
+
 
 
