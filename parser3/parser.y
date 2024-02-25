@@ -39,6 +39,10 @@ std::string createTempVarible(){
 %left L_PAR R_PAR 
 %left IDENTIFIER NUMBER
 
+%start program
+%token FUNCTION BEGINPARAMS ENDPARAMS BEGINLOCALS ENDLOCALS BEGINBODY ENDBODY
+%token INTEGER ARRAY OF IF THEN ENDIF ELSE 
+%token WHILE DO BEGINLOOP ENDLOOP CONTINUE
 %token <op_value> NUMBER
 %token <op_value> IDENTIFIER
 
@@ -51,7 +55,7 @@ std::string createTempVarible(){
 %nterm <double> comparitors bool_expression
 %nterm <double> read_statement while_statement 
 
-%start program
+
 %type <codenode> function_declerations function_decleration statements statement var_decleration
 %type <codenode> var_assigment expression multiplicative_expr term varibles print_statement pars
 %type <codenode> paramerter_decleration return_statement

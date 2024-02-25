@@ -42,7 +42,7 @@ std::string createTempVarible(){
 %token <op_value> NUMBER
 %token <op_value> IDENTIFIER
 
-%token RETURN RRETURN INT PRT FUNC WHILE IF ELSE BREAK CONTINUE READ SEMICOLON COMMA 
+%token RETURN RRETURN INT PRT FUNC WHILE IF ELSE BREAK CONTINUE READ SEMICOLON COMMA ARR_IDENTIFIER
 %token L_CURLY R_CURLY L_BRAKET R_BRAKET ASSIGNMENT LESS LESS_EQ GREATER GREATER_EQ EQUALITY NOT_EQ
 
 %token UNKNOWN_TOKEN
@@ -52,7 +52,7 @@ std::string createTempVarible(){
 %nterm <double> read_statement while_statement 
 
 %start program
-%type <codenode> function_declerations function_decleration statements statement var_decleration
+%type <codenode> function_declerations function_decleration statements statement var_decleration array_declaration
 %type <codenode> var_assigment expression multiplicative_expr term varibles print_statement pars
 %type <codenode> paramerter_decleration return_statement
 %%
@@ -85,6 +85,7 @@ statements	       : statements statement {
 statement	       : var_decleration SEMICOLON {$$ = $1;}
 	               | var_assigment SEMICOLON { $$ = $1; }
 		       | print_statement SEMICOLON {$$ = $1;}
+                       | array_declaration SEMICOLON {$$ = $1}
 		       | if_statement {
 struct CodeNode *node = new CodeNode;
  $$ = node;}
@@ -121,6 +122,13 @@ return_statement       : RETURN expression {
  $$=node;
 
 };
+
+array_declaration      :  ARR_IDENTIFIER {
+struct Codenode *node = new CodeNode;
+node->code = std:: string("[]") + std::string("=") + std::string("$2") + std::string(",") + std::string("0") + std::string ("$4") + std:string ("\n");
+$$ = node;
+}                      
+
 var_decleration        : INT IDENTIFIER {
  struct CodeNode *node= new CodeNode;
  node->code = std:: string(". ") + std::string($2) + std::string("\n");
@@ -136,7 +144,8 @@ var_decleration        : INT IDENTIFIER {
   node -> code =  std:: string(".[] ") + std::string($5) + std::string(", ")+std::string($3)+ std::string("\n");
   $$ = node;
   
- } 
+ }
+
 	               | INT IDENTIFIER ASSIGNMENT expression  {}
 		       ;
 paramerter_decleration : INT IDENTIFIER {
