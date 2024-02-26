@@ -260,52 +260,83 @@ function_decleration
         $$ = node;
     }
 
-var_assigment: IDENTIFIER ASSIGNMENT expression {
-    if (!isDeclared($1)) {
-        char buffer[128];
-        snprintf(buffer, sizeof(buffer), "Undeclared variable '%s'", $1);
-        yyerror(buffer);
-    } else {
-                               struct CodeNode *node = new CodeNode;
-                               struct CodeNode *expression = $3;
-                               node->code = expression->code;
-                               node->code += std::string("= ") + std::string($1) + std::string(", ") + expression->name + std::string("\n");
-                               $$ = node;
-                           }
-                         }
 
-                       | IDENTIFIER L_BRAKET NUMBER R_BRAKET ASSIGNMENT expression{
 
- struct CodeNode *node = new CodeNode;
- struct CodeNode *expression = $6;
- node -> code = expression -> code; 
- node-> code += std:: string("[]= ") + std::string($1) + std::string(", ") + std::string($3) + std::string(", ") + expression->name + std::string("\n");
- $$= node;
-}
-                       ;
-expression             : multiplicative_expr {$$ = $1;}
-		       | multiplicative_expr ADD expression {
-    struct CodeNode *node = new CodeNode;
-    struct CodeNode *left = $1; 
-    struct CodeNode *right = $3;
-    std::string tempVarible = createTempVarible();
-    node->code = left->code + right->code;
-    node->code += std::string(". ") + tempVarible + std::string("\n");
-    node->code += std::string("+ ") + tempVarible + std::string(", ") + left->name  + std::string(", ") + right->name + std::string("\n");
-    node->name = tempVarible;
- $$ = node;}
-		       | multiplicative_expr SUBTRACTION expression { 
- struct CodeNode *node = new CodeNode;
- struct CodeNode *multiplicative_expr = $1;
- struct CodeNode *expression = $3;
- node -> code = multiplicative_expr -> code + expression->code;
- std:: string tempVarible = createTempVarible();
- node -> code +=  std:: string(". ") + tempVarible + std::string("\n");
- node -> code += std::string("- ") + tempVarible + std::string(", ") + multiplicative_expr->name  + std::string(", ") + expression->name + std::string("\n");
- node -> name = tempVarible;
- $$ = node;}
-                       ;
-bool_expression        : expression comparitors expression {};
+var_assigment
+    : IDENTIFIER ASSIGNMENT expression 
+        {
+            if (!isDeclared($1)) {
+            char buffer[128];
+            snprintf(buffer, sizeof(buffer), "Undeclared variable '%s'", $1);
+            yyerror(buffer);
+            } else {
+            struct CodeNode * node = new CodeNode;
+            struct CodeNode * expression = $3;
+            node -> code = expression -> code;
+            node -> code += std::string("= ") + std::string($1) + std::string(", ") + expression -> name + std::string("\n");
+            $$ = node;
+            }
+        }
+    |
+    IDENTIFIER L_BRAKET NUMBER R_BRAKET ASSIGNMENT expression 
+        {
+
+            struct CodeNode * node = new CodeNode;
+            struct CodeNode * expression = $6;
+            node -> code = expression -> code;
+            node -> code += std::string("[]= ") + std::string($1) + std::string(", ") + std::string($3) + std::string(", ") + expression -> name + std::string("\n");
+            $$ = node;
+        }
+
+
+expression
+    : multiplicative_expr 
+        {$$ = $1;} 
+    |
+    multiplicative_expr ADD expression 
+        {
+            struct CodeNode * node = new CodeNode;
+            struct CodeNode * left = $1;
+            struct CodeNode * right = $3;
+            std::string tempVarible = createTempVarible();
+            node -> code = left -> code + right -> code;
+            node -> code += std::string(". ") + tempVarible + std::string("\n");
+            node -> code += std::string("+ ") + tempVarible + std::string(", ") + left -> name + std::string(", ") + right -> name + std::string("\n");
+            node -> name = tempVarible;
+            $$ = node;
+        } 
+    |
+    multiplicative_expr SUBTRACTION expression 
+        {
+            struct CodeNode * node = new CodeNode;
+            struct CodeNode * multiplicative_expr = $1;
+            struct CodeNode * expression = $3;
+            node -> code = multiplicative_expr -> code + expression -> code;
+            std::string tempVarible = createTempVarible();
+            node -> code += std::string(". ") + tempVarible + std::string("\n");
+            node -> code += std::string("- ") + tempVarible + std::string(", ") + multiplicative_expr -> name + std::string(", ") + expression -> name + std::string("\n");
+            node -> name = tempVarible;
+            $$ = node;
+        }
+
+
+
+bool_expression
+    : expression comparitors expression 
+        {}
+
+
+
+
+
+
+
+
+
+
+
+
+
 multiplicative_expr    : term {$$ = $1;}
                        | term MOD multiplicative_expr {
  struct CodeNode *node = new CodeNode;
