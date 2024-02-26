@@ -569,10 +569,10 @@ static const yytype_int16 yyrline[] =
 {
        0,    76,    76,    89,    98,   103,   112,   117,   119,   121,
      123,   125,   127,   129,   131,   133,   138,   143,   145,   150,
-     152,   154,   156,   158,   160,   165,   177,   189,   200,   205,
-     217,   231,   233,   235,   240,   240,   266,   281,   293,   296,
-     309,   325,   331,   334,   347,   360,   376,   378,   385,   397,
-     402,   413,   421,   426,   439,   457,   467,   471
+     152,   154,   156,   158,   160,   165,   177,   189,   203,   208,
+     220,   234,   236,   238,   243,   243,   269,   284,   296,   299,
+     312,   328,   334,   337,   350,   363,   379,   381,   388,   400,
+     405,   416,   424,   429,   442,   460,   470,   474
 };
 #endif
 
@@ -2041,25 +2041,28 @@ yyreduce:
   case 27: /* var_dec: INT L_BRAKET NUMBER R_BRAKET IDENTIFIER  */
 #line 190 "parser.y"
         {
-            if (atoi((yyvsp[-2].op_value)) <= 0) {
-            fprintf(stderr, "Sematic error at line %d: array decleared of size less than or equal to 0\n", yylineno);
-            return -1;
+            if (isDeclared((yyvsp[0].op_value))) {
+                yyerror("Array variable redeclared");
+            } else if (atoi((yyvsp[-2].op_value)) <= 0) {
+                fprintf(stderr, "Semantic error at line %d: array declared of size less than or equal to 0\n", yylineno);
+            } else {
+                symbolTable.push_back((yyvsp[0].op_value));
+                struct CodeNode * node = new CodeNode;
+                node -> code = std::string(".[] ") + std::string((yyvsp[0].op_value)) + std::string(", ") + std::string((yyvsp[-2].op_value)) + std::string("\n");
+                (yyval.codenode) = node;
             }
-            struct CodeNode * node = new CodeNode;
-            node -> code = std::string(".[] ") + std::string((yyvsp[0].op_value)) + std::string(", ") + std::string((yyvsp[-2].op_value)) + std::string("\n");
-            (yyval.codenode) = node;
         }
-#line 2053 "parser.tab.c"
+#line 2056 "parser.tab.c"
     break;
 
   case 28: /* var_dec: INT IDENTIFIER ASSIGNMENT expression  */
-#line 200 "parser.y"
+#line 203 "parser.y"
                                          {}
-#line 2059 "parser.tab.c"
+#line 2062 "parser.tab.c"
     break;
 
   case 29: /* param_dec: INT IDENTIFIER  */
-#line 206 "parser.y"
+#line 209 "parser.y"
         {
             if (isDeclared((yyvsp[0].op_value))) {
             yyerror("Parameter redeclared");
@@ -2070,11 +2073,11 @@ yyreduce:
             (yyval.codenode) = paramNode;
             }
         }
-#line 2074 "parser.tab.c"
+#line 2077 "parser.tab.c"
     break;
 
   case 30: /* param_dec: INT IDENTIFIER COMMA param_dec  */
-#line 218 "parser.y"
+#line 221 "parser.y"
         {
             if (isDeclared((yyvsp[-2].op_value))) {
             yyerror("Parameter redeclared");
@@ -2087,35 +2090,35 @@ yyreduce:
             (yyval.codenode) = node;
             }
         }
-#line 2091 "parser.tab.c"
+#line 2094 "parser.tab.c"
     break;
 
   case 31: /* param_dec: INT L_BRAKET R_BRAKET IDENTIFIER  */
-#line 231 "parser.y"
+#line 234 "parser.y"
                                      {}
-#line 2097 "parser.tab.c"
+#line 2100 "parser.tab.c"
     break;
 
   case 32: /* param_dec: INT L_BRAKET R_BRAKET IDENTIFIER COMMA param_dec  */
-#line 233 "parser.y"
+#line 236 "parser.y"
                                                      {}
-#line 2103 "parser.tab.c"
+#line 2106 "parser.tab.c"
     break;
 
   case 33: /* param_dec: %empty  */
-#line 235 "parser.y"
+#line 238 "parser.y"
            {struct CodeNode * node = new CodeNode; (yyval.codenode) = node;}
-#line 2109 "parser.tab.c"
+#line 2112 "parser.tab.c"
     break;
 
   case 34: /* $@1: %empty  */
-#line 240 "parser.y"
+#line 243 "parser.y"
                             {symbolTable.clear();}
-#line 2115 "parser.tab.c"
+#line 2118 "parser.tab.c"
     break;
 
   case 35: /* function: FUNC IDENTIFIER L_PAR $@1 param_dec R_PAR L_CURLY statements R_CURLY  */
-#line 241 "parser.y"
+#line 244 "parser.y"
     {
         std::string subS = "";
         int cnt = 0;
@@ -2137,11 +2140,11 @@ yyreduce:
         node -> code += std::string("endfunc\n\n");
         (yyval.codenode) = node;
     }
-#line 2141 "parser.tab.c"
+#line 2144 "parser.tab.c"
     break;
 
   case 36: /* var_assigment: IDENTIFIER ASSIGNMENT expression  */
-#line 267 "parser.y"
+#line 270 "parser.y"
         {
             if (!isDeclared((yyvsp[-2].op_value))) {
             char buffer[128];
@@ -2155,11 +2158,11 @@ yyreduce:
             (yyval.codenode) = node;
             }
         }
-#line 2159 "parser.tab.c"
+#line 2162 "parser.tab.c"
     break;
 
   case 37: /* var_assigment: IDENTIFIER L_BRAKET NUMBER R_BRAKET ASSIGNMENT expression  */
-#line 282 "parser.y"
+#line 285 "parser.y"
         {
 
             struct CodeNode * node = new CodeNode;
@@ -2168,17 +2171,17 @@ yyreduce:
             node -> code += std::string("[]= ") + std::string((yyvsp[-5].op_value)) + std::string(", ") + std::string((yyvsp[-3].op_value)) + std::string(", ") + expression -> name + std::string("\n");
             (yyval.codenode) = node;
         }
-#line 2172 "parser.tab.c"
+#line 2175 "parser.tab.c"
     break;
 
   case 38: /* expression: multiplicative_expr  */
-#line 294 "parser.y"
+#line 297 "parser.y"
         {(yyval.codenode) = (yyvsp[0].codenode);}
-#line 2178 "parser.tab.c"
+#line 2181 "parser.tab.c"
     break;
 
   case 39: /* expression: multiplicative_expr ADD expression  */
-#line 297 "parser.y"
+#line 300 "parser.y"
         {
             struct CodeNode * node = new CodeNode;
             struct CodeNode * left = (yyvsp[-2].codenode);
@@ -2190,11 +2193,11 @@ yyreduce:
             node -> name = tempVarible;
             (yyval.codenode) = node;
         }
-#line 2194 "parser.tab.c"
+#line 2197 "parser.tab.c"
     break;
 
   case 40: /* expression: multiplicative_expr SUBTRACTION expression  */
-#line 310 "parser.y"
+#line 313 "parser.y"
         {
             struct CodeNode * node = new CodeNode;
             struct CodeNode * multiplicative_expr = (yyvsp[-2].codenode);
@@ -2206,23 +2209,23 @@ yyreduce:
             node -> name = tempVarible;
             (yyval.codenode) = node;
         }
-#line 2210 "parser.tab.c"
+#line 2213 "parser.tab.c"
     break;
 
   case 41: /* bool_expr: expression comparitors expression  */
-#line 326 "parser.y"
+#line 329 "parser.y"
         {}
-#line 2216 "parser.tab.c"
+#line 2219 "parser.tab.c"
     break;
 
   case 42: /* multiplicative_expr: term  */
-#line 332 "parser.y"
+#line 335 "parser.y"
         {(yyval.codenode) = (yyvsp[0].codenode); }
-#line 2222 "parser.tab.c"
+#line 2225 "parser.tab.c"
     break;
 
   case 43: /* multiplicative_expr: term MOD multiplicative_expr  */
-#line 335 "parser.y"
+#line 338 "parser.y"
         {
             struct CodeNode * node = new CodeNode;
             struct CodeNode * term = (yyvsp[-2].codenode);
@@ -2234,11 +2237,11 @@ yyreduce:
             node -> name = tempVarible;
             (yyval.codenode) = node;
         }
-#line 2238 "parser.tab.c"
+#line 2241 "parser.tab.c"
     break;
 
   case 44: /* multiplicative_expr: term MULTIPLY multiplicative_expr  */
-#line 348 "parser.y"
+#line 351 "parser.y"
         {
             struct CodeNode * node = new CodeNode;
             struct CodeNode * term = (yyvsp[-2].codenode);
@@ -2250,11 +2253,11 @@ yyreduce:
             node -> name = tempVarible;
             (yyval.codenode) = node;
         }
-#line 2254 "parser.tab.c"
+#line 2257 "parser.tab.c"
     break;
 
   case 45: /* multiplicative_expr: term DIVIDE multiplicative_expr  */
-#line 361 "parser.y"
+#line 364 "parser.y"
         {
             struct CodeNode * node = new CodeNode;
             struct CodeNode * term = (yyvsp[-2].codenode);
@@ -2266,27 +2269,27 @@ yyreduce:
             node -> name = tempVarible;
             (yyval.codenode) = node;
         }
-#line 2270 "parser.tab.c"
+#line 2273 "parser.tab.c"
     break;
 
   case 46: /* term: L_PAR expression R_PAR  */
-#line 376 "parser.y"
+#line 379 "parser.y"
                              {(yyval.codenode) = (yyvsp[-1].codenode);}
-#line 2276 "parser.tab.c"
+#line 2279 "parser.tab.c"
     break;
 
   case 47: /* term: NUMBER  */
-#line 379 "parser.y"
+#line 382 "parser.y"
         {
             struct CodeNode * node = new CodeNode;
             node -> name = std::string((yyvsp[0].op_value));
             (yyval.codenode) = node;
         }
-#line 2286 "parser.tab.c"
+#line 2289 "parser.tab.c"
     break;
 
   case 48: /* term: IDENTIFIER L_PAR pars R_PAR  */
-#line 386 "parser.y"
+#line 389 "parser.y"
         {
             struct CodeNode * node = new CodeNode;
             struct CodeNode * pars = (yyvsp[-1].codenode);
@@ -2297,17 +2300,17 @@ yyreduce:
             node -> name = tempVarible;
             (yyval.codenode) = node;
         }
-#line 2301 "parser.tab.c"
+#line 2304 "parser.tab.c"
     break;
 
   case 49: /* term: varibles  */
-#line 397 "parser.y"
+#line 400 "parser.y"
              {(yyval.codenode) = (yyvsp[0].codenode);}
-#line 2307 "parser.tab.c"
+#line 2310 "parser.tab.c"
     break;
 
   case 50: /* pars: pars COMMA expression  */
-#line 403 "parser.y"
+#line 406 "parser.y"
         {
             struct CodeNode * node = new CodeNode;
             struct CodeNode * expression = (yyvsp[0].codenode);
@@ -2317,11 +2320,11 @@ yyreduce:
             node -> code += std::string("param ") + expression -> name + std::string("\n");
             (yyval.codenode) = node;
         }
-#line 2321 "parser.tab.c"
+#line 2324 "parser.tab.c"
     break;
 
   case 51: /* pars: expression  */
-#line 414 "parser.y"
+#line 417 "parser.y"
         {
             struct CodeNode * node = new CodeNode;
             struct CodeNode * expression = (yyvsp[0].codenode);
@@ -2329,17 +2332,17 @@ yyreduce:
             node -> code += std::string("param ") + expression -> name + std::string("\n");
             (yyval.codenode) = node;
         }
-#line 2333 "parser.tab.c"
+#line 2336 "parser.tab.c"
     break;
 
   case 52: /* pars: %empty  */
-#line 421 "parser.y"
+#line 424 "parser.y"
              {struct CodeNode * node = new CodeNode;(yyval.codenode) = node;}
-#line 2339 "parser.tab.c"
+#line 2342 "parser.tab.c"
     break;
 
   case 53: /* varibles: IDENTIFIER  */
-#line 427 "parser.y"
+#line 430 "parser.y"
         {
             if (!isDeclared((yyvsp[0].op_value))) {
             char buffer[128];
@@ -2351,11 +2354,11 @@ yyreduce:
             (yyval.codenode) = node;
             }
         }
-#line 2355 "parser.tab.c"
+#line 2358 "parser.tab.c"
     break;
 
   case 54: /* varibles: IDENTIFIER L_BRAKET NUMBER R_BRAKET  */
-#line 440 "parser.y"
+#line 443 "parser.y"
         {
             struct CodeNode * node = new CodeNode;
             std::string tempVarible = createTempVarible();
@@ -2364,11 +2367,11 @@ yyreduce:
             node -> name = tempVarible;
             (yyval.codenode) = node;
         }
-#line 2368 "parser.tab.c"
+#line 2371 "parser.tab.c"
     break;
 
   case 55: /* print_stm: PRT L_PAR expression R_PAR  */
-#line 458 "parser.y"
+#line 461 "parser.y"
         {
             struct CodeNode *node = new CodeNode;
             struct CodeNode *expression = (yyvsp[-1].codenode);
@@ -2376,23 +2379,23 @@ yyreduce:
             node-> code += std::string(".> ") + expression->name + std::string("\n");
             (yyval.codenode) = node;
         }
-#line 2380 "parser.tab.c"
+#line 2383 "parser.tab.c"
     break;
 
   case 56: /* read_stm: READ L_PAR expression R_PAR  */
-#line 467 "parser.y"
+#line 470 "parser.y"
                                   {}
-#line 2386 "parser.tab.c"
+#line 2389 "parser.tab.c"
     break;
 
   case 57: /* while_stm: WHILE L_PAR bool_expr R_PAR L_CURLY statements R_CURLY  */
-#line 471 "parser.y"
+#line 474 "parser.y"
                                                              {}
-#line 2392 "parser.tab.c"
+#line 2395 "parser.tab.c"
     break;
 
 
-#line 2396 "parser.tab.c"
+#line 2399 "parser.tab.c"
 
         default: break;
       }
@@ -2632,7 +2635,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 474 "parser.y"
+#line 477 "parser.y"
 
 
 int main(int argc, char** argv) {

@@ -188,18 +188,17 @@ var_dec
     |
     INT L_BRAKET NUMBER R_BRAKET IDENTIFIER 
         {
-             if (isDeclared($5)) {
-            yyerror("Array variable redeclared");
-        }
-        
-            if (atoi($3) <= 0) {
-            fprintf(stderr, "Sematic error at line %d: array decleared of size less than or equal to 0\n", yylineno);
-            return -1;
+            if (isDeclared($5)) {
+                yyerror("Array variable redeclared");
+            } else if (atoi($3) <= 0) {
+                fprintf(stderr, "Semantic error at line %d: array declared of size less than or equal to 0\n", yylineno);
+            } else {
+                symbolTable.push_back($5);
+                struct CodeNode * node = new CodeNode;
+                node -> code = std::string(".[] ") + std::string($5) + std::string(", ") + std::string($3) + std::string("\n");
+                $$ = node;
             }
-            struct CodeNode * node = new CodeNode;
-            node -> code = std::string(".[] ") + std::string($5) + std::string(", ") + std::string($3) + std::string("\n");
-            $$ = node;
-        } 
+        }
     |
     INT IDENTIFIER ASSIGNMENT expression {}
 
