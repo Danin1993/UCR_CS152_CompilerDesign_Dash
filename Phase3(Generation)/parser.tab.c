@@ -97,7 +97,7 @@ int varCount = 0;
 extern int yylex();
 extern FILE* yyin;
 extern int yylineno;
-int error_count = 0;
+
 void yyerror(const char* s);
 
 std::string createTempVarible(){
@@ -572,7 +572,7 @@ static const yytype_int16 yyrline[] =
      152,   154,   156,   158,   160,   165,   177,   189,   203,   208,
      220,   234,   236,   238,   243,   243,   269,   284,   296,   299,
      312,   328,   334,   337,   350,   363,   379,   381,   388,   407,
-     412,   423,   431,   436,   449,   467,   477,   481
+     412,   423,   431,   436,   449,   460,   470,   474
 };
 #endif
 
@@ -2377,7 +2377,7 @@ yyreduce:
     break;
 
   case 55: /* print_stm: PRT L_PAR expression R_PAR  */
-#line 468 "parser.y"
+#line 461 "parser.y"
         {
             struct CodeNode *node = new CodeNode;
             struct CodeNode *expression = (yyvsp[-1].codenode);
@@ -2389,13 +2389,13 @@ yyreduce:
     break;
 
   case 56: /* read_stm: READ L_PAR expression R_PAR  */
-#line 477 "parser.y"
+#line 470 "parser.y"
                                   {}
 #line 2395 "parser.tab.c"
     break;
 
   case 57: /* while_stm: WHILE L_PAR bool_expr R_PAR L_CURLY statements R_CURLY  */
-#line 481 "parser.y"
+#line 474 "parser.y"
                                                              {}
 #line 2401 "parser.tab.c"
     break;
@@ -2641,7 +2641,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 484 "parser.y"
+#line 477 "parser.y"
 
 
 int main(int argc, char** argv) {
@@ -2662,16 +2662,11 @@ int main(int argc, char** argv) {
         fclose(yyin);
     }
 
-    if (error_count > 0) {
-        fprintf(stderr, "Parsing finished with %d error(s).\n", error_count);
-        return 1; 
-    }
-
     return 0;
 }
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Error at line %d: %s\n", yylineno, s);
+    std::cerr << "[ X ERROR > line " << yylineno - 1<< " ] > " << s << std::endl;
     hasSemanticError = true;
+    exit(1);
 }
-

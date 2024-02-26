@@ -27,7 +27,7 @@ int varCount = 0;
 extern int yylex();
 extern FILE* yyin;
 extern int yylineno;
-int error_count = 0;
+
 void yyerror(const char* s);
 
 std::string createTempVarible(){
@@ -456,13 +456,6 @@ varibles
             $$ = node;
         }
 
-
-
-
-
-
-
-
  print_stm
     : PRT L_PAR expression R_PAR 
         {
@@ -501,16 +494,11 @@ int main(int argc, char** argv) {
         fclose(yyin);
     }
 
-    if (error_count > 0) {
-        fprintf(stderr, "Parsing finished with %d error(s).\n", error_count);
-        return 1; 
-    }
-
     return 0;
 }
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Error at line %d: %s\n", yylineno, s);
+    std::cerr << "[ X ERROR > line " << yylineno - 1<< " ] > " << s << std::endl;
     hasSemanticError = true;
+    exit(1);
 }
-
