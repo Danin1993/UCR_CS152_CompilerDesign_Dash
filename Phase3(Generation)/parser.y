@@ -240,7 +240,7 @@ param_dec
 
 
 function
-    : FUNC IDENTIFIER L_PAR {symbolTable.clear();}param_dec R_PAR L_CURLY statements R_CURLY 
+    : FUNC IDENTIFIER L_PAR {symbolTable.clear();} param_dec R_PAR L_CURLY statements R_CURLY 
     {
         std::string subS = "";
         int cnt = 0;
