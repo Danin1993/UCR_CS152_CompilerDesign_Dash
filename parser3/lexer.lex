@@ -42,9 +42,14 @@ ERRORCOM {COMPARISON}[^ \t\n]|"=="
 
 %{
 #include <stdio.h>
-
 #define YY_DECL int yylex()
 #include "parser.tab.h"
+char *create_string(char *value, int length) {
+  char *return_value = new char[length + 1];
+  strcpy(return_value, value);
+  return return_value;
+}
+
 %}
 
 %option yylineno
@@ -88,10 +93,9 @@ ERRORCOM {COMPARISON}[^ \t\n]|"=="
 
 
 
-{IDENTIFIER}            { yylval.sval = strdup(yytext); return IDENTIFIER; }
+{IDENTIFIER}            { yylval.op_value = create_string(yytext, yyleng); return IDENTIFIER;}
 {ASSIGNMENT_ERROR}      {printf("Error: unrecognized symbol \"%s\"\n", yytext); return -1; }
-{NUMBER}                { yylval.dval = atof(yytext); return NUMBER; }
-
+{NUMBER}                {yylval.op_value = create_string(yytext, yyleng); return NUMBER;}
 {SCINTIFICNUM}		{ printf("SCINTIFIC NUMBER: %s\n", yytext);}
 {COMMENT}               {/* ignore */}
 {WHITESPACE}            { /*ignore*/ }
