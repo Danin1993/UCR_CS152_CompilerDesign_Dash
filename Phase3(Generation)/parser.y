@@ -386,15 +386,22 @@ term
         } 
     |
     IDENTIFIER L_PAR pars R_PAR 
+    
         {
-            struct CodeNode * node = new CodeNode;
-            struct CodeNode * pars = $3;
-            std::string tempVarible = createTempVarible();
-            node -> code = pars -> code;
-            node -> code += std::string(". ") + tempVarible + std::string("\n");
-            node -> code += std::string("call ") + std::string($1) + std::string(", ") + tempVarible + std::string("\n");
-            node -> name = tempVarible;
-            $$ = node;
+           if (!isFunctionDeclared($1)) {
+             char buffer[128];
+             snprintf(buffer, sizeof(buffer), "Undeclared function '%s' called", $1);
+             yyerror(buffer);
+           } else {
+             struct CodeNode * node = new CodeNode;
+             struct CodeNode * pars = $3;
+             std::string tempVarible = createTempVarible();
+             node -> code = pars -> code;
+             node -> code += std::string(". ") + tempVarible + std::string("\n");
+             node -> code += std::string("call ") + std::string($1) + std::string(", ") + tempVarible + std::string("\n");
+             node -> name = tempVarible;
+             $$ = node;
+           }
         } 
     |
     varibles {$$ = $1;};
