@@ -1,6 +1,7 @@
 .nfs*
 *.swp
 *.o
+*.dash
 lexer
 parser
 lex.yy.c
