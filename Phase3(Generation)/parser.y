@@ -388,7 +388,7 @@ term
     IDENTIFIER L_PAR pars R_PAR 
     
         {
-           if (!isFunctionDeclared($1)) {
+           if (!isDeclared($1)) {
              char buffer[128];
              snprintf(buffer, sizeof(buffer), "Undeclared function '%s' called", $1);
              yyerror(buffer);
