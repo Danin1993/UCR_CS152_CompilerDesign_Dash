@@ -3,7 +3,7 @@ func main() {
   int b;
   int c;
   a = 10;
-  b = 25;
-  c = a + b;
+  b = 25; 
+  c = a + c; 
   prt(c);
 }

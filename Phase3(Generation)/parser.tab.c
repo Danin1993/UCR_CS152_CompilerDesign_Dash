@@ -2148,7 +2148,7 @@ yyreduce:
         {
             if (!isDeclared((yyvsp[-2].op_value))) {
             char buffer[128];
-            snprintf(buffer, sizeof(buffer), "Undeclared variable '%s'", (yyvsp[-2].op_value));
+            snprintf(buffer, sizeof(buffer), "Undeclared variable ssssss'%s'", (yyvsp[-2].op_value));
             yyerror(buffer);
             } else {
             struct CodeNode * node = new CodeNode;

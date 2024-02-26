@@ -270,7 +270,7 @@ var_assigment
         {
             if (!isDeclared($1)) {
             char buffer[128];
-            snprintf(buffer, sizeof(buffer), "Undeclared variable '%s'", $1);
+            snprintf(buffer, sizeof(buffer), "Undeclared variable'%s'", $1);
             yyerror(buffer);
             } else {
             struct CodeNode * node = new CodeNode;
