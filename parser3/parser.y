@@ -7,6 +7,13 @@
 #include <string>
 #include <string.h>
 #include <fstream>
+#include <vector>
+#include <map>
+#include <algorithm> 
+
+std::vector<std::string> symbolTable;
+
+bool hasSemanticError = false;
 
 std::ofstream milFile("output.mil");
 struct CodeNode{
@@ -23,6 +30,12 @@ void yyerror(const char* s);
 std::string createTempVarible(){
  static int cnt = 0;
  return std::string("_temp") + std::to_string(cnt++);
+}
+
+
+
+bool isDeclared(const std::string& varName) {
+    return std::find(symbolTable.begin(), symbolTable.end(), varName) != symbolTable.end();
 }
 %}
 
@@ -55,12 +68,17 @@ std::string createTempVarible(){
 %type <codenode> function_declerations function_decleration statements statement var_decleration
 %type <codenode> var_assigment expression multiplicative_expr term varibles print_statement pars
 %type <codenode> paramerter_decleration return_statement
+
 %%
 program                : function_declerations { 
-                        struct CodeNode *node = $1;
-                         printf("%s\n", node->code.c_str());
-                         milFile << node->code; 
-                        milFile.close();}
+                           struct CodeNode *node = $1;
+                           if (!hasSemanticError) {
+                               milFile << node->code; 
+                               std::cout << "successful\n"; 
+                           }
+                           milFile.close();
+                        }
+
 function_declerations  : function_declerations function_decleration {
  struct CodeNode *function_declerations = $1;
  struct CodeNode *function_decleration = $2;
@@ -121,12 +139,16 @@ return_statement       : RETURN expression {
  $$=node;
 
 };
-var_decleration        : INT IDENTIFIER {
- struct CodeNode *node= new CodeNode;
- node->code = std:: string(". ") + std::string($2) + std::string("\n");
- $$ = node;
- 
- } 
+var_decleration: INT IDENTIFIER {
+    if (isDeclared($2)) {
+        yyerror("Variable redeclared");
+    } else {
+        symbolTable.push_back($2);
+        struct CodeNode *node= new CodeNode;
+        node->code = std::string(". ") + std::string($2) + std::string("\n");
+        $$ = node;
+                           }
+                         }
 		       | INT L_BRAKET NUMBER R_BRAKET IDENTIFIER {
   if(atoi($3) <= 0){
   fprintf(stderr, "Sematic error at line %d: array decleared of size less than or equal to 0\n", yylineno);
@@ -139,29 +161,43 @@ var_decleration        : INT IDENTIFIER {
  } 
 	               | INT IDENTIFIER ASSIGNMENT expression  {}
 		       ;
-paramerter_decleration : INT IDENTIFIER {
- struct CodeNode *node = new CodeNode;
- node->code = std:: string(". ") + std::string($2) + std::string("\n");
- $$ = node;
-}
-            	       | INT IDENTIFIER COMMA paramerter_decleration{ 
-struct CodeNode *node = new CodeNode;
-struct CodeNode *paramerter_decleration = $4;
- node->code = std:: string(". ") + std::string($2) + std::string("\n");
- node->code += paramerter_decleration->code;
- $$ = node;
-}
+paramerter_decleration: 
+    INT IDENTIFIER 
+    {
+        if (isDeclared($2)) {
+            yyerror("Parameter redeclared");
+        } else {
+            symbolTable.push_back($2); 
+            struct CodeNode *paramNode = new CodeNode;
+            paramNode->code = std::string(". ") + std::string($2) + std::string("\n");
+            $$ = paramNode;
+        }
+    }
+            	       | INT IDENTIFIER COMMA paramerter_decleration
+    {
+        if (isDeclared($2)) {
+            yyerror("Parameter redeclared");
+        } else {
+            symbolTable.push_back($2);
+                                struct CodeNode *node = new CodeNode;
+                                struct CodeNode *paramerter_decleration = $4;
+                                node->code = std:: string(". ") + std::string($2) + std::string("\n");
+                                node->code += paramerter_decleration->code;
+                                $$ = node;
+                            }
+                        }
 		       | INT L_BRAKET R_BRAKET IDENTIFIER {}
             	       | INT L_BRAKET R_BRAKET IDENTIFIER COMMA paramerter_decleration {}
-		       | %empty {struct CodeNode *node = new CodeNode; $$ = node;}
-		       ; 
-function_decleration   : FUNC IDENTIFIER L_PAR paramerter_decleration R_PAR L_CURLY statements R_CURLY {
+		      | %empty {struct CodeNode* Node = new CodeNode();$$ = Node;}
+
+		       
+function_decleration   : FUNC IDENTIFIER L_PAR {symbolTable.clear();} paramerter_decleration R_PAR L_CURLY  statements R_CURLY { 
 std::string subS="";
 int cnt=0;
 int dotPlace=0;
 struct CodeNode *node = new CodeNode;
-struct CodeNode *statements = $7; 
-struct CodeNode *paramerter_decleration = $4;
+struct CodeNode *statements = $8; 
+struct CodeNode *paramerter_decleration = $5;
 node->code = std::string("func ") + std::string($2) + std::string("\n");
 node->code += paramerter_decleration->code;
 for(int i=0; i< paramerter_decleration->code.length();i++){
@@ -175,13 +211,20 @@ for(int i=0; i< paramerter_decleration->code.length();i++){
 node->code += statements->code;
 node->code += std::string("endfunc\n\n");
 $$ = node;};
-var_assigment          : IDENTIFIER ASSIGNMENT expression {
- struct CodeNode *node = new CodeNode;
- struct CodeNode *expression = $3;
- node -> code = expression -> code;
- node-> code += std:: string("= ")+ std::string($1) + std::string(", ")+ expression->name+ std::string("\n");
- $$ = node;
- }
+var_assigment: IDENTIFIER ASSIGNMENT expression {
+    if (!isDeclared($1)) {
+        char buffer[128];
+        snprintf(buffer, sizeof(buffer), "Undeclared variable '%s'", $1);
+        yyerror(buffer);
+    } else {
+                               struct CodeNode *node = new CodeNode;
+                               struct CodeNode *expression = $3;
+                               node->code = expression->code;
+                               node->code += std::string("= ") + std::string($1) + std::string(", ") + expression->name + std::string("\n");
+                               $$ = node;
+                           }
+                         }
+
                        | IDENTIFIER L_BRAKET NUMBER R_BRAKET ASSIGNMENT expression{
 
  struct CodeNode *node = new CodeNode;
@@ -280,9 +323,16 @@ pars                   : pars COMMA expression {
                        | %empty {struct CodeNode *node = new CodeNode; $$ = node;}
                        ;
 varibles               : IDENTIFIER {
- struct CodeNode *node = new CodeNode;
- node -> name = std::string($1);
- $$ = node;}
+                           if (!isDeclared($1)) {
+                               char buffer[128];
+                               snprintf(buffer, sizeof(buffer), "Undeclared variable '%s'", $1);
+                               yyerror(buffer);
+                           } else {
+                               struct CodeNode *node = new CodeNode;
+                               node->name = std::string($1);
+                               $$ = node;
+                           }
+                         }
 		       | IDENTIFIER L_BRAKET NUMBER R_BRAKET {
  struct CodeNode *node = new CodeNode;
  std:: string tempVarible = createTempVarible();
@@ -329,14 +379,7 @@ int main(int argc, char** argv) {
 }
 
 void yyerror(const char *s) {
-  if (strcmp(s, "syntax error") == 0) {
-        fprintf(stderr, "Syntax error at line %d: Unexpected token\n", yylineno);
-    } else if (strcmp(s, "type error") == 0) {
-        fprintf(stderr, "Type error at line %d: Incompatible types\n", yylineno);
-    } else if (strcmp(s, "undeclared variable") == 0) {
-        fprintf(stderr, "Error at line %d: Undeclared variable\n", yylineno);
-    } else {
-        fprintf(stderr, "Error at line %d: %s\n", yylineno, s);
-    }
-    error_count++;
+    fprintf(stderr, "Error at line %d: %s\n", yylineno, s);
+    hasSemanticError = true;
 }
+

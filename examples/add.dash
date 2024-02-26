@@ -7,3 +7,4 @@ func main() {
   c = a + b;
   prt(c);
 }
+# 35
