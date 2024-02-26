@@ -188,6 +188,10 @@ var_dec
     |
     INT L_BRAKET NUMBER R_BRAKET IDENTIFIER 
         {
+             if (isDeclared($5)) {
+            yyerror("Array variable redeclared");
+        }
+        
             if (atoi($3) <= 0) {
             fprintf(stderr, "Sematic error at line %d: array decleared of size less than or equal to 0\n", yylineno);
             return -1;
