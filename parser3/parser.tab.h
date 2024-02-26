@@ -1,8 +1,9 @@
-/* A Bison parser, made by GNU Bison 3.0.4.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
+   Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -30,6 +31,10 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
+
 #ifndef YY_YY_PARSER_TAB_H_INCLUDED
 # define YY_YY_PARSER_TAB_H_INCLUDED
 /* Debug traces.  */
@@ -40,61 +45,65 @@
 extern int yydebug;
 #endif
 
-/* Token type.  */
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    SUBTRACTION = 258,
-    ADD = 259,
-    MULTIPLY = 260,
-    DIVIDE = 261,
-    MOD = 262,
-    L_PAR = 263,
-    R_PAR = 264,
-    IDENTIFIER = 265,
-    NUMBER = 266,
-    RETURN = 267,
-    RRETURN = 268,
-    INT = 269,
-    PRT = 270,
-    FUNC = 271,
-    WHILE = 272,
-    IF = 273,
-    ELSE = 274,
-    BREAK = 275,
-    CONTINUE = 276,
-    READ = 277,
-    SEMICOLON = 278,
-    COMMA = 279,
-    L_CURLY = 280,
-    R_CURLY = 281,
-    L_BRAKET = 282,
-    R_BRAKET = 283,
-    ASSIGNMENT = 284,
-    LESS = 285,
-    LESS_EQ = 286,
-    GREATER = 287,
-    GREATER_EQ = 288,
-    EQUALITY = 289,
-    NOT_EQ = 290,
-    UNKNOWN_TOKEN = 291
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    SUBTRACTION = 258,             /* SUBTRACTION  */
+    ADD = 259,                     /* ADD  */
+    MULTIPLY = 260,                /* MULTIPLY  */
+    DIVIDE = 261,                  /* DIVIDE  */
+    MOD = 262,                     /* MOD  */
+    L_PAR = 263,                   /* L_PAR  */
+    R_PAR = 264,                   /* R_PAR  */
+    NUMBER = 265,                  /* NUMBER  */
+    IDENTIFIER = 266,              /* IDENTIFIER  */
+    RETURN = 267,                  /* RETURN  */
+    RRETURN = 268,                 /* RRETURN  */
+    INT = 269,                     /* INT  */
+    PRT = 270,                     /* PRT  */
+    FUNC = 271,                    /* FUNC  */
+    WHILE = 272,                   /* WHILE  */
+    IF = 273,                      /* IF  */
+    ELSE = 274,                    /* ELSE  */
+    BREAK = 275,                   /* BREAK  */
+    CONTINUE = 276,                /* CONTINUE  */
+    READ = 277,                    /* READ  */
+    SEMICOLON = 278,               /* SEMICOLON  */
+    COMMA = 279,                   /* COMMA  */
+    L_CURLY = 280,                 /* L_CURLY  */
+    R_CURLY = 281,                 /* R_CURLY  */
+    L_BRAKET = 282,                /* L_BRAKET  */
+    R_BRAKET = 283,                /* R_BRAKET  */
+    ASSIGNMENT = 284,              /* ASSIGNMENT  */
+    LESS = 285,                    /* LESS  */
+    LESS_EQ = 286,                 /* LESS_EQ  */
+    GREATER = 287,                 /* GREATER  */
+    GREATER_EQ = 288,              /* GREATER_EQ  */
+    EQUALITY = 289,                /* EQUALITY  */
+    NOT_EQ = 290,                  /* NOT_EQ  */
+    UNKNOWN_TOKEN = 291            /* UNKNOWN_TOKEN  */
   };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-
 union YYSTYPE
 {
-#line 45 "parser.y" /* yacc.c:1909  */
+#line 48 "parser.y"
 
  struct CodeNode *codenode;
  char *op_value;
 
-#line 96 "parser.tab.h" /* yacc.c:1909  */
-};
+#line 105 "parser.tab.h"
 
+};
 typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -117,6 +126,8 @@ struct YYLTYPE
 
 extern YYSTYPE yylval;
 extern YYLTYPE yylloc;
+
 int yyparse (void);
+
 
 #endif /* !YY_YY_PARSER_TAB_H_INCLUDED  */
