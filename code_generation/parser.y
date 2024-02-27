@@ -44,11 +44,14 @@ Function *get_function() {
   }
   return &symbol_table[last];
 }
+
 int find(std::string &value) {
+
   Function *f = get_function();
   for(int i=0; i < f->declarations.size(); i++) {
     Symbol *s = &f->declarations[i];
     if (s->name == value) {
+
       return s->type;
     }
   }
@@ -59,6 +62,7 @@ bool find_function(std:: string &value){
   if(symbol_table.at(i).name.compare(value) == 0){ return true;}
  }
  return false;
+
 }
 void add_function_to_symbol_table(std::string &value) {
   Function f; 
@@ -79,11 +83,13 @@ bool checkMainFunc(){
  return false;
 }
 Type getVarType(std:: string &code){
+
  if(code.at(1) == '['){ return Array;}
  return Integer;
 }
 
 std:: string getVarNameDecleration(Type t, std:: string &code){
+
  if(t == Integer){
   return code.substr(2,code.find('\n')-2);
  }
@@ -95,6 +101,7 @@ std:: string getVarNameDecleration(Type t, std:: string &code){
   }
  }
 }
+
 std:: string getVarNamePrint(Type t, std:: string &code){
  if(t == Integer){
   return code.substr(3,code.find('\n')-3);
@@ -136,10 +143,12 @@ void checkIntergerAssignemnt(std:: string &code){
     }
   }
 }
+
 void generate_table_and_verify_code(std::string &code){
  int startLine=0;
  for(int i=0;i<code.length();i++){
    if(code.at(i) == '\n'){
+
     std::string s = code.substr(startLine,i-startLine);
      if(code.at(startLine) == '.' && code.at(startLine+1) != '[' && code.at(startLine+1) != '>' && code.at(startLine+2) != '_'){
         s=getVarNameDecleration(Integer,s);
@@ -177,6 +186,7 @@ void generate_table_and_verify_code(std::string &code){
       }
     }
   }
+
 void print_symbol_table(void) {
   printf("symbol table:\n");
   printf("--------------------\n");
@@ -184,7 +194,9 @@ void print_symbol_table(void) {
     printf("function: %s\n", symbol_table[i].name.c_str());
     for(int j=0; j<symbol_table[i].declarations.size(); j++) {
       printf("  locals: %s\n", symbol_table[i].declarations[j].name.c_str());
+
        printf("  type: %d\n", symbol_table[i].declarations[j].type);
+
     }
   }
   printf("--------------------\n");
@@ -423,11 +435,13 @@ term                   : L_PAR expression R_PAR {$$ = $2; }
                        | IDENTIFIER L_PAR pars R_PAR {
  struct CodeNode *node = new CodeNode;
  struct CodeNode *pars = $3;
+
  std:: string s = $1;
  if(!find_function(s)){
   fprintf(stderr, "Sematic error at line %d: called an underclared function\n", yylineno);
   exit(1);
  }
+
  std:: string tempVarible = createTempVarible();
  node->code=pars->code;
  node -> code +=  std:: string(". ") + tempVarible + std::string("\n");
@@ -458,10 +472,12 @@ varibles               : IDENTIFIER {
  node -> name = std::string($1);
  $$ = node;}
 		       | IDENTIFIER L_BRAKET NUMBER R_BRAKET {
+
 if(atoi($3) < 0){
   fprintf(stderr, "Sematic error at line %d: array index less than 0\n", yylineno);
   exit(1);
  }
+
  struct CodeNode *node = new CodeNode;
  std:: string tempVarible = createTempVarible();
  node -> code =  std:: string(". ") + tempVarible + std::string("\n");
