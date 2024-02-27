@@ -12,7 +12,7 @@ func main() {
         c = 0;
     } else {
         c = 1;
-    }
+   } 
 
     # Should print out '1'.
     prt(c);

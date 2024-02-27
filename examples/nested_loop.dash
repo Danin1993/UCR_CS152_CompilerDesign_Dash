@@ -7,7 +7,7 @@ func main() {
         while (j < 3) {
             prt(j);
             j = j + 1;
-        }
+       } 
         i = i + 1;
     }
 }
