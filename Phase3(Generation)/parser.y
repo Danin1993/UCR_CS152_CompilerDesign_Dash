@@ -388,11 +388,7 @@ term
     IDENTIFIER L_PAR pars R_PAR 
     
         {
-           if (!isDeclared($1)) {
-             char buffer[128];
-             snprintf(buffer, sizeof(buffer), "Undeclared function '%s' called", $1);
-             yyerror(buffer);
-           } else {
+
              struct CodeNode * node = new CodeNode;
              struct CodeNode * pars = $3;
              std::string tempVarible = createTempVarible();
@@ -402,7 +398,7 @@ term
              node -> name = tempVarible;
              $$ = node;
            }
-        } 
+        
     |
     varibles {$$ = $1;};
 
