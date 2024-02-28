@@ -108,6 +108,7 @@ std:: string getVarNamePrint(Type t, std:: string &code){
  }
 }
 
+
 void checkIntergerAssignemnt(std:: string &code){
   for(int i=2;i<code.length();i++){
     if(code.at(i)==','){
@@ -133,7 +134,115 @@ void checkIntergerAssignemnt(std:: string &code){
            exit(1);
          }
       }
+      break;
     }
+  }
+}
+void checkArrayAssignmentLeft(std:: string &code){
+  int startVal=0;
+  for(int i=0;i<code.length();i++){
+   if(code.at(i) == ','){
+     startVal=i+2;
+     break;
+   }
+  }
+  std:: string temp = "";
+  for(int i=startVal;i<code.length();i++){
+   if(code.at(i) == ','){
+    break;
+   }
+   temp += code.at(i);
+ }
+ int check = find(temp);
+ if(check == -1){
+   fprintf(stderr, "Sematic error at line %d: Accessing an unknow array\n", yylineno);
+           exit(1);
+ }
+ if(check == 0){
+   fprintf(stderr, "Sematic error at line %d: treating an interger as an array\n", yylineno);
+           exit(1);
+ }
+}
+void checkArrayAssignmentRight(std::string &code){
+int numberStart = 0;
+int srcStart = 0;
+std:: string temp = "";
+for(int i=4;i<code.length();i++){
+   if(code.at(i) == ','){
+     numberStart=i+2;
+     break;
+    }
+    temp += code.at(i); 
+  }
+ int check = find(temp);
+ if(check == -1){
+   fprintf(stderr, "Sematic error at line %d: Assigning an unknow array\n", yylineno);
+           exit(1);
+ }
+ if(check == 0){
+   fprintf(stderr, "Sematic error at line %d: treating an interger as an array\n", yylineno);
+           exit(1);
+ }
+ for(int i=numberStart;i<code.length();i++){
+   if(code.at(i) == ','){
+     srcStart=i+2;
+     break;
+    }
+  }
+  temp = code.substr(srcStart, code.length()-srcStart);
+  if(temp.at(0) != '_'  && temp.at(0)>64){
+    check = find(temp);
+     if(check == -1){
+       fprintf(stderr, "Sematic error at line %d: accessing an unknow varible\n", yylineno);
+           exit(1);
+      }
+         if(check == 1){
+          fprintf(stderr, "Sematic error at line %d: treating an array as an interger\n", yylineno);
+           exit(1);
+     }
+   } 
+}
+void checkMath(std::string &code){
+ std:: string temp1 = "";
+ std:: string temp2 =  "";
+ int commaCont =0;
+ int check;
+ for(int i=0; i<code.length();i++){
+  if(code.at(i) == '\n'){
+   break;
+  }
+  if(code.at(i) == ','){
+    commaCont++;
+    i+=2;
+   }
+   if(commaCont==1){
+    temp1+=code.at(i);
+   }
+   if(commaCont == 2){
+    temp2+=code.at(i);
+   }
+  }
+  if(temp1.at(0) != '_' && temp1.at(0)>64){
+   check = find(temp1);
+   if(check == -1){
+       fprintf(stderr, "Sematic error at line %d: accessing an unknow varible\n", yylineno);
+           exit(1);
+      }
+         if(check == 1){
+          fprintf(stderr, "Sematic error at line %d: treating an array as an interger\n", yylineno);
+           exit(1);
+     }
+  }
+ if(temp2.at(0) != '_' && temp2.at(0)>64){
+   check = find(temp2);
+   if(check == -1){
+       fprintf(stderr, "Sematic error at line %d: accessing an unknow varible\n", yylineno);
+           exit(1);
+      }
+         if(check == 1){
+          fprintf(stderr, "Sematic error at line %d: treating an array as an interger\n", yylineno);
+           exit(1);
+     }
   }
 }
 void generate_table_and_verify_code(std::string &code){
@@ -171,8 +280,19 @@ void generate_table_and_verify_code(std::string &code){
      }
      if(code.at(startLine) == '=' && code.at(startLine+1)== ' '){
      checkIntergerAssignemnt(s);
- 
    }
+    if(code.at(startLine) == '=' && code.at(startLine+1)== '['){
+     checkArrayAssignmentLeft(s);  
+   }
+   if(code.at(startLine) == '['){
+      checkArrayAssignmentRight(s);
+  
+    }
+   if(code.at(startLine) == '+' || code.at(startLine) == '-' || code.at(startLine) == '*' || code.at(startLine) == '/' || code.at(startLine) == '%'){
+    checkMath(s);
+   
+
+  }
    startLine = i+1;
       }
     }
@@ -224,6 +344,11 @@ void print_symbol_table(void) {
 %type <codenode> paramerter_decleration return_statement
 %%
 program                : function_declerations { struct CodeNode *node = $1;
+ if(!checkMainFunc()){
+  fprintf(stderr, "Sematic error at line %d: no main fuction declared\n", yylineno);
+  exit(1);
+
+ }
                          printf("%s\n", node->code.c_str());}
 function_declerations  : function_declerations function_decleration {
  struct CodeNode *function_declerations = $1;
@@ -424,7 +549,7 @@ term                   : L_PAR expression R_PAR {$$ = $2; }
  struct CodeNode *node = new CodeNode;
  struct CodeNode *pars = $3;
  std:: string s = $1;
- if(!find_function(s)){
+if(!find_function(s)){
   fprintf(stderr, "Sematic error at line %d: called an underclared function\n", yylineno);
   exit(1);
  }
@@ -493,13 +618,7 @@ int main(int argc, char** argv) {
     }
 
     yyparse();
-if(!checkMainFunc()){
-  fprintf(stderr, "Sematic error at line %d: no main fuction declared\n", yylineno);
-  exit(1);
-
- }
-
-   print_symbol_table();
+   //print_symbol_table();
     if (argc >= 2) {
         fclose(yyin);
     }
