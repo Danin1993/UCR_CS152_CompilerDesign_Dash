@@ -87,7 +87,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 45 "parser.y" /* yacc.c:1909  */
+#line 48 "parser.y" /* yacc.c:1909  */
 
  struct CodeNode *codenode;
  char *op_value;

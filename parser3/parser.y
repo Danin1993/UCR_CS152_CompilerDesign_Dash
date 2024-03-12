@@ -32,7 +32,10 @@ std::string createTempVarible(){
  return std::string("_temp") + std::to_string(cnt++);
 }
 
-
+std::string createLabel() {
+    static int labelCount = 0;
+    return "label" + std::to_string(labelCount++);
+}
 
 bool isDeclared(const std::string& varName) {
     return std::find(symbolTable.begin(), symbolTable.end(), varName) != symbolTable.end();
@@ -351,28 +354,28 @@ varibles               : IDENTIFIER {
 read_statement 	       : READ L_PAR expression R_PAR {};
 while_statement : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {
     struct CodeNode *node = new CodeNode;
-    struct CodeNode *condition = $3; 
-    struct CodeNode *body = $6; 
+    struct CodeNode *condition = $3;
+    struct CodeNode *body = $6;
 
+    std::string loopStartLabel = createLabel() + "beginloop";
+    std::string loopBodyLabel = createLabel() + "loopbody";
+    std::string loopEndLabel = createLabel() + "endloop";
+    std::string tempVar = createTempVarible();
 
-    std::string startLabel = createTempVarible(); 
-    std::string endLabel = createTempVarible();   
-    std::string conditionVar = createTempVarible(); 
-    
+    node->code = ": " + loopStartLabel + "\n";
+    node->code += ". " + tempVar + "\n";
+    node->code += "< " + tempVar + ", " + condition->name + ", 10\n"; 
+    node->code += "?:= " + loopBodyLabel + ", " + tempVar + "\n";
+    node->code += ":= " + loopEndLabel + "\n";
+    node->code += ": " + loopBodyLabel + "\n";
+    node->code += body->code;
+    node->code += ":= " + loopStartLabel + "\n";
+    node->code += ": " + loopEndLabel + "\n";
 
-    node->code = ". " + conditionVar + "\n"; 
-    node->code += startLabel + ":\n"; 
-    node->code += condition->code; 
-    node->code += "= " + conditionVar + ", " + condition->name + "\n"; 
-    node->code += "if " + conditionVar + " == 0 goto " + endLabel + "\n"; 
-    node->code += body->code; 
-    node->code += "goto " + startLabel + "\n"; 
-    node->code += endLabel + ":\n"; 
     std::cout << "Generated while code:\n" << node->code << std::endl;
 
-    $$ = node; 
+    $$ = node;
 }
-
 %%
 
 int main(int argc, char** argv) {
