@@ -1,6 +1,9 @@
+func mul(int a, int b) {
+    return a * b;
+}
 func main() {
-  #int[-2] array;
   #a = 5;
-  int a;
-  int a;
+  int[-2] array;
+  #int a;
+  #int a;
 }

@@ -60,15 +60,15 @@ bool isDeclared(const std::string& varName) {
 
 %token UNKNOWN_TOKEN
 
-%nterm <double> if_statement else_statement 
-%nterm <double> comparitors bool_expression
-%nterm <double> read_statement while_statement 
+%nterm <codenode> if_statement else_statement 
+%nterm <codenode> comparitors bool_expression
+%nterm <codenode> read_statement while_statement 
+
 
 %start program
 %type <codenode> function_declerations function_decleration statements statement var_decleration
 %type <codenode> var_assigment expression multiplicative_expr term varibles print_statement pars
 %type <codenode> paramerter_decleration return_statement
-
 %%
 program                : function_declerations { 
                            struct CodeNode *node = $1;
@@ -349,7 +349,30 @@ varibles               : IDENTIFIER {
  $$ = node;
 };
 read_statement 	       : READ L_PAR expression R_PAR {};
-while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {};
+while_statement : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {
+    struct CodeNode *node = new CodeNode;
+    struct CodeNode *condition = $3; 
+    struct CodeNode *body = $6; 
+
+
+    std::string startLabel = createTempVarible(); 
+    std::string endLabel = createTempVarible();   
+    std::string conditionVar = createTempVarible(); 
+    
+
+    node->code = ". " + conditionVar + "\n"; 
+    node->code += startLabel + ":\n"; 
+    node->code += condition->code; 
+    node->code += "= " + conditionVar + ", " + condition->name + "\n"; 
+    node->code += "if " + conditionVar + " == 0 goto " + endLabel + "\n"; 
+    node->code += body->code; 
+    node->code += "goto " + startLabel + "\n"; 
+    node->code += endLabel + ":\n"; 
+    std::cout << "Generated while code:\n" << node->code << std::endl;
+
+    $$ = node; 
+}
+
 %%
 
 int main(int argc, char** argv) {
