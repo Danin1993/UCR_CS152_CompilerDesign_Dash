@@ -486,7 +486,7 @@ while_stm
             node->code += stmts->code; 
             node->code += "goto " + startLabel + "\n"; 
             node->code += endLabel + ":\n"; 
-            
+            std::cout << "Generated while loop code:\n" << node->code << std::endl;
             $$ = node;
         }
 
