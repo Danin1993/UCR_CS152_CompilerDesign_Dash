@@ -66,9 +66,9 @@ bool isDeclared(const std::string& varName) {
 %token L_CURLY R_CURLY L_BRAKET R_BRAKET ASSIGNMENT LESS LESS_EQ GREATER GREATER_EQ EQUALITY NOT_EQ
 %token UNKNOWN_TOKEN
 
-%nterm <double> if_stm else_stm 
-%nterm <double> comparitors bool_expr
-%nterm <double> read_stm while_stm 
+%nterm <codenode> if_stm else_stm
+%nterm <codenode> comparitors bool_expr
+%nterm <codenode> read_stm while_stm
 
 %start program
 %type <codenode> functions function statements statement var_dec
