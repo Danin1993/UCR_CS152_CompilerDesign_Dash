@@ -1,17 +1,5 @@
 func main
 . i
 = i, 0
-: label0beginloop
-. _temp1
-< _temp1, i, 10
-?:= label1loopbody, _temp1
-:= label2endloop
-: label1loopbody
-. _temp0
-+ _temp0, i, 1
-= i, _temp0
-.> i
-:= label0beginloop
-: label2endloop
 endfunc
 
