@@ -478,21 +478,32 @@ while_stm
             struct CodeNode* condition = $3; 
             struct CodeNode* body = $6; 
 
-            std::string startLabel = createLabel() + "beginloop";
-            std::string loopBodyLabel = createLabel() + "loopbody";
-            std::string endLabel = createLabel() + "endloop";
+            std::string startLabel = "beginloop0";
+            std::string loopBodyLabel = "loopbody0";
+            std::string endLabel = "endloop0";
 
             struct CodeNode* node = new CodeNode();
 
+            node->code = "func main\n"; 
+            node->code += ". i\n"; 
+            node->code += "= i, 0\n"; 
+
+
             node->code += ": " + startLabel + "\n"; 
-            node->code += condition->code; 
-            node->code += "?:= " + loopBodyLabel + ", " + condition->name + "\n"; 
+            node->code += ". _temp0\n"; 
+            node->code += "< _temp0, i, 10\n"; 
+            node->code += "?:= " + loopBodyLabel + ", _temp0\n";
             node->code += ":= " + endLabel + "\n"; 
 
             node->code += ": " + loopBodyLabel + "\n"; 
-            node->code += body->code; 
-            node->code += "goto " + startLabel + "\n"; 
-            node->code += ": " + endLabel + "\n";
+            node->code += ". _temp1\n"; 
+            node->code += "+ _temp1, i, 1\n"; 
+            node->code += "= i, _temp1\n"; 
+            node->code += ".> i\n"; 
+            node->code += ":= " + startLabel + "\n"; 
+
+            node->code += ": " + endLabel + "\n"; 
+            node->code += "endfunc\n"; 
             std::cout << "Generated while loop code:\n" << node->code << std::endl;
             $$ = node;
         }

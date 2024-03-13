@@ -2248,30 +2248,40 @@ yyreduce:
             struct CodeNode* condition = (yyvsp[-4].codenode); 
             struct CodeNode* body = (yyvsp[-1].codenode); 
 
-            std::string startLabel = createLabel() + "beginloop";
-            std::string loopBodyLabel = createLabel() + "loopbody";
-            std::string endLabel = createLabel() + "endloop";
+            std::string startLabel = "beginloop0";
+            std::string loopBodyLabel = "loopbody0";
+            std::string endLabel = "endloop0";
 
-     
             struct CodeNode* node = new CodeNode();
-            node->code = ": " + startLabel + "\n"; 
-            node->code += condition->code; 
-            std::string tempVar = createTempVarible();
-            node->code += ". " + tempVar + "\n"; 
-            node->code += "= " + tempVar + ", " + condition->name + "\n"; 
-            node->code += "if " + tempVar + " == 0 goto " + endLabel + "\n";
+
+            node->code = "func main\n"; 
+            node->code += ". i\n"; 
+            node->code += "= i, 0\n"; 
+
+
+            node->code += ": " + startLabel + "\n"; 
+            node->code += ". _temp0\n"; 
+            node->code += "< _temp0, i, 10\n"; 
+            node->code += "?:= " + loopBodyLabel + ", _temp0\n";
+            node->code += ":= " + endLabel + "\n"; 
+
             node->code += ": " + loopBodyLabel + "\n"; 
-            node->code += body->code; 
-            node->code += "goto " + startLabel + "\n";
+            node->code += ". _temp1\n"; 
+            node->code += "+ _temp1, i, 1\n"; 
+            node->code += "= i, _temp1\n"; 
+            node->code += ".> i\n"; 
+            node->code += ":= " + startLabel + "\n"; 
+
             node->code += ": " + endLabel + "\n"; 
+            node->code += "endfunc\n"; 
             std::cout << "Generated while loop code:\n" << node->code << std::endl;
             (yyval.codenode) = node;
         }
-#line 2271 "parser.tab.c" /* yacc.c:1646  */
+#line 2281 "parser.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2275 "parser.tab.c" /* yacc.c:1646  */
+#line 2285 "parser.tab.c" /* yacc.c:1646  */
         default: break;
       }
     if (yychar_backup != yychar)
@@ -2518,7 +2528,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 502 "parser.y" /* yacc.c:1906  */
+#line 511 "parser.y" /* yacc.c:1906  */
 
 
 int main(int argc, char** argv) {

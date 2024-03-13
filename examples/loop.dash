@@ -1,5 +1,3 @@
-#Checked, Done!
-
 func main() {
     int i;
     i = 0;
