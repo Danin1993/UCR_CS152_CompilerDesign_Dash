@@ -1,0 +1,16 @@
+func main
+. i
+= i, 0
+: label0beginloop
+. _temp1
+= _temp1, i
+if _temp1 == 0 goto label2endloop
+: label1loopbody
+. _temp0
++ _temp0, i, 1
+= i, _temp0
+.> i
+goto label0beginloop
+: label2endloop
+endfunc
+

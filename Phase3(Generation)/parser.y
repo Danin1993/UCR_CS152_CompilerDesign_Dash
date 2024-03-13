@@ -471,21 +471,28 @@ read_stm
     : READ L_PAR expression R_PAR {}
 
 
+
 while_stm
-    : WHILE L_PAR bool_expr R_PAR L_CURLY statements R_CURLY 
+    : WHILE L_PAR bool_expr R_PAR L_CURLY statements R_CURLY
         {
-            std::string startLabel = createLabel();
-            std::string endLabel = createLabel();
-            struct CodeNode *condition = $3;
-            struct CodeNode *stmts = $6;
-            
-            struct CodeNode *node = new CodeNode();
-            node->code = startLabel + ":\n"; 
+            struct CodeNode* condition = $3; 
+            struct CodeNode* body = $6; 
+
+            std::string startLabel = createLabel() + "beginloop";
+            std::string loopBodyLabel = createLabel() + "loopbody";
+            std::string endLabel = createLabel() + "endloop";
+
+            struct CodeNode* node = new CodeNode();
+
+            node->code += ": " + startLabel + "\n"; 
             node->code += condition->code; 
-            node->code += "if " + condition->name + " == 0 goto " + endLabel + "\n";
-            node->code += stmts->code; 
+            node->code += "?:= " + loopBodyLabel + ", " + condition->name + "\n"; 
+            node->code += ":= " + endLabel + "\n"; 
+
+            node->code += ": " + loopBodyLabel + "\n"; 
+            node->code += body->code; 
             node->code += "goto " + startLabel + "\n"; 
-            node->code += endLabel + ":\n"; 
+            node->code += ": " + endLabel + "\n";
             std::cout << "Generated while loop code:\n" << node->code << std::endl;
             $$ = node;
         }

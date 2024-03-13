@@ -508,7 +508,7 @@ static const yytype_uint16 yyrline[] =
      157,   159,   161,   163,   165,   170,   182,   194,   208,   213,
      225,   239,   241,   243,   248,   248,   274,   289,   301,   304,
      317,   333,   339,   342,   355,   368,   384,   386,   393,   408,
-     413,   424,   432,   437,   450,   461,   471,   475
+     413,   424,   432,   437,   450,   461,   471,   476
 };
 #endif
 
@@ -2243,28 +2243,35 @@ yyreduce:
     break;
 
   case 57:
-#line 476 "parser.y" /* yacc.c:1646  */
+#line 477 "parser.y" /* yacc.c:1646  */
     {
-            std::string startLabel = createLabel();
-            std::string endLabel = createLabel();
-            struct CodeNode *condition = (yyvsp[-4].codenode);
-            struct CodeNode *stmts = (yyvsp[-1].codenode);
-            
-            struct CodeNode *node = new CodeNode();
-            node->code = startLabel + ":\n"; 
+            struct CodeNode* condition = (yyvsp[-4].codenode); 
+            struct CodeNode* body = (yyvsp[-1].codenode); 
+
+            std::string startLabel = createLabel() + "beginloop";
+            std::string loopBodyLabel = createLabel() + "loopbody";
+            std::string endLabel = createLabel() + "endloop";
+
+     
+            struct CodeNode* node = new CodeNode();
+            node->code = ": " + startLabel + "\n"; 
             node->code += condition->code; 
-            node->code += "if " + condition->name + " == 0 goto " + endLabel + "\n";
-            node->code += stmts->code; 
-            node->code += "goto " + startLabel + "\n"; 
-            node->code += endLabel + ":\n"; 
+            std::string tempVar = createTempVarible();
+            node->code += ". " + tempVar + "\n"; 
+            node->code += "= " + tempVar + ", " + condition->name + "\n"; 
+            node->code += "if " + tempVar + " == 0 goto " + endLabel + "\n";
+            node->code += ": " + loopBodyLabel + "\n"; 
+            node->code += body->code; 
+            node->code += "goto " + startLabel + "\n";
+            node->code += ": " + endLabel + "\n"; 
             std::cout << "Generated while loop code:\n" << node->code << std::endl;
             (yyval.codenode) = node;
         }
-#line 2264 "parser.tab.c" /* yacc.c:1646  */
+#line 2271 "parser.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2268 "parser.tab.c" /* yacc.c:1646  */
+#line 2275 "parser.tab.c" /* yacc.c:1646  */
         default: break;
       }
     if (yychar_backup != yychar)
@@ -2511,7 +2518,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 493 "parser.y" /* yacc.c:1906  */
+#line 502 "parser.y" /* yacc.c:1906  */
 
 
 int main(int argc, char** argv) {
