@@ -35,6 +35,11 @@ std::string createTempVarible(){
  return std::string("_temp") + std::to_string(cnt++);
 }
 
+std::string createLabel() {
+    static int labelCnt = 0;
+    return "label" + std::to_string(labelCnt++);
+}
+
 bool isDeclared(const std::string& varName) {
     return std::find(symbolTable.begin(), symbolTable.end(), varName) != symbolTable.end();
 }
@@ -466,9 +471,24 @@ read_stm
     : READ L_PAR expression R_PAR {}
 
 
-while_stm        
-    : WHILE L_PAR bool_expr R_PAR L_CURLY statements R_CURLY {}
-
+while_stm
+    : WHILE L_PAR bool_expr R_PAR L_CURLY statements R_CURLY 
+        {
+            std::string startLabel = createLabel();
+            std::string endLabel = createLabel();
+            struct CodeNode *condition = $3;
+            struct CodeNode *stmts = $6;
+            
+            struct CodeNode *node = new CodeNode();
+            node->code = startLabel + ":\n"; 
+            node->code += condition->code; 
+            node->code += "if " + condition->name + " == 0 goto " + endLabel + "\n";
+            node->code += stmts->code; 
+            node->code += "goto " + startLabel + "\n"; 
+            node->code += endLabel + ":\n"; 
+            
+            $$ = node;
+        }
 
 %%
 
