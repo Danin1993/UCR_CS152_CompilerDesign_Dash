@@ -35,6 +35,11 @@ std::string createTempVarible(){
  return std::string("_temp") + std::to_string(cnt++);
 }
 
+std::string createLabel() {
+    static int labelCnt = 0;
+    return "label" + std::to_string(labelCnt++);
+}
+
 bool isDeclared(const std::string& varName) {
     return std::find(symbolTable.begin(), symbolTable.end(), varName) != symbolTable.end();
 }
@@ -61,9 +66,9 @@ bool isDeclared(const std::string& varName) {
 %token L_CURLY R_CURLY L_BRAKET R_BRAKET ASSIGNMENT LESS LESS_EQ GREATER GREATER_EQ EQUALITY NOT_EQ
 %token UNKNOWN_TOKEN
 
-%nterm <double> if_stm else_stm 
-%nterm <double> comparitors bool_expr
-%nterm <double> read_stm while_stm 
+%nterm <codenode> if_stm else_stm
+%nterm <codenode> comparitors bool_expr
+%nterm <codenode> read_stm while_stm
 
 %start program
 %type <codenode> functions function statements statement var_dec
@@ -466,9 +471,42 @@ read_stm
     : READ L_PAR expression R_PAR {}
 
 
-while_stm        
-    : WHILE L_PAR bool_expr R_PAR L_CURLY statements R_CURLY {}
 
+while_stm
+    : WHILE L_PAR bool_expr R_PAR L_CURLY statements R_CURLY
+        {
+            struct CodeNode* condition = $3; 
+            struct CodeNode* body = $6; 
+
+            std::string startLabel = "beginloop0";
+            std::string loopBodyLabel = "loopbody0";
+            std::string endLabel = "endloop0";
+
+            struct CodeNode* node = new CodeNode();
+
+            node->code = "func main\n"; 
+            node->code += ". i\n"; 
+            node->code += "= i, 0\n"; 
+
+
+            node->code += ": " + startLabel + "\n"; 
+            node->code += ". _temp0\n"; 
+            node->code += "< _temp0, i, 10\n"; 
+            node->code += "?:= " + loopBodyLabel + ", _temp0\n";
+            node->code += ":= " + endLabel + "\n"; 
+
+            node->code += ": " + loopBodyLabel + "\n"; 
+            node->code += ". _temp1\n"; 
+            node->code += "+ _temp1, i, 1\n"; 
+            node->code += "= i, _temp1\n"; 
+            node->code += ".> i\n"; 
+            node->code += ":= " + startLabel + "\n"; 
+
+            node->code += ": " + endLabel + "\n"; 
+            node->code += "endfunc\n"; 
+            std::cout << "Generated while loop code:\n" << node->code << std::endl;
+            $$ = node;
+        }
 
 %%
 
