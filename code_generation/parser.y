@@ -7,11 +7,21 @@
 #include <string>
 #include <string.h>
 #include <vector>
-
+#include <stack>
+int breakCnt=0;
+int continueCnt=0;
+int loopCnt=0;
 struct CodeNode{
 std :: string code;
 std :: string name;
 };
+struct loopLabel{
+std::string label;
+bool breakS = false;
+bool continueS = false;
+
+};
+std:: stack <loopLabel> labeles;
 int parCnt = 0;
 int varCount = 0;
 extern int yylex();
@@ -22,6 +32,10 @@ void yyerror(const char* s);
 std::string createTempVarible(){
  static int cnt = 0;
  return std::string("_temp") + std::to_string(cnt++);
+}
+std::string createJmpLabel(){
+ static int cnt = 0;
+ return std::string("_L") + std::to_string(cnt++);
 }
 enum Type { Integer, Array };
 
@@ -145,7 +159,6 @@ void checkIntergerAssignemnt(std:: string &code){
     }
   }
 }
-<<<<<<< HEAD
 void checkArrayAssignmentLeft(std:: string &code){
   int startVal=0;
   for(int i=0;i<code.length();i++){
@@ -253,9 +266,7 @@ void checkMath(std::string &code){
      }
   }
 }
-=======
 
->>>>>>> d4cc006a483c797471898fa642d792aa8bc48c5a
 void generate_table_and_verify_code(std::string &code){
  int startLine=0;
  for(int i=0;i<code.length();i++){
@@ -300,7 +311,7 @@ void generate_table_and_verify_code(std::string &code){
       checkArrayAssignmentRight(s);
   
     }
-   if(code.at(startLine) == '+' || code.at(startLine) == '-' || code.at(startLine) == '*' || code.at(startLine) == '/' || code.at(startLine) == '%'){
+   if((code.at(startLine) == '=' && code.at(startLine+1) == '=') || code.at(startLine) == '!' || code.at(startLine) == '<' || code.at(startLine) == '>'|| code.at(startLine) == '+' || code.at(startLine) == '-' || code.at(startLine) == '*' || code.at(startLine) == '/' || code.at(startLine) == '%'){
     checkMath(s);
    
 
@@ -349,20 +360,22 @@ void print_symbol_table(void) {
 
 %token UNKNOWN_TOKEN
 
-%nterm <double> if_statement else_statement 
-%nterm <double> comparitors bool_expression
-%nterm <double> read_statement while_statement 
+%nterm <double> read_statement 
 
 %start program
-%type <codenode> function_declerations function_decleration statements statement var_decleration
-%type <codenode> var_assigment expression multiplicative_expr term varibles print_statement pars
-%type <codenode> paramerter_decleration return_statement
+%type <codenode> function_declerations function_decleration statements statement var_decleration if_statement
+%type <codenode> var_assigment expression multiplicative_expr term varibles print_statement pars while_statement
+%type <codenode> paramerter_decleration return_statement comparitors else_statement bool_expression
 %%
 program                : function_declerations { struct CodeNode *node = $1;
  if(!checkMainFunc()){
   fprintf(stderr, "Sematic error at line %d: no main fuction declared\n", yylineno);
   exit(1);
 
+ }
+ if(!labeles.empty() || (loopCnt < breakCnt) || (loopCnt < continueCnt) ){
+  fprintf(stderr, "Sematic error at line %d: mutiple break/continue statement used outside loop or mutiple  break/continue from in a loop \n", yylineno);
+  exit(1);
  }
                          printf("%s\n", node->code.c_str());}
 function_declerations  : function_declerations function_decleration {
@@ -389,33 +402,84 @@ statements	       : statements statement {
 statement	       : var_decleration SEMICOLON {$$ = $1;}
 	               | var_assigment SEMICOLON { $$ = $1; }
 		       | print_statement SEMICOLON {$$ = $1;}
-		       | if_statement {
-struct CodeNode *node = new CodeNode;
- $$ = node;}
+		       | if_statement { $$ = $1;}
 		       | return_statement SEMICOLON {$$ = $1;}
                        | read_statement SEMICOLON {
 struct CodeNode *node = new CodeNode;
  $$ = node;}
-		       | while_statement {
-struct CodeNode *node = new CodeNode;
- $$ = node;}
+		       | while_statement { 
+loopCnt++;
+$$ = $1;}
                        | BREAK SEMICOLON {
+breakCnt++;
 struct CodeNode *node = new CodeNode;
+std::string temp;
+if(labeles.empty() || labeles.top().breakS){
+ temp=createJmpLabel();
+ loopLabel Label;
+ Label.label = temp;
+ Label.breakS = true;
+ labeles.push(Label);
+ node->code = std::string(":= ") + temp + std::string("end\n");
+}
+else{
+ labeles.top().breakS = true;
+ node->code = std::string(":= ") + temp + std::string("end\n");
+}
  $$ = node;}
                        | CONTINUE SEMICOLON {
+continueCnt++;
 struct CodeNode *node = new CodeNode;
- $$ = node;}
+std::string temp;
+if(labeles.empty() || labeles.top().continueS){
+ temp=createJmpLabel();
+ loopLabel Label;
+ Label.label = temp;
+ Label.continueS = true;
+ labeles.push(Label);
+ node->code = std::string(":= ") + temp + std::string("begin\n");
+}
+else{
+ labeles.top().continueS = true;
+ node->code = std::string(":= ") + temp + std::string("begin\n");
+}
+ $$ = node;
+}
 		       ;  
-if_statement           : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {};
-else_statement         : ELSE L_CURLY statements R_CURLY {}
-		       | %empty {}
+if_statement           : IF L_PAR bool_expression R_PAR L_CURLY statements R_CURLY else_statement {
+struct CodeNode *node= new CodeNode;
+struct CodeNode *bool_expression= $3;
+struct CodeNode *statements= $6;
+struct CodeNode *else_statement= $8;
+node->code = bool_expression->code;
+node->code+= std::string("?:= ") + else_statement->name + std::string(", ") + bool_expression->name + std::string("\n");node->code+= statements->code + else_statement->code;
+$$ = node;
+
+};
+else_statement         : ELSE L_CURLY statements R_CURLY {
+struct CodeNode *node= new CodeNode;
+struct CodeNode *statements= $3;
+std::string label1 = createJmpLabel();
+std::string label2 = createJmpLabel();
+node->code = std::string(":= ") + label2+ std::string("\n");
+node->code += std::string(": ") + label1 + std::string("\n");
+node->code += statements->code;
+node->code += std::string(": ") + label2 + std::string("\n");
+node->name = label1;
+$$ = node;
+
+}
+		       | %empty {struct CodeNode *node = new CodeNode; node->name = createJmpLabel(); 
+ node->code = std::string(": ") + node->name + std::string("\n");
+ $$ = node;
+ }
                        ;
-comparitors            : LESS {}
-		       | LESS_EQ {}
-		       | GREATER {}
-                       | GREATER_EQ {}
-                       | EQUALITY {} 
-                       | NOT_EQ {}
+comparitors            : LESS {struct CodeNode *node= new CodeNode; node->name=">="; $$=node;}
+		       | LESS_EQ {struct CodeNode *node= new CodeNode; node->name=">"; $$=node;}
+		       | GREATER {struct CodeNode *node= new CodeNode; node->name="<="; $$=node;}
+                       | GREATER_EQ {struct CodeNode *node= new CodeNode; node->name="<"; $$=node;}
+                       | EQUALITY {struct CodeNode *node= new CodeNode; node->name="!="; $$=node;} 
+                       | NOT_EQ {struct CodeNode *node= new CodeNode; node->name="=="; $$=node;}
                        ;
 return_statement       : RETURN expression {
  struct CodeNode *node= new CodeNode;
@@ -522,7 +586,21 @@ expression             : multiplicative_expr {$$ = $1;}
  node -> name = tempVarible;
  $$ = node;}
                        ;
-bool_expression        : expression comparitors expression {};
+bool_expression        : expression comparitors expression {
+ struct CodeNode *node = new CodeNode;
+ struct CodeNode *exprL = $1;
+ struct CodeNode *exprR = $3;
+ struct CodeNode *comparitors = $2;
+ node->code= exprL->code + exprR->code;
+ std:: string tempVarible = createTempVarible();
+ node -> code +=  std:: string(". ") + tempVarible + std::string("\n");
+ 
+ node->code += comparitors->name += std::string(" ")+ tempVarible + std::string(", ") + exprL->name + std::string(", ")+exprR->name + std::string("\n");
+node->name = tempVarible;
+$$ = node;
+ 
+
+};
 multiplicative_expr    : term {$$ = $1;}
                        | term MOD multiplicative_expr {
  struct CodeNode *node = new CodeNode;
@@ -621,7 +699,28 @@ if(atoi($3) < 0){
  $$ = node;
 };
 read_statement 	       : READ L_PAR expression R_PAR {};
-while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {};
+while_statement        : WHILE L_PAR bool_expression R_PAR L_CURLY statements R_CURLY {
+std:: string temp;
+struct CodeNode *node = new CodeNode;
+struct CodeNode *bool_expression = $3;
+struct CodeNode *statements = $6;
+if(!labeles.empty()){ temp=labeles.top().label;
+ temp = labeles.top().label;
+ labeles.pop();
+}
+else{
+ temp = createJmpLabel();
+ }
+
+node->code= std::string(": ") + temp + std::string("begin\n");
+node->code += bool_expression->code;
+node->code+= std::string("?:= ") + temp + std::string("end, ") + bool_expression->name + std::string("\n");
+node->code+=statements->code;
+node->code += std::string(":= ") + temp + std::string("begin\n");
+node->code += std::string(": ") + temp + std::string("end\n");
+$$ = node;
+
+};
 %%
 
 int main(int argc, char** argv) {
